@@ -1,0 +1,54 @@
+HTML
+    shrewdSnek2.js --->  "source".js
+        mainMenu.js                                                     evolutionRunner.js              --->  all clicking and input should be on this layer
+            singleSnakeRunner.js                                            singleSnakeRunner.js                generationProcessor.js                --->  all the actual game logic should be on this layer
+                                                                                                                    singleSnakeRunner.js (x1000)
+          
+
+shrewdSnek2.js:
+    currentlyRunning
+    terminate()
+    startNew()
+
+
+mainMenu.js:
+    displayMenu
+    runningInstance
+    loadAndPlay()
+    playUser()
+    loadEvolution()
+    createEvolution()
+
+
+evolutionRunner.js:
+    runningInstance   --->  singleSnakeRunner.js or generationProcessor.js
+    evolutionVariables
+        mutable:
+            timeScore
+            appleScore
+            timeOutTime
+            numTimesRunEachSnake
+        immutable:
+            variances
+            brainStructure
+            mutationType
+    changeEvolutionVariables()
+    saveBest()
+    saveEvolution()
+    runGeneration()
+    runXGenerations()
+    playBest()
+    playPercentile()
+
+
+singleSnakeRunner.js:
+    gridSize
+    appleValue
+    mySnake
+        a single "snake.js"
+    tickRate
+    score
+    draw():
+        MUST be called from outside, so as to allow multi-threading
+    finish():
+        callback
