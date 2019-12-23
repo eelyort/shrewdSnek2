@@ -41,6 +41,22 @@ evolutionRunner.js:
     playPercentile()
 
 
+generationProcessor.js:
+    Runs in thread
+    snakes
+    draw()
+        MUST be called from outside, so as to allow multi-threading
+        loading bar
+    finish()
+        callback
+        returns sorted snakes
+    runSnake()
+        makes x singleSnakeRunner.js's
+        averages scores
+    mutateIndividual()
+        calls brain.mutate
+
+
 singleSnakeRunner.js:
     gridSize
     appleValue
@@ -48,7 +64,24 @@ singleSnakeRunner.js:
         a single "snake.js"
     tickRate
     score
+    time
+    input
     draw():
         MUST be called from outside, so as to allow multi-threading
     finish():
         callback
+
+
+snake.js:
+    score
+        Comparable
+    brain.js
+        mutateMethod.js
+    getDecision()
+        called from outside
+
+
+brain.js:
+    network
+    getDecision()
+    mutate()
