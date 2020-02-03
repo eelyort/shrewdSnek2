@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Gamedev Canvas Workshop</title>
+    <style>
+        * { padding: 0; margin: 0; }
+        canvas { background: #eee; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="480" height="320"> <!-- The Game is drawn in here--> </canvas>
+
+<script>
+    // JavaScript code goes here
+    //FPS throttler
+    let stop = false;
+    let frameCount = 0;
+    let fps, fpsInterval, startTime, now, then, elapsed;
+    fps = 60;
+
+    // initialize the timer variables and start the animation
+
+    function startAnimating(fps) {
+        fpsInterval = 1000 / fps;
+        then = Date.now();
+        startTime = then;
+        // alert("Hi");
+        animate();
+    }
+
+    // the animation loop calculates time elapsed since the last loop
+    // and only draws if your specified fps interval is achieved
+    function animate() {
+
+        // request another frame
+
+        requestAnimationFrame(animate);
+
+        // calc elapsed time since last loop
+
+        now = Date.now();
+        elapsed = now - then;
+
+        // if enough time has elapsed, draw the next frame
+
+        if (elapsed > fpsInterval) {
+
+            // Get ready for next frame by setting then=now, but also adjust for your
+            // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+            then = now - (elapsed % fpsInterval);
+
+            // Put your drawing code here
+            draw();
+        }
+    }
+
+    // Grab reference to canvas
+    let canvas = document.getElementById("myCanvas");
+    let ctx = canvas.getContext("2d");                  //This is what we actually draw onto
+
+    function testPlays() {
+        //Test code to draw a red rectangle
+        ctx.beginPath();
+        //x, y ofTop-left corner, width, height
+        ctx.rect(20, 40, 50, 50);
+        //Fill style same as CSS: hexadec, keyword, rgba(), etc
+        ctx.fillStyle = "#FF0000";
+        ctx.fill();
+        ctx.closePath();
+
+        //Test code to draw a green circle
+        ctx.beginPath();
+        //x, y of center, radius, start angle(radians), end angle(radians), false(draw clockwise), true(draw counterclockwise)
+        ctx.arc(240, 160, 20, 0, Math.PI * 2, false);
+        //Fill style same as CSS: hexadec, keyword, rgba(), etc
+        ctx.fillStyle = "green";
+        ctx.fill();
+        ctx.closePath();
+
+        //Test code for stroke(): colors the borders rather than the fill
+        ctx.beginPath();
+        ctx.rect(160, 10, 100, 40);
+        //Fill style same as CSS: hexadec, keyword, rgba(), etc
+        ctx.strokeStyle = "rgba(0, 0, 255, 0.5)";
+        ctx.stroke();
+        ctx.closePath();
+    }
+
+    function drawBall(){
+        //Ball drawing
+        ctx.beginPath();
+        ctx.arc(x, y, ballradius, 0, Math.PI*2);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawPaddle() {
+        ctx.beginPath();
+        ctx.rect(paddleX, canvas.height-paddleHeight-paddleYOffset, paddleWidth, paddleHeight);
+        ctx.fillStyle = "#0095DD";
+        ctx.fill();
+        ctx.closePath();
+    }
+
+    function drawBricks() {
+        // alert(bricksArray.length);
+        // alert(bricksArray[0].length);
+        for (let c = 0; c < brickColumnCount; c++) {
+            for (let r = 0; r < brickRowCount; r++) {
+                if(bricksArray[c][r].status == true) {
+                    ctx.beginPath();
+                    ctx.rect(bricksArray[c][r].x, bricksArray[c][r].y, brickWidth, brickHeight);
+                    ctx.fillStyle = "#0095DD";
+                    ctx.fill();
+                    ctx.closePath();
+                }
+                // alert(c + " " + r);
+            }
+        }
+    }
+
+    //This function should be called every tick
+    function draw(){
+        //Drawing Code
+        //Clear Canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        //Draw the ball
+        drawBall();
+
+        //draw paddle
+        drawPaddle();
+
+        //draw bricks
+        drawBricks();
+
+        //brick collisions
+        for(let r = 0; r < bricksArray.length; r++){
+            for(let c = 0; c < bricksArray[r].length; c++){
+                if(bricksArray[r][c].status && (x + ballradius) > bricksArray[r][c].x && (x - ballradius) < (bricksArray[r][c].x + brickWidth) && (y + ballradius) > bricksArray[r][c].y && (y - ballradius) < (bricksArray[r][c].y + brickHeight)) {
+                    bricksArray[r][c].status = false;
+                    dy *= -1;
+                    // //bounce off left or right
+                    // if ((x + ballradius) > bricksArray[r][c].x && (x + ballradius) < (bricksArray[r][c].x + brickWidth)) {
+                    //     bricksArray[r][c].status = false;
+                    //     dx *= -1;
+                    //     // dy *= -1;
+                    // }
+                    // //bounce off top or bottom
+                    // else if ((y + ballradius) > bricksArray[r][c].y && (y + ballradius) < (bricksArray[r][c].y + brickHeight)) {
+                    //     bricksArray[r][c].status = false;
+                    //     dy *= -1;
+                    // }
+                }
+            }
+        }
+
+        //Collision detection(bouncing)
+        //let margin = 10; depreciated
+        //horizontal
+        if(x + dx >= canvas.width-(ballradius/**((0.75*dy)/ballradius)*/) || x + dx <= ballradius/***((0.75*dy)/ballradius)*/){
+            dx *= -1;
+        }
+        if(y + dy <= ballradius/**((0.75*dy)/ballradius)*/ || (y + dy >= canvas.height-paddleHeight-paddleYOffset-(ballradius/**((0.75*dy)/ballradius)*/) && (x + dx < paddleX+paddleWidth && x + dx > paddleX))){
+            dy *= -1;
+        }
+        // else if(y + dy >= canvas.height-paddleHeight-(ballradius*((0.75*dy)/ballradius)) && (x + dx < paddleX+paddleWidth && x + dx > paddleX)){
+        //
+        // }
+        else if(y + dy >= canvas.height-(ballradius/**((0.75*dy)/ballradius)*/)){
+            alert("GAME OVER");
+            document.location.reload();
+            // clearInterval(interval); // Needed for Chrome to end game
+        }
+
+        //Move the paddle
+        if(rightPressed) {
+            paddleX += paddledx;
+            if (paddleX + paddleWidth > canvas.width){
+                paddleX = canvas.width - paddleWidth;
+            }
+        }
+        if(leftPressed) {
+            paddleX -= paddledx;
+            if (paddleX < 0){
+                paddleX = 0;
+            }
+        }
+
+        //Move the ball
+        x += dx;
+        y += dy;
+
+        // requestAnimationFrame(draw);
+    }
+    //ball variables -------------------
+    //set up x and y variable
+    let x = canvas.width/2;
+    let y = canvas.height-30;
+    //speeds
+    let dx = 2;
+    let dy = -2;
+    //ball stuff
+    let ballradius = 10;
+
+    //paddle variables -----------------
+    let paddleHeight = 10;
+    let paddleWidth = 75;
+    let paddledx = 3;
+    //the draw starts from top left corner
+    let paddleX = (canvas.width-paddleWidth)/2;
+    let paddleYOffset = 5;
+    //movement
+    let rightPressed = false;
+    let leftPressed = false;
+    //Event listeners, on "string", call function keyDownHandler/keyUpHandler
+    document.addEventListener("keydown", keyDownHandlerTestRename, false);
+    function keyDownHandlerTestRename(e) {
+        if(e.key == "Right" || e.key == "ArrowRight" || e.key == 'D' || e.key == 'd') {
+            rightPressed = true;
+        }
+        else if(e.key == "Left" || e.key == "ArrowLeft" || e.key == 'A' || e.key == 'a') {
+            leftPressed = true;
+        }
+    }
+    document.addEventListener("keyup", keyUpHandler, false);
+    function keyUpHandler(e) {
+        if(e.key == "Right" || e.key == "ArrowRight" || e.key == 'D' || e.key == 'd') {
+            rightPressed = false;
+        }
+        else if(e.key == "Left" || e.key == "ArrowLeft" || e.key == 'A' || e.key == 'a') {
+            leftPressed = false;
+        }
+    }
+    
+    //brick variables
+    let brickRowCount = 3;
+    let brickColumnCount = 5;
+    let brickWidth = 75;
+    let brickHeight = 20;
+    let brickPadding = 10;
+    let brickOffsetTop = 30;
+    let brickOffsetLeft = 30;
+    let bricksArray = [];
+    for (let c = 0; c < brickColumnCount; c++){
+        bricksArray[c] = [];
+        for (let r = 0; r < brickRowCount; r++) {
+            bricksArray[c][r] = { x: 0, y: 0, status: true };
+            bricksArray[c][r].x = (c*(brickWidth+brickPadding))+brickOffsetLeft;
+            bricksArray[c][r].y = (r*(brickHeight+brickPadding))+brickOffsetTop;
+            // alert(c + " " + r);
+        }
+    }
+
+    //This sets up the tick rate, calls function "draw" every 10 milliseconds forever/until stopped
+    //It is stored into a variable to allow it to be cleared/stopped on game over
+    // let interval = setInterval(draw, 10);
+    // draw();
+    startAnimating(fps);
+
+</script>
+</body>
+</html>

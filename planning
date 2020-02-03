@@ -7,8 +7,8 @@ HTML
 
 shrewdSnek2.js:
     currentlyRunning
-    terminate()
     startNew()
+        terminate()
 
 
 mainMenu.js:
