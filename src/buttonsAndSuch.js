@@ -1,3 +1,20 @@
+// the next layer class which is currently running and controlling visuals/inputs
+class InteractableLayer{
+    constructor(documentIn, canvasIn, ctxIn){
+        // alert("Beginning of InteractableLayer constructor");
+        this.isRunning = true;
+        this.myDocument = documentIn;
+        this.myCanvas = canvasIn;
+        this.myCTX = ctxIn;
+        // this.myButtons = new Array();
+        this.myCanvas.style.zIndex = "0";
+        // alert("End of InteractableLayer constructor");
+    }
+    run(){
+        // left empty on purpose
+    }
+}
+
 // default button class to make things easier
 class ButtonPrimative{
     constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, buttonCTX, myButtonFunc){
@@ -49,7 +66,8 @@ class ButtonPrimative{
 // button which is made using HTML
 class ButtonHTML{
     // creates a button, from initialization to HTML creation
-    constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, myButtonFunc){
+    constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, buttonFunc){
+        // alert("Beginning of ButtonHTML constructor");
         // initialize variables
         // given percentage coords (0-1)
         if(isPercentage) {
@@ -66,18 +84,26 @@ class ButtonHTML{
             this.heightButton = heightButton;
         }
         this.buttonText = buttonText;
-        this.myButtonFunc = myButtonFunc;
+        this.myButtonFunc = buttonFunc;
+
+        // alert("Checkpoint 1 for buttonHTML");
 
         // create HTML button
         this.myButton = documentButton.createElement("button");
         this.myButton.innerHTML = this.buttonText;
 
+        // alert("Checkpoint 2 for buttonHTML");
+
         // append to document
-        parentElement.insertBefore(this.myButton);
+        parentElement.appendChild(this.myButton);
+
+        // alert("Checkpoint 3 for buttonHTML");
 
         // set properties
         // function
         this.myButton.addEventListener("click", this.myButtonFunc);
+
+        // alert("Checkpoint 4 for buttonHTML");
 
         // position
         this.myButton.style.left = this.xTopLeft;
@@ -85,10 +111,14 @@ class ButtonHTML{
         this.myButton.style.width = this.widthButton;
         this.myButton.style.height = this.heightButton;
 
+        // alert("Checkpoint 5 for buttonHTML");
+
         // so its "above" the canvas
         this.myButton.style.position = "absolute";
         this.myButton.style.zIndex = "2";
 
         // TODO: padding? No. do it in css file
+
+        // alert("End of ButtonHTML constructor");
     }
 }

@@ -5,3 +5,6 @@ const buttonColor = "red";
 
 // background color of main menu
 const mainMenuBackColor = "#B8C5D6";
+
+// id of the "gamePanel"
+const gamePanelID = "gamePanel-1";

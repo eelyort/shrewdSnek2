@@ -1,11 +1,11 @@
 class MainMenu extends InteractableLayer{
     constructor(documentIn, canvasIn, ctxIn){
-        alert("Beginning of MainMenu constructor");
+        // alert("Beginning of MainMenu constructor");
         super(documentIn, canvasIn, ctxIn);
         this.runningInstance = null;
         this.myButtons = [
             // TODO
-            new ButtonHTML(.5, .5, .1, .1, true, "Test", this.myCanvas, this.myDocument, this.TEST_FUNC)
+            new ButtonHTML(.5, .5, .1, .1, true, "Test", this.myDocument.getElementById(gamePanelID), this.myDocument, this.TEST_FUNC)
         ];
 
         // TODO: delete test
@@ -15,7 +15,7 @@ class MainMenu extends InteractableLayer{
         this.myCTX.fill();
         this.myCTX.closePath();
 
-        alert("End of MainMenu constructor");
+        // alert("End of MainMenu constructor");
         // TODO: event listeners
     }
 
@@ -27,6 +27,7 @@ class MainMenu extends InteractableLayer{
     // draws ONLY the menu items
     displayMenu(){
         // TODO: myCTX.draw...
+
     }
 
     // begins running a singleSnakeRunner using an AI brain
