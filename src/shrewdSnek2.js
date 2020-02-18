@@ -5,18 +5,28 @@ class InteractableLayer{
         this.myDocument = documentIn;
         this.myCanvas = canvasIn;
         this.myCTX = ctxIn;
+        // this.myButtons = new Array();
+        this.myCanvas.style.zIndex = "0";
     }
     run(){
-        ;
+        // left empty on purpose
     }
 }
-let currentlyRunning = null;
 
+let currentlyRunning = null;
 // grab references to canvas, document, context to pass around
 // theoretically this is unnecessary but its useful for scaling and sub-windows
 let trueDocument = document;
 let trueCanvas = trueDocument.getElementById("myCanvas");
 let trueCTX = trueCanvas.getContext("2d");
+const trueOriginalTransform = trueCTX.getTransform();
+
+// alert(trueOriginalTransform);
+
+alert("Aboutta start game");
+alert("hi" + MainMenu);
+// TODO: start game
+startNew("mainMenu");
 
 function terminate(){
     currentlyRunning.isRunning = false;
@@ -27,6 +37,9 @@ function startNew(key){
     switch (key) {
         case 'mainMenu':
             // TODO
+            alert("aboutta go new MainMenu");
+            currentlyRunning = new MainMenu(trueDocument, trueCanvas, trueCTX);
+            alert("finished new MainMenu");
             break;
         case "evolutionRunner":
             // TODO
@@ -36,8 +49,8 @@ function startNew(key){
     }
 }
 
-while(true){
-    if(currentlyRunning != null){
-        currentlyRunning.run();
-    }
-}
+// while(true){
+//     if(currentlyRunning != null){
+//         currentlyRunning.run();
+//     }
+// }

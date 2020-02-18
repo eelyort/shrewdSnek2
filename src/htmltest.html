@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Gamedev Canvas Workshop</title>
+    <title>ShrewdSnek2</title>
     <style>
         * { padding: 0; margin: 0; }
         canvas { background: #eee; display: block; margin: 0 auto; }
@@ -10,7 +10,15 @@
 </head>
 <body>
 
-<canvas id="myCanvas" width="480" height="320"> <!-- The Game is drawn in here--> </canvas>
+<div class="gamePanel">
+    <canvas id="myCanvas" width="480" height="320"> <!-- The Game is drawn in here--> </canvas>
+</div>
+
+<!--Need constants-->
+<script src="constants.js"></script>
+
+<!--Need the buttons and whatnot-->
+<script src="buttonsAndSuch.js"></script>
 
 <!--First include the snakes-->
 <script src="brain.js"></script>
