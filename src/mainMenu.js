@@ -5,7 +5,7 @@ class MainMenu extends InteractableLayer{
         this.runningInstance = null;
         this.myButtons = [
             // TODO
-            new ButtonHTML(.5, .5, .1, .1, true, "Test", this.myDocument.getElementById(gamePanelID), this.myDocument, this.TEST_FUNC)
+            new ButtonHTML(.45, .45, .1, .1, true, "Test", this.myDocument.getElementById(gamePanelID), this.myDocument, this.TEST_FUNC)
         ];
 
         // TODO: delete test

@@ -152,18 +152,18 @@ class ButtonHTML{
 
         // position
         // given percentage coords (0-1)
-        if(isPercentage) {
-            this.myButton.style.left = Math.round(this.xTopLeft * 100).toString(10) + "%";
-            this.myButton.style.top = Math.round(this.yTopLeft * 100).toString(10) + "%";
-            this.myButton.style.width = Math.round(this.widthButton * 100).toString(10) + "%";
-            this.myButton.style.height = Math.round(this.heightButton * 100).toString(10) + "%";
+        if(this.isPercentage) {
+            this.myButton.style.left = (this.xTopLeft * 100.0).toString(10) + "%";
+            this.myButton.style.top = (this.yTopLeft * 100.0).toString(10) + "%";
+            this.myButton.style.width = (this.widthButton * 100.0).toString(10) + "%";
+            this.myButton.style.height = (this.heightButton * 100.0).toString(10) + "%";
         }
         // given absolute coords
         else{
-            this.myButton.style.left = (this.xTopLeft).toString(10) + "px";
-            this.myButton.style.top = (this.yTopLeft).toString(10) + "px";
-            this.myButton.style.width = (this.widthButton).toString(10) + "px";
-            this.myButton.style.height = (this.heightButton).toString(10) + "px";
+            this.myButton.style.left = (this.xTopLeft).toString() + "px";
+            this.myButton.style.top = (this.yTopLeft).toString() + "px";
+            this.myButton.style.width = (this.widthButton).toString() + "px";
+            this.myButton.style.height = (this.heightButton).toString() + "px";
         }
     }
 }
