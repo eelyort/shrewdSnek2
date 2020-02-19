@@ -1,0 +1,12 @@
+.gamePanelContainer {
+    position: relative;
+}
+.gamePanelContainer #gamePanel-1 {
+    width: 400px;
+    height: 400px;
+}
+
+.gameCanvas {
+    width: 100%;
+    height: 100%;
+}
