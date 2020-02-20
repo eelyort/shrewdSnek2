@@ -21,23 +21,23 @@ class SnakeBrain{
     }
 }
 
-// Player controlled snake, basically just parses a key event into direction
+// Player controlled snake, basically just parses an array to a direction
 class PlayerControlledBrain extends SnakeBrain{
     constructor(){
         super();
     }
-    // assumes the input is a key event
+    // assumes the input is an array of 0-1
     getDecision(brainInput) {
-        if(brainInput.key == "Up" || brainInput.key == "ArrowUp" || brainInput.key == "W" || brainInput.key == "w"){
+        if(brainInput[0]){
             return 0;
         }
-        if(brainInput.key == "Right" || brainInput.key == "ArrowRight" || brainInput.key == "D" || brainInput.key == "d"){
+        if(brainInput[1]){
             return 1;
         }
-        if(brainInput.key == "Down" || brainInput.key == "ArrowDown" || brainInput.key == "S" || brainInput.key == "s"){
+        if(brainInput[2]){
             return 2;
         }
-        if(brainInput.key == "Left" || brainInput.key == "ArrowLeft" || brainInput.key == 'A' || brainInput.key == 'a') {
+        if(brainInput[3]){
             return 3;
         }
         return 4;
