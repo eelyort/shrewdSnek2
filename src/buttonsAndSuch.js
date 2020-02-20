@@ -6,7 +6,6 @@ class InteractableLayer{
         this.myDocument = documentIn;
         this.myCanvas = canvasIn;
         this.myCTX = ctxIn;
-        // this.myButtons = new Array();
         this.myCanvas.style.zIndex = "1";
         // alert("End of InteractableLayer constructor");
     }
