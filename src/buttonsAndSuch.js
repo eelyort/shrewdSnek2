@@ -7,7 +7,7 @@ class InteractableLayer{
         this.myCanvas = canvasIn;
         this.myCTX = ctxIn;
         // this.myButtons = new Array();
-        this.myCanvas.style.zIndex = "0";
+        this.myCanvas.style.zIndex = "1";
         // alert("End of InteractableLayer constructor");
     }
     run(){
@@ -138,13 +138,14 @@ class ButtonHTML{
         // create HTML button
         this.myButton = documentButton.createElement("button");
         this.myButton.innerHTML = this.buttonText;
+        this.myButton.classList.add("gameButton");
 
         // append to document
         parentElement.appendChild(this.myButton);
 
         // set properties
         // function
-        this.myButton.addEventListener("click", this.myButtonFunc);
+        this.myButton.addEventListener("click", this.eventButtonClicked.bind(this));
 
         // so its "above" the canvas
         this.myButton.style.position = "absolute";
@@ -165,5 +166,30 @@ class ButtonHTML{
             this.myButton.style.width = (this.widthButton).toString() + "px";
             this.myButton.style.height = (this.heightButton).toString() + "px";
         }
+    }
+    eventButtonClicked(){
+        // alert("Parent");
+        this.myButtonFunc();
+    }
+}
+
+// button that toggles between functions
+class ButtonHTMLToggle extends ButtonHTML{
+    constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, buttonFuncs){
+        super(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, null);
+        // what function the toggle is currently on
+        this.funcIndex = 0;
+        this.myButtonFunctions = buttonFuncs;
+    }
+    toggleButtonFunc(){
+        this.myButtonFunctions[this.funcIndex]();
+        this.funcIndex++;
+        if(this.funcIndex === this.myButtonFunctions.length){
+            this.funcIndex = 0;
+        }
+    }
+    eventButtonClicked() {
+        // alert("Child");
+        this.toggleButtonFunc();
     }
 }
