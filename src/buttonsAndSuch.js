@@ -14,6 +14,42 @@ class InteractableLayer{
     }
 }
 
+// queue implementation
+class QueueNode{
+    constructor(valueIn, nextNode) {
+        this.myVal = valueIn;
+        this.myNext = nextNode;
+    }
+}
+class CustomQueue{
+    constructor(){
+        this.startNode = null;
+        this.endNode = null;
+        this.size = 0;
+    }
+    enqueue(valueIn){
+        let newNode = new QueueNode(valueIn, null);
+        if(this.size > 0) {
+            this.endNode.myNext = newNode;
+            this.endNode = newNode;
+        }
+        // when adding first one
+        else{
+            this.startNode = newNode;
+            this.endNode = newNode;
+        }
+        this.size++;
+    }
+    poll(){
+        let valOut = this.startNode.myVal;
+        this.startNode = this.startNode.myNext;
+        return valOut;
+    }
+    peel(){
+        return this.startNode.myVal;
+    }
+}
+
 // default button class to make things easier
 class ButtonPrimative{
     constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, buttonCTX, myButtonFunc){

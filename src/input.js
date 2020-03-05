@@ -2,12 +2,49 @@
 // Specifications
 //  -Takes in snake, gets info from there
 //  -Creates and returns an array
+//  -Inputlength is the length of the returned array
 class Input{
     constructor(snake){
         this.mySnake = snake;
+        this.inputLength = 0;
     }
     generateInput(keyEvent){
         return [];
+    }
+}
+
+// Input which basically just agglomerates smaller inputs
+// Specifications
+//  -Basically appends input arrays to each other
+class MultipleInput extends Input{
+    constructor(snake, firstInput){
+        super(snake);
+        this.myInputs = new CustomQueue();
+        this.addInput(firstInput);
+    }
+    addInput(inputToAdd){
+        this.inputLength += inputToAdd.inputLength;
+        this.myInputs.enqueue(inputToAdd);
+    }
+    generateInput(keyEvent) {
+        let ansInput = new Array[this.inputLength];
+        let index = 0;
+        let currNode = this.myInputs.startNode;
+        while(currNode != null){
+            // get input from current module
+            let tempIn = currNode.myVal.generateInput(keyEvent);
+            // copy the contents
+            for (let i = 0; i < tempIn.length; i++) {
+                ansInput[index] = tempIn[i];
+                index++;
+            }
+
+            // go to the next module
+            currNode = currNode.myNext;
+        }
+
+        // return the result
+        return ansInput;
     }
 }
 
@@ -16,6 +53,7 @@ class Input{
 class PlayerControlledInput extends Input{
     constructor(snake){
         super(snake);
+        this.inputLength = 4;
     }
     generateInput(keyEvent) {
         let ansInput = [false, false, false, false];

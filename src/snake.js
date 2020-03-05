@@ -8,12 +8,32 @@ class Snake{
         this.myBrain = brainIn;
         this.myHeadPos = headPosIn;
         this.myTailPos = this.myHeadPos;
+        // queue of body segments so that can remove them when needed
+        this.myBodySegs = new CustomQueue();
+        this.myBodySegs.enqueue(this.myHeadPos);
+
+        // N(0), E(1), S(2), W(3)
+        this.myDirection = 0;
         this.myLength = startLengthIn;
 
-        // TODO: scores or have them be in singleSnakeRunner?
         this.score = 0;
     }
+    // for printing purposes
     getDecision(keyEvent){
+        this.myBrain.getDecision(this.myInput.generateInput(keyEvent));
+    }
+    // actually moves the snake on the board
+    // returns false if dead, true otherwise
+    makeMove(direction){
+        // TODO
+    }
+    // processes one tick
+    makeTick(keyEvent){
+        let decision = this.getDecision(keyEvent);
 
+        // filter out useless information
+        if(decision == 0 || decision == 1 || decision == 2 || decision == 3){
+            this.myDirection = decision;
+        }
     }
 }

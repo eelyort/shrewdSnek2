@@ -1,10 +1,10 @@
 // Parent skeleton brain class
 // Specifications
 //  -Takes in an "input" into method, gets decision (direction) out
-//  -Can mutate with set method, variable parameters
+//  -Can mutate with many methods, variable parameters
 class SnakeBrain{
-    constructor(){
-
+    constructor(mutateMethod){
+        this.mutateMethod = mutateMethod;
     }
     // takes in input(compress into array)
     // outputs a direction:
@@ -17,7 +17,7 @@ class SnakeBrain{
         return 0;
     }
     mutateMe(mutateParameters){
-
+        this.mutateMethod.mutate(mutateParameters, this);
     }
 }
 
