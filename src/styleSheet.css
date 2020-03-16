@@ -1,5 +1,14 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
 .gamePanelContainer {
     position: relative;
+    height: 50vw;
+    padding: 0;
+    margin: 0;
+    /*padding: 0;*/
 }
 .gamePanelContainer #gamePanel-1 {
     width: 400px;
@@ -8,9 +17,67 @@
 
 .gameCanvas {
     width: 100%;
-    height: 100%;
+    display: block;
+    /*height: 100%;*/
 }
 
+.subGameCanvas {
+    border: 4px solid aqua;
+}
+
+/*!*Basically sets width and height to be the same so that it is a square which fits in a given range*!*/
+/*!*div around content to be squared*!*/
+/*.squareMeWrap {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*}*/
+/*!*content to be squared*!*/
+/*.squareMe {*/
+/*    !*width: min();*!*/
+/*    !*square the content*!*/
+/*    !*set vars in JS or IDs*!*/
+/*    --max-width: 0;*/
+/*    --max-height: 0;*/
+/*    width: var(--max-width);*/
+/*    height: var(--max-height);*/
+/*    max-width: var(--max-height);*/
+/*    max-height: var(--max-width);*/
+/*    !*center the content*!*/
+/*    display: block;*/
+/*    margin: auto;*/
+
+/*    !*position: static;*!*/
+/*}*/
+
+/*1:1 aspect ratio*/
+
+/*.squareMe * {*/
+/*    !*square the content*!*/
+/*    !*set vars in JS or IDs*!*/
+/*    --max-width: 0;*/
+/*    --max-height: 0;*/
+/*    width: var(--max-width);*/
+/*    height: var(--max-height);*/
+/*    max-width: var(--max-height);*/
+/*    max-height: var(--max-width);*/
+/*    !*center the content*!*/
+/*    margin: auto;*/
+/*}*/
+
+/*Aspect ratio things: https://jsbin.com/nehituxuqe/edit?html,css,output*/
+/*.aspectRatioWrapper {*/
+/*    position: relative;*/
+/*}*/
+/*.aspectRatio .ratio {*/
+/*    !*Set padding-bottom*!*/
+/*}*/
+/*.aspectRatio .aspectRatio-content {*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    bottom: 0;*/
+/*    left: 0;*/
+/*    right: 0;*/
+/*}*/
 
 /*button {*/
 /*    height: 100%;*/

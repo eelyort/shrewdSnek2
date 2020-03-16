@@ -7,10 +7,17 @@ class InteractableLayer{
         this.myCanvas = canvasIn;
         this.myCTX = ctxIn;
         this.myCanvas.style.zIndex = "1";
+
+        // setup onResize
+        this.myDocument.getElementsByTagName("BODY")[0].onresize = (this.onResizeFunc).bind(this);
         // alert("End of InteractableLayer constructor");
     }
     run(){
         // left empty on purpose
+    }
+    // called when window is resized
+    onResizeFunc(){
+
     }
 }
 
@@ -45,7 +52,7 @@ class CustomQueue{
         this.startNode = this.startNode.myNext;
         return valOut;
     }
-    peel(){
+    peek(){
         return this.startNode.myVal;
     }
 }
@@ -184,7 +191,7 @@ class ButtonHTML{
 
         // so its "above" the canvas
         this.myButton.style.position = "absolute";
-        this.myButton.style.zIndex = "2";
+        this.myButton.style.zIndex = "5";
 
         // position
         // given percentage coords (0-1)
@@ -210,14 +217,16 @@ class ButtonHTML{
 
 // button that toggles between functions
 class ButtonHTMLToggle extends ButtonHTML{
-    constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, buttonFuncs){
-        super(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, null);
+    constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonTexts, parentElement, documentButton, buttonFuncs){
+        super(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonTexts[0], parentElement, documentButton, null);
         // what function the toggle is currently on
         this.funcIndex = 0;
         this.myButtonFunctions = buttonFuncs;
+        this.buttonTexts = buttonTexts;
     }
     toggleButtonFunc(){
         this.myButtonFunctions[this.funcIndex]();
+        this.myButton.innerHTML = this.buttonTexts[((this.funcIndex === this.myButtonFunctions.length - 1) ? (0) : (this.funcIndex + 1))];
         this.funcIndex++;
         if(this.funcIndex === this.myButtonFunctions.length){
             this.funcIndex = 0;

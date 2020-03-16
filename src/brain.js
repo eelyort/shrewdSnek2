@@ -19,6 +19,12 @@ class SnakeBrain{
     mutateMe(mutateParameters){
         this.mutateMethod.mutate(mutateParameters, this);
     }
+    // returns a copy of this brain
+    cloneMe(){
+        let clone = new SnakeBrain(this.mutateMethod.cloneMe());
+        clone.getDecision = this.getDecision;
+        return clone;
+    }
 }
 
 // Player controlled snake, basically just parses an array to a direction
@@ -28,6 +34,9 @@ class PlayerControlledBrain extends SnakeBrain{
     }
     // assumes the input is an array of 0-1
     getDecision(brainInput) {
+        if(brainInput == null){
+            return 4;
+        }
         if(brainInput[0]){
             return 0;
         }

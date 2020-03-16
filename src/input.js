@@ -4,12 +4,23 @@
 //  -Creates and returns an array
 //  -Inputlength is the length of the returned array
 class Input{
-    constructor(snake){
-        this.mySnake = snake;
+    constructor(){
+        this.mySnake = null;
         this.inputLength = 0;
     }
     generateInput(keyEvent){
         return [];
+    }
+    // returns a copy of this input
+    cloneMe(){
+        let clone = new Input();
+        clone.generateInput = this.generateInput;
+        clone.inputLength = this.inputLength;
+        return clone;
+    }
+    // called by snake constructor
+    updateParentSnake(snake){
+        this.mySnake = snake;
     }
 }
 
@@ -17,8 +28,8 @@ class Input{
 // Specifications
 //  -Basically appends input arrays to each other
 class MultipleInput extends Input{
-    constructor(snake, firstInput){
-        super(snake);
+    constructor(firstInput){
+        super();
         this.myInputs = new CustomQueue();
         this.addInput(firstInput);
     }
@@ -46,13 +57,20 @@ class MultipleInput extends Input{
         // return the result
         return ansInput;
     }
+    // returns a copy of this input, object type decays, but all functionality is preserved
+    cloneMe(snake){
+        let clone = super.cloneMe(snake).bind(this);
+        clone.myInputs = this.myInputs;
+        clone.addInput = this.addInput;
+        return clone;
+    }
 }
 
 // User input
 //  basically parses a key event
 class PlayerControlledInput extends Input{
-    constructor(snake){
-        super(snake);
+    constructor(){
+        super();
         this.inputLength = 4;
     }
     generateInput(keyEvent) {

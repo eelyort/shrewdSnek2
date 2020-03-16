@@ -9,4 +9,10 @@ class mutateMethod{
     mutate(mutateParameters, brain){
 
     }
+    // returns a copy of this mutateMethod
+    cloneMe(){
+        let clone = new mutateMethod();
+        clone.mutate = this.mutate;
+        return clone;
+    }
 }
