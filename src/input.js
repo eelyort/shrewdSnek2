@@ -70,10 +70,15 @@ class MultipleInput extends Input{
 //  basically parses a key event
 class PlayerControlledInput extends Input{
     constructor(){
+        // alert("Player Controlled Input");
         super();
         this.inputLength = 4;
     }
     generateInput(keyEvent) {
+        if(keyEvent == null){
+            return null;
+        }
+        // alert("generateInput with keyEvent.key: " + keyEvent.key);
         let ansInput = [false, false, false, false];
         if(keyEvent.key == "Up" || keyEvent.key == "ArrowUp" || keyEvent.key == "W" || keyEvent.key == "w"){
             ansInput[0] = true;
@@ -87,6 +92,7 @@ class PlayerControlledInput extends Input{
         else if(keyEvent.key == "Left" || keyEvent.key == "ArrowLeft" || keyEvent.key == 'A' || keyEvent.key == 'a') {
             ansInput[3] = true;
         }
+        // alert("ansInput: " + ansInput);
         return ansInput;
     }
 }

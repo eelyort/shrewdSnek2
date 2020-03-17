@@ -30,7 +30,8 @@ class SnakeBrain{
 // Player controlled snake, basically just parses an array to a direction
 class PlayerControlledBrain extends SnakeBrain{
     constructor(){
-        super();
+        // alert("Player Controlled Brain");
+        super(new MutateMethod());
     }
     // assumes the input is an array of 0-1
     getDecision(brainInput) {
@@ -44,11 +45,13 @@ class PlayerControlledBrain extends SnakeBrain{
             return 1;
         }
         if(brainInput[2]){
+            // alert("brain getDecision: 2");
             return 2;
         }
         if(brainInput[3]){
             return 3;
         }
+        // alert("brain getDecision: 4");
         return 4;
     }
 }

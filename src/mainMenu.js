@@ -1,11 +1,10 @@
 class MainMenu extends InteractableLayer{
-    constructor(documentIn, canvasIn, ctxIn){
+    constructor(documentIn, gamePanelIn){
         // alert("Beginning of MainMenu constructor");
-        super(documentIn, canvasIn, ctxIn);
+        super(documentIn, gamePanelIn);
         // TODO: decide whether to set this here or in css
-        this.myCanvas.style.backgroundColor = mainMenuBackColor;
+        this.myGamePanel.style.backgroundColor = mainMenuBackColor;
         this.runningInstance = null;
-        this.myGamePanel = this.myDocument.getElementById(gamePanelID);
         this.myButtons = [
             // TODO
             // new ButtonHTML(.45, .45, .1, .1, true, "Test", this.myDocument.getElementById(gamePanelID), this.myDocument, this.TEST_FUNC)
@@ -22,6 +21,9 @@ class MainMenu extends InteractableLayer{
         this.subCanvas.style.backgroundColor = gameBackColor;
         this.subCanvas.style.zIndex = "1";
         this.subCanvas.style.position = "absolute";
+        // set height and width cuz 2 separate coord systems
+        this.subCanvas.width = 200;
+        this.subCanvas.height = this.subCanvas.width;
         this.formatSubCanvas();
 
         this.subCanvasCTX = this.subCanvas.getContext("2d");
@@ -31,14 +33,29 @@ class MainMenu extends InteractableLayer{
         this.now = 0;
         this.fps = defaultFPS;
 
-        // alert("End of MainMenu constructor");
-        this.myDocument.addEventListener("keypress", this.keyEventIn, false);
+        // keyEvents: note that it is using keyDown instead of keyPress because keyPress doesn't register arrowKeys, shift, etc
+        this.myDocument.addEventListener("keydown", this.keyEventInDown.bind(this), false);
+        // set of keys down to prevent double presses for holding down, stores the keyEvent.key's
+        this.keysDown = new Set();
+        this.myDocument.addEventListener("keyup", this.keyEventInUp.bind(this), false);
     }
 
-    // called on keyEvent
-    keyEventIn(keyEvent){
-        alert(keyEvent);
-        // TODO
+    // called on keyEvent press
+    keyEventInDown(keyEvent){
+        if(!this.keysDown.has(keyEvent.key)) {
+            if (this.isRunning) {
+                this.runningInstance.keyEventIn(keyEvent);
+            } else {
+                // alert("Main menu keyEvent when not running: " + keyEvent + ", key: " + keyEvent.key);
+            }
+            this.keysDown.add(keyEvent.key);
+        }
+    }
+    keyEventInUp(keyEvent){
+        if(this.keysDown.has(keyEvent.key)){
+            this.keysDown.delete(keyEvent.key);
+            // alert(keyEvent.key + ": up");
+        }
     }
 
     // start run, sets up variables, analoguous to startAnimating
@@ -50,10 +67,10 @@ class MainMenu extends InteractableLayer{
     // basically the "main" method
     run(){
         if(this.runningInstance != null && this.isRunning) {
-            let fpsInterval = 1000 / fps;
+            let fpsInterval = 1000 / this.fps;
 
             // request another frame
-            requestAnimationFrame(this.run);
+            requestAnimationFrame(this.run.bind(this));
 
             // calc time elapsed
             this.now = Date.now();
@@ -63,12 +80,20 @@ class MainMenu extends InteractableLayer{
             if (elapsed > fpsInterval) {
                 // Get ready for next frame by setting then=now, but also adjust for your
                 // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
-                then = now - (elapsed % fpsInterval);
+                this.then = this.now - (elapsed % fpsInterval);
 
                 // TODO: draw
                 this.runningInstance.draw(this.subCanvasCTX);
             }
         }
+    }
+
+    // callback function which ends the currently running thing
+    callbackEndCurrent(){
+        // alert("callback1");
+        this.isRunning = false;
+        // this.runningInstance.draw(this.subCanvasCTX);
+        // alert("Done");
     }
 
     // draws ONLY the menu items
@@ -81,6 +106,14 @@ class MainMenu extends InteractableLayer{
     // can choose whether to have apples set or random
     loadAndPlay(){
         // TODO
+    }
+
+    testDrawRect(){
+        this.subCanvasCTX.beginPath();
+        this.subCanvasCTX.rect(0, 0, 50, 50);
+        this.subCanvasCTX.fillStyle = "#ff00ff";
+        this.subCanvasCTX.fill();
+        this.subCanvasCTX.closePath();
     }
 
     // loads an evolution from memory then switches it to evolutionRunner
@@ -107,16 +140,16 @@ class MainMenu extends InteractableLayer{
     loadButton(){
         // TODO
         alert("Load");
+        // testing
+        this.testDrawRect();
     }
 
     playButton(){
         // TODO
         alert("Play");
-        // this.subCanvasCTX.beginPath();
-        // this.subCanvasCTX.rect(0, 0, 50, 50);
-        // this.subCanvasCTX.fillStyle = "#ff55ff";
-        // this.subCanvasCTX.fill();
-        // this.subCanvasCTX.closePath();
+
+        // TEST
+        this.startPlayerControlled();
     }
 
     // TODO: delete
@@ -126,8 +159,8 @@ class MainMenu extends InteractableLayer{
 
     // formats the sub canvas's size and position
     formatSubCanvas(){
-        let totWidth = this.myCanvas.getBoundingClientRect().width;
-        let totHeight = this.myCanvas.getBoundingClientRect().height;
+        let totWidth = this.myGamePanel.getBoundingClientRect().width;
+        let totHeight = this.myGamePanel.getBoundingClientRect().height;
         let maxWidth = totWidth * 0.45;
         let maxHeight = totHeight * 0.70;
 
@@ -144,5 +177,19 @@ class MainMenu extends InteractableLayer{
     // called when window is resized
     onResizeFunc() {
         this.formatSubCanvas();
+    }
+
+    // starts the play of a player controlled snake
+    startPlayerControlled(){
+        let snake = presetPlayerControlled.cloneMe(1, 3);
+        let runner = new SingleSnakeRunner(snake, 25, 1, 20, this.callbackEndCurrent);
+        // clear canvas
+        if(this.runningInstance != null){
+            this.subCanvas.width = 200;
+            this.subCanvas.height = this.subCanvas.width;
+        }
+        this.runningInstance = runner;
+        this.isRunning = true;
+        this.startRun();
     }
 }

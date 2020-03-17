@@ -1,9 +1,10 @@
 // Modular snake, all logic should be elsewhere in input/brain/whatnot
 //  There should be very little actual code here
 class Snake{
-    constructor(parentSingleSnakeRunner, inputIn, brainIn, headPosIn, startLengthIn) {
+    constructor(inputIn, brainIn, headPosIn, startLengthIn) {
         // set variables
-        this.mySingleSnakeRunner = parentSingleSnakeRunner;
+        // MOVED TO SINGLESNAKERUNNER CONSTRUCTOR
+        this.mySingleSnakeRunner = null;
         // input
         this.myInput = inputIn;
         this.myInput.updateParentSnake(this);
@@ -16,24 +17,40 @@ class Snake{
         this.myBodySegs.enqueue(this.myHeadPos);
 
         // N(0), E(1), S(2), W(3)
-        this.myDirection = 0;
+        this.myDirection = 1;
+        this.previousDir = -1;
         this.myLength = startLengthIn;
 
-        this.gridSize = parentSingleSnakeRunner.gridSize;
+        this.gridSize = -1;
 
         this.score = 0;
     }
+    // to set parent runner
+    updateParentRunner(singleSnakeRunnerIn){
+        this.mySingleSnakeRunner = singleSnakeRunnerIn;
+        this.gridSize = this.mySingleSnakeRunner.gridSize;
+        // alert("gridSize snake update to: " + this.gridSize);
+    }
     // for printing purposes
     getDecision(keyEvent){
-        this.myBrain.getDecision(this.myInput.generateInput(keyEvent));
+        // if(keyEvent != null){
+        //     alert("Snake getDecision called with keyEvent: " + keyEvent);
+        // }
+        return this.myBrain.getDecision(this.myInput.generateInput(keyEvent));
     }
     // updates direction, should be called only on key events
     updateDecision(keyEvent){
         let decision = this.getDecision(keyEvent);
+        // if(keyEvent != null){
+        //     alert("decision: " + decision);
+        // }
 
         // filter out useless information
         if(decision == 0 || decision == 1 || decision == 2 || decision == 3){
-            this.myDirection = decision;
+            // make it so u cannot instantly kill self by going backwards
+            if(!((decision > 1 && decision-2 == this.previousDir) || (decision < 2 && decision+2 == this.previousDir))) {
+                this.myDirection = decision;
+            }
         }
     }
     // actually moves the snake on the board
@@ -42,13 +59,13 @@ class Snake{
         let adjacent = 0;
         switch (this.myDirection) {
             case 0:
-                adjacent = -this.gridSize;
+                adjacent = -(this.gridSize+2);
                 break;
             case 1:
                 adjacent = 1;
                 break;
             case 2:
-                adjacent = this.gridSize;
+                adjacent = (this.gridSize+2);
                 break;
             case 3:
                 adjacent = -1;
@@ -56,6 +73,8 @@ class Snake{
             default:
                 alert("INVALID this.myDirection!!!");
         }
+
+        this.previousDir = this.myDirection;
 
         let grid = this.mySingleSnakeRunner.grid;
         let newPos = this.myHeadPos + adjacent;
@@ -68,6 +87,13 @@ class Snake{
         // apple
         if(grid[newPos] == 2){
             this.myLength += this.mySingleSnakeRunner.appleVal;
+            // alert("Ate apple");
+            this.mySingleSnakeRunner.appleSpawned = false;
+        }
+
+        // manage length
+        if(this.myBodySegs.size > this.myLength){
+            grid[this.myBodySegs.poll()] = 0;
         }
 
         // move
@@ -75,38 +101,58 @@ class Snake{
         grid[newPos] = 1;
         this.myBodySegs.enqueue(newPos);
 
-        // manage length
-        if(this.myBodySegs.size > this.myLength){
-            grid[this.myBodySegs.poll()] = 0;
-        }
         return true;
     }
-    // processes one tick
+    // processes one tick, returns the same as makeMove()
     makeTick(){
         this.updateDecision(null);
 
-        this.makeMove();
+        return this.makeMove();
     }
     // draw
     draw(ctx){
+        // alert("Snake draw");
         let curr = this.myBodySegs.startNode;
-        ctx.fillStyle = snakeColor;
+        let width = ctx.canvas.width;
+        // width/height of one grid square
+        let step = width/this.gridSize;
+        // draw snake different color if ded
+        if(this.mySingleSnakeRunner.running == true) {
+            ctx.fillStyle = snakeColor;
+        }
+        else{
+            ctx.fillStyle = snakeDedColor;
+        }
         while(curr != null){
             let currVal = curr.myVal;
+            // alert("currVal: " + currVal);
+            // alert("gridSize: " + this.gridSize);
             let r = Math.floor(currVal / (this.gridSize+2));
-            let c = currVal % (this.gridSize+2);
+            // alert("row: " + r);
+            // minus one to account for the padding
+            let c = currVal % (this.gridSize+2) - 1;
+            // alert("col: " + c);
+            // alert("step: " + step);
 
             ctx.beginPath();
-            ctx.rect(c*this.gridSize - 1, r*this.gridSize, this.gridSize, this.gridSize);
+            // alert("rect is from x: " + c*step + ", y: " + r*step + ", w: " + step + ", h: " + step);
+            ctx.rect(c*step, r*step, step, step);
             ctx.fill();
             ctx.closePath();
 
             curr = curr.myNext;
         }
+
+        // alert(ctx);
+        // ctx.beginPath();
+        // ctx.rect(0, 50, 50, 50);
+        // ctx.fillStyle = "#0000ff";
+        // ctx.fill();
+        // ctx.closePath();
     }
     // returns a copy of this snake
-    cloneMe(parentSingleSnakeRunner, headPosIn, startLengthIn){
-        let clone = new Snake(parentSingleSnakeRunner, this.myInput.cloneMe(), this.myBrain.cloneMe(), headPosIn, startLengthIn);
+    cloneMe(headPosIn, startLengthIn){
+        let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), headPosIn, startLengthIn);
         return clone;
     }
 }

@@ -5,14 +5,17 @@ body {
 
 .gamePanelContainer {
     position: relative;
+    width: 100vw;
     height: 50vw;
     padding: 0;
-    margin: 0;
+
+    display: block;
+    margin: auto;
     /*padding: 0;*/
 }
-.gamePanelContainer #gamePanel-1 {
-    width: 400px;
-    height: 400px;
+#gamePanel-1 {
+    /*width: 100%;*/
+    /*height: 100%;*/
 }
 
 .gameCanvas {

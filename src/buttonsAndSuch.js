@@ -1,12 +1,11 @@
 // the next layer class which is currently running and controlling visuals/inputs
 class InteractableLayer{
-    constructor(documentIn, canvasIn, ctxIn){
+    constructor(documentIn, gamePanelIn){
         // alert("Beginning of InteractableLayer constructor");
-        this.isRunning = true;
+        this.isRunning = false;
         this.myDocument = documentIn;
-        this.myCanvas = canvasIn;
-        this.myCTX = ctxIn;
-        this.myCanvas.style.zIndex = "1";
+        this.myGamePanel = gamePanelIn;
+        this.myGamePanel.style.zIndex = "1";
 
         // setup onResize
         this.myDocument.getElementsByTagName("BODY")[0].onresize = (this.onResizeFunc).bind(this);
@@ -50,6 +49,7 @@ class CustomQueue{
     poll(){
         let valOut = this.startNode.myVal;
         this.startNode = this.startNode.myNext;
+        this.size--;
         return valOut;
     }
     peek(){
