@@ -5,12 +5,13 @@ class MainMenu extends InteractableLayer{
         // TODO: decide whether to set this here or in css
         this.myGamePanel.style.backgroundColor = mainMenuBackColor;
         this.runningInstance = null;
-        this.myButtons = [
+        this.myInteractables = [
             // TODO
             // new ButtonHTML(.45, .45, .1, .1, true, "Test", this.myDocument.getElementById(gamePanelID), this.myDocument, this.TEST_FUNC)
-            new ButtonHTML(.6, .15, .3, .2, true, "Play", this.myGamePanel, this.myDocument, (this.playButton).bind(this)),
-            new ButtonHTML(.6, .4, .3, .2, true, "Load", this.myGamePanel, this.myDocument, (this.loadButton).bind(this)),
-            new ButtonHTMLToggle(.15, .85, .3, .1, true, ["Pause", "Play"], this.myGamePanel, this.myDocument, [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)])
+            new ButtonHTML(.6, .15, .3, .2, "Play", this.myGamePanel, this.myDocument, (this.playButton).bind(this)),
+            // new ButtonHTML(.6, .4, .3, .2, "Load", this.myGamePanel, this.myDocument, (this.loadButton).bind(this)),
+            new ButtonHTMLToggle(.15, .85, .3, .1, ["Pause", "Play"], this.myGamePanel, this.myDocument, [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]),
+            new SelectButton(.6, .4, .3, .2, "Load", this.myGamePanel, this.myDocument, (this.loadButton).bind(this), .8, ["One", "Two"])
         ];
 
         // setup sub canvas for drawing game
@@ -137,11 +138,12 @@ class MainMenu extends InteractableLayer{
         alert("Play");
     }
 
-    loadButton(){
+    loadButton(id){
         // TODO
-        alert("Load");
+        alert("Load: " + id);
         // testing
-        this.testDrawRect();
+        // this.testDrawRect();
+        // let snake;
     }
 
     playButton(){
@@ -182,7 +184,7 @@ class MainMenu extends InteractableLayer{
     // starts the play of a player controlled snake
     startPlayerControlled(){
         let snake = presetPlayerControlled.cloneMe(1, 3);
-        let runner = new SingleSnakeRunner(snake, 25, 1, 20, this.callbackEndCurrent);
+        let runner = new SingleSnakeRunner(snake, 25, 10, 20, this.callbackEndCurrent);
         // clear canvas
         if(this.runningInstance != null){
             this.subCanvas.width = 200;

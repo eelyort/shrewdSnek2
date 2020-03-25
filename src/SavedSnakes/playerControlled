@@ -1,0 +1,18 @@
+Snake - Player Controlled
+
+Input
+0 - Player Input
+
+Mutate Method
+0 - None
+
+Brain
+0 - Player Brain
+
+Head Position
+1
+
+Start Length
+3
+
+End Snake

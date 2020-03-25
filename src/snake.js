@@ -24,6 +24,9 @@ class Snake{
         this.gridSize = -1;
 
         this.score = 0;
+
+        // Used for labeling in output/input text files
+        this.name = "";
     }
     // to set parent runner
     updateParentRunner(singleSnakeRunnerIn){

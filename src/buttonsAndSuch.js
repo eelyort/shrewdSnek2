@@ -166,7 +166,7 @@ class ButtonHTML{
     // }
 
     // creates a button, from initialization to HTML creation
-    constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, buttonFunc){
+    constructor(xTopLeft, yTopLeft, widthButton, heightButton, buttonText, parentElement, documentButton, buttonFunc){
         // initialize variables
         this.buttonText = buttonText;
         this.myButtonFunc = buttonFunc;
@@ -174,7 +174,6 @@ class ButtonHTML{
         this.yTopLeft = yTopLeft;
         this.widthButton = widthButton;
         this.heightButton = heightButton;
-        this.isPercentage = isPercentage;
 
         // HTML stuff
         // create HTML button
@@ -195,19 +194,19 @@ class ButtonHTML{
 
         // position
         // given percentage coords (0-1)
-        if(this.isPercentage) {
-            this.myButton.style.left = (this.xTopLeft * 100.0).toString(10) + "%";
-            this.myButton.style.top = (this.yTopLeft * 100.0).toString(10) + "%";
-            this.myButton.style.width = (this.widthButton * 100.0).toString(10) + "%";
-            this.myButton.style.height = (this.heightButton * 100.0).toString(10) + "%";
-        }
-        // given absolute coords
-        else{
-            this.myButton.style.left = (this.xTopLeft).toString() + "px";
-            this.myButton.style.top = (this.yTopLeft).toString() + "px";
-            this.myButton.style.width = (this.widthButton).toString() + "px";
-            this.myButton.style.height = (this.heightButton).toString() + "px";
-        }
+        // if(this.isPercentage) {
+        this.myButton.style.left = (this.xTopLeft * 100.0).toString(10) + "%";
+        this.myButton.style.top = (this.yTopLeft * 100.0).toString(10) + "%";
+        this.myButton.style.width = (this.widthButton * 100.0).toString(10) + "%";
+        this.myButton.style.height = (this.heightButton * 100.0).toString(10) + "%";
+        // }
+        // // given absolute coords
+        // else{
+        //     this.myButton.style.left = (this.xTopLeft).toString() + "px";
+        //     this.myButton.style.top = (this.yTopLeft).toString() + "px";
+        //     this.myButton.style.width = (this.widthButton).toString() + "px";
+        //     this.myButton.style.height = (this.heightButton).toString() + "px";
+        // }
     }
     eventButtonClicked(){
         // alert("Parent");
@@ -217,8 +216,8 @@ class ButtonHTML{
 
 // button that toggles between functions
 class ButtonHTMLToggle extends ButtonHTML{
-    constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonTexts, parentElement, documentButton, buttonFuncs){
-        super(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonTexts[0], parentElement, documentButton, null);
+    constructor(xTopLeft, yTopLeft, widthButton, heightButton, buttonTexts, parentElement, documentButton, buttonFuncs){
+        super(xTopLeft, yTopLeft, widthButton, heightButton, buttonTexts[0], parentElement, documentButton, null);
         // what function the toggle is currently on
         this.funcIndex = 0;
         this.myButtonFunctions = buttonFuncs;
@@ -235,5 +234,73 @@ class ButtonHTMLToggle extends ButtonHTML{
     eventButtonClicked() {
         // alert("Child");
         this.toggleButtonFunc();
+    }
+}
+
+// a select box merged with a button
+class SelectButton{
+    constructor(xTopLeft, yTopLeft, widthButton, heightButton, buttonText, parentElement, documentButton, buttonFunc, percentSelectvsButton, options){
+        // initialize variables
+        this.buttonText = buttonText;
+        this.myButtonFunc = buttonFunc;
+        this.xTopLeft = xTopLeft;
+        this.yTopLeft = yTopLeft;
+        this.widthButton = widthButton;
+        this.heightButton = heightButton;
+        this.percentSelectvsButton = percentSelectvsButton;
+        this.myOptions = options;
+        this.myDocument = documentButton;
+
+        // HTML stuff
+        // container
+        this.mySelectContainer = this.myDocument.createElement("div");
+        this.mySelectContainer.classList.add("selectContainer");
+        parentElement.appendChild(this.mySelectContainer);
+        // so its "above" the canvas
+        this.mySelectContainer.style.position = "absolute";
+        this.mySelectContainer.style.zIndex = "5";
+        // position
+        this.mySelectContainer.style.left = (this.xTopLeft * 100.0).toString(10) + "%";
+        this.mySelectContainer.style.top = (this.yTopLeft * 100.0).toString(10) + "%";
+        this.mySelectContainer.style.width = (this.widthButton * 100.0).toString(10) + "%";
+        this.mySelectContainer.style.height = (this.heightButton * 100.0).toString(10) + "%";
+
+        // select
+        this.mySelect = this.myDocument.createElement("select");
+        this.mySelect.classList.add("select");
+        this.mySelectContainer.appendChild(this.mySelect);
+        // position
+        this.mySelect.style.width = (this.percentSelectvsButton * 100.0).toString(10) + "%";
+        // this.mySelect.style.zIndex = "6";
+        // positions
+        for (let i = 0; i < options.length; i++) {
+            let curr = this.myDocument.createElement("option");
+            curr.value = i.toString(10);
+            curr.innerHTML = this.myOptions[i];
+            this.mySelect.appendChild(curr);
+        }
+
+        // button
+        this.myButton = this.myDocument.createElement("button");
+        this.myButton.classList.add("selectButton");
+        this.mySelectContainer.appendChild(this.myButton);
+
+        this.myButton.innerHTML = this.buttonText;
+        this.myButton.style.width = (100.0 - (this.percentSelectvsButton * 100.0)).toString(10) + "%";
+        // this.myButton.style.zIndex = "6";
+        this.myButton.addEventListener("click", this.onPress.bind(this));
+    }
+    // adds another option, TODO: call on import snake from file
+    addOption(option){
+        let curr = this.myDocument.createElement("option");
+        curr.value = (this.myOptions.length).toString(10);
+        curr.innerHTML = option;
+        this.mySelect.appendChild(curr);
+
+        this.myOptions.append(option);
+    }
+    // calls callback with the id of the selection
+    onPress(){
+        this.myButtonFunc(parseInt(this.mySelect.value));
     }
 }

@@ -7,6 +7,7 @@ class Input{
     constructor(){
         this.mySnake = null;
         this.inputLength = 0;
+        this.inputID = -1;
     }
     generateInput(keyEvent){
         return [];
@@ -73,6 +74,7 @@ class PlayerControlledInput extends Input{
         // alert("Player Controlled Input");
         super();
         this.inputLength = 4;
+        this.inputID = 0;
     }
     generateInput(keyEvent) {
         if(keyEvent == null){

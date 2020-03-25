@@ -5,6 +5,7 @@
 class SnakeBrain{
     constructor(mutateMethod){
         this.mutateMethod = mutateMethod;
+        this.brainID = -1;
     }
     // takes in input(compress into array)
     // outputs a direction:
@@ -32,6 +33,7 @@ class PlayerControlledBrain extends SnakeBrain{
     constructor(){
         // alert("Player Controlled Brain");
         super(new MutateMethod());
+        this.brainID = 0;
     }
     // assumes the input is an array of 0-1
     getDecision(brainInput) {

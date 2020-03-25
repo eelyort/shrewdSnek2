@@ -5,6 +5,7 @@
 class MutateMethod{
     constructor(){
         // alert("Mutate Method");
+        this.mutateID = 0;
     }
     mutate(mutateParameters, brain){
 
