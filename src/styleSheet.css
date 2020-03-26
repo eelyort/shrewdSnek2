@@ -34,6 +34,20 @@ body {
     height: 100%;
 }
 
+.selectContainer .select {
+    text-align: center;
+    text-align-last: center;
+    -ms-text-align-last: center;
+    -moz-text-align-last: center;
+    /*background-color: magenta;*/
+    /*margin: 0 auto;*/
+    /*display: block;*/
+}
+
+.popUp-card {
+    background-color: darkcyan;
+}
+
 /*!*Basically sets width and height to be the same so that it is a square which fits in a given range*!*/
 /*!*div around content to be squared*!*/
 /*.squareMeWrap {*/

@@ -5,13 +5,14 @@ class MainMenu extends InteractableLayer{
         // TODO: decide whether to set this here or in css
         this.myGamePanel.style.backgroundColor = mainMenuBackColor;
         this.runningInstance = null;
+        this.myPopUps = [
+            new PopUp(.05, .05, this.myGamePanel, this.myDocument)
+        ];
         this.myInteractables = [
-            // TODO
-            // new ButtonHTML(.45, .45, .1, .1, true, "Test", this.myDocument.getElementById(gamePanelID), this.myDocument, this.TEST_FUNC)
             new ButtonHTML(.6, .15, .3, .2, "Play", this.myGamePanel, this.myDocument, (this.playButton).bind(this)),
-            // new ButtonHTML(.6, .4, .3, .2, "Load", this.myGamePanel, this.myDocument, (this.loadButton).bind(this)),
             new ButtonHTMLToggle(.15, .85, .3, .1, ["Pause", "Play"], this.myGamePanel, this.myDocument, [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]),
-            new SelectButton(.6, .4, .3, .2, "Load", this.myGamePanel, this.myDocument, (this.loadButton).bind(this), .8, ["One", "Two"])
+            new SelectButton(.6, .4, .3, .2, "Load", this.myGamePanel, this.myDocument, (this.loadButton).bind(this), .8, ["One", "Two"]),
+            new ButtonHTML(.6, .65, .3, .2, "Test PopUp", this.myGamePanel, this.myDocument, (this.TEST_POPUP).bind(this))
         ];
 
         // setup sub canvas for drawing game
@@ -157,6 +158,10 @@ class MainMenu extends InteractableLayer{
     // TODO: delete
     TEST_FUNC(){
         alert("Test");
+    }
+    TEST_POPUP(){
+        this.myPopUps[0].showPopUp();
+        alert("TEST_POPUP");
     }
 
     // formats the sub canvas's size and position

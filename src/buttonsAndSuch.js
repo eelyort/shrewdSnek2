@@ -107,64 +107,6 @@ class ButtonPrimative{
 
 // button which is made using HTML
 class ButtonHTML{
-    // TODO: commented out so that can redo with only percentage coords
-    // // creates a button, from initialization to HTML creation
-    // constructor(xTopLeft, yTopLeft, widthButton, heightButton, isPercentage, buttonText, parentElement, documentButton, buttonFunc){
-    //     // alert("Beginning of ButtonHTML constructor");
-    //     // initialize variables
-    //     // given percentage coords (0-1)
-    //     if(isPercentage) {
-    //         this.xTopLeft = Math.floor(xTopLeft * parentElement.offsetWidth);
-    //         this.yTopLeft = Math.floor(yTopLeft * parentElement.offsetHeight);
-    //         this.widthButton = Math.floor(widthButton * parentElement.offsetWidth);
-    //         this.heightButton = Math.floor(heightButton * parentElement.offsetHeight);
-    //     }
-    //     // given absolute coords
-    //     else{
-    //         this.xTopLeft = xTopLeft;
-    //         this.yTopLeft = yTopLeft;
-    //         this.widthButton = widthButton;
-    //         this.heightButton = heightButton;
-    //     }
-    //     this.buttonText = buttonText;
-    //     this.myButtonFunc = buttonFunc;
-    //
-    //     // alert("Checkpoint 1 for buttonHTML");
-    //
-    //     // create HTML button
-    //     this.myButton = documentButton.createElement("button");
-    //     this.myButton.innerHTML = this.buttonText;
-    //
-    //     // alert("Checkpoint 2 for buttonHTML");
-    //
-    //     // append to document
-    //     parentElement.appendChild(this.myButton);
-    //
-    //     // alert("Checkpoint 3 for buttonHTML");
-    //
-    //     // set properties
-    //     // function
-    //     this.myButton.addEventListener("click", this.myButtonFunc);
-    //
-    //     // alert("Checkpoint 4 for buttonHTML");
-    //
-    //     // position
-    //     this.myButton.style.left = (this.xTopLeft).toString(10) + "px";
-    //     this.myButton.style.top = (this.yTopLeft).toString(10) + "px";
-    //     this.myButton.style.width = (this.widthButton).toString(10) + "px";
-    //     this.myButton.style.height = (this.heightButton).toString(10) + "px";
-    //
-    //     // alert("Checkpoint 5 for buttonHTML");
-    //
-    //     // so its "above" the canvas
-    //     this.myButton.style.position = "absolute";
-    //     this.myButton.style.zIndex = "2";
-    //
-    //     // TODO: padding? No. do it in css file
-    //
-    //     // alert("End of ButtonHTML constructor");
-    // }
-
     // creates a button, from initialization to HTML creation
     constructor(xTopLeft, yTopLeft, widthButton, heightButton, buttonText, parentElement, documentButton, buttonFunc){
         // initialize variables
@@ -174,6 +116,7 @@ class ButtonHTML{
         this.yTopLeft = yTopLeft;
         this.widthButton = widthButton;
         this.heightButton = heightButton;
+        this.myParent = parentElement;
 
         // HTML stuff
         // create HTML button
@@ -182,7 +125,7 @@ class ButtonHTML{
         this.myButton.classList.add("gameButton");
 
         // append to document
-        parentElement.appendChild(this.myButton);
+        this.myParent.appendChild(this.myButton);
 
         // set properties
         // function
@@ -190,7 +133,7 @@ class ButtonHTML{
 
         // so its "above" the canvas
         this.myButton.style.position = "absolute";
-        this.myButton.style.zIndex = "5";
+        this.myButton.style.zIndex = (parseInt(this.myParent.style.zIndex) + 1).toString(10);
 
         // position
         // given percentage coords (0-1)
@@ -302,5 +245,81 @@ class SelectButton{
     // calls callback with the id of the selection
     onPress(){
         this.myButtonFunc(parseInt(this.mySelect.value));
+    }
+}
+
+// class which creates a pop up which is constantly loaded and hidden from view
+// assuming coords in percentage (0-1) and the popUp fills the screen and is centered
+class PopUp{
+    constructor(left, top, gamePanel, documentPopUp){
+        this.myLeft = left;
+        this.myTop = top;
+        this.myWidth = 1 - (2 * this.myLeft);
+        this.myHeight = 1 - (2 * this.myTop);
+
+        this.myGamePanel = gamePanel;
+        this.myDocument = documentPopUp;
+        this.isShowing = true;
+
+        // create the card on which the popup sits
+        this.myCard = this.myDocument.createElement("div");
+        this.myCard.classList.add("popUp-card");
+        this.myGamePanel.appendChild(this.myCard);
+
+        // position
+        this.myCard.style.position = "absolute";
+        this.myCard.style.left = (this.myLeft * 100.0).toString(10) + "%";
+        this.myCard.style.top = (this.myTop * 100.0).toString(10) + "%";
+        this.myCard.style.width = (this.myWidth * 100.0).toString(10) + "%";
+        this.myCard.style.height = (this.myHeight * 100.0).toString(10) + "%";
+        this.myCard.style.zIndex = "6";
+
+        // buttons, eventListeners MUST be removed on hide
+        this.myButtons = [
+            new ButtonHTML(.3, .875, .4, .075, "done", this.myCard, this.myDocument, (function () {
+                this.intermediateFunction(this.hidePopUp.bind(this));
+            }).bind(this))
+        ];
+
+        // hidden by default
+        this.hidePopUp();
+    }
+    showPopUp(){
+        this.myCard.style.display = "initial";
+        this.isShowing = true;
+    }
+    hidePopUp(){
+        this.myCard.style.display = "none";
+        this.isShowing = false;
+        // alert("Hide pop up")
+    }
+    // function which ALL event listeners should call
+    // makes nothing happen if the display is hidden
+    intermediateFunction(func){
+        // alert("intermediateFunction():" + func);
+        if(this.isShowing){
+            func();
+        }
+        else{
+            // do nothing
+            // alert("doing nothing");
+        }
+    }
+}
+
+// popup to select which snake to run
+class SelectSnakePopUp extends PopUp{
+    constructor(left, top, optionsArr, percentTop, gamePanel, documentPopUp){
+        super(left, top, gamePanel, documentPopUp);
+
+        // option of the snakes to choose from
+        this.optionsArr = optionsArr;
+
+        // percentage of the card the top(search) bar takes up
+        this.percentTop = percentTop;
+    }
+    // updates the display TODO: call on upload file
+    update(){
+
     }
 }
