@@ -68,12 +68,10 @@ class SingleSnakeRunner{
                     this.then = this.then + tickInterval;
                     this.tick();
                 }
-
-                // TODO
             }
             // paused
             else{
-
+                this.then = Date.now();
             }
         }
         // game ended
@@ -136,6 +134,17 @@ class SingleSnakeRunner{
             ctx.fill();
             ctx.closePath();
         }
+    }
+
+    // pause the game, call from outside
+    pause(){
+        this.paused = true;
+    }
+
+    // unpause the game, call from outside
+    unpause(){
+        this.paused = false;
+        // this.gameClock();
     }
 
     // finish and callback

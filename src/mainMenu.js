@@ -2,17 +2,20 @@ class MainMenu extends InteractableLayer{
     constructor(documentIn, gamePanelIn){
         // alert("Beginning of MainMenu constructor");
         super(documentIn, gamePanelIn);
-        // TODO: decide whether to set this here or in css
-        this.myGamePanel.style.backgroundColor = mainMenuBackColor;
+        // this.myGamePanel.style.backgroundColor = mainMenuBackColor;
+        this.myGamePanel.classList.add("snakeMenu");
         this.runningInstance = null;
         this.myPopUps = [
-            new PopUp(.05, .05, this.myGamePanel, this.myDocument)
+            // testing one TODO: delete me
+            new PopUp(.05, .05, this.myGamePanel, this.myDocument),
+            // select one TODO: pass in list of snakes
+            new SelectSnakePopUp(.05, .05, this.myGamePanel, this.myDocument, [presetPlayerControlled, presetPlayerControlledB, presetPlayerControlledC, presetPlayerControlledD, presetPlayerControlledE, presetPlayerControlledF])
         ];
         this.myInteractables = [
             new ButtonHTML(.6, .15, .3, .2, "Play", this.myGamePanel, this.myDocument, (this.playButton).bind(this)),
             new ButtonHTMLToggle(.15, .85, .3, .1, ["Pause", "Play"], this.myGamePanel, this.myDocument, [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]),
             new SelectButton(.6, .4, .3, .2, "Load", this.myGamePanel, this.myDocument, (this.loadButton).bind(this), .8, ["One", "Two"]),
-            new ButtonHTML(.6, .65, .3, .2, "Test PopUp", this.myGamePanel, this.myDocument, (this.TEST_POPUP).bind(this))
+            new ButtonHTML(.6, .65, .3, .2, "Test Select PopUp", this.myGamePanel, this.myDocument, (this.selectButton).bind(this))
         ];
 
         // setup sub canvas for drawing game
@@ -20,11 +23,11 @@ class MainMenu extends InteractableLayer{
         this.myGamePanel.appendChild(this.subCanvas);
         this.subCanvas.id = subCanvasID;
         this.subCanvas.classList.add("subGameCanvas");
-        this.subCanvas.style.backgroundColor = gameBackColor;
+        // this.subCanvas.style.backgroundColor = gameBackColor;
         this.subCanvas.style.zIndex = "1";
         this.subCanvas.style.position = "absolute";
         // set height and width cuz 2 separate coord systems
-        this.subCanvas.width = 200;
+        this.subCanvas.width = 800;
         this.subCanvas.height = this.subCanvas.width;
         this.formatSubCanvas();
 
@@ -101,7 +104,7 @@ class MainMenu extends InteractableLayer{
     // draws ONLY the menu items
     displayMenu(){
         // TODO: myCTX.draw...
-
+        // uh looks like because I switched to using html elements this is useless now :/
     }
 
     // begins running a singleSnakeRunner using an AI brain
@@ -131,13 +134,18 @@ class MainMenu extends InteractableLayer{
 
     pauseButton(){
         // TODO
-        alert("Pause");
+        // alert("Pause");
+        if(this.runningInstance != null){
+            this.runningInstance.pause();
+        }
     }
 
     unpauseButton(){
         // TODO
-        alert("Play");
-    }
+        if(this.runningInstance != null){
+            this.runningInstance.unpause();
+        }
+}
 
     loadButton(id){
         // TODO
@@ -149,10 +157,15 @@ class MainMenu extends InteractableLayer{
 
     playButton(){
         // TODO
-        alert("Play");
+        // alert("Play");
 
         // TEST
         this.startPlayerControlled();
+    }
+
+    // popup that shows the selection of all snakes and lets u choose and see details and whatnot
+    selectButton(){
+        this.myPopUps[1].showPopUp();
     }
 
     // TODO: delete
@@ -161,7 +174,7 @@ class MainMenu extends InteractableLayer{
     }
     TEST_POPUP(){
         this.myPopUps[0].showPopUp();
-        alert("TEST_POPUP");
+        // alert("TEST_POPUP");
     }
 
     // formats the sub canvas's size and position

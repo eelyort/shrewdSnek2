@@ -6,15 +6,6 @@ const buttonColor = "red";
 // default fps
 const defaultFPS = 60;
 
-// TODO: move this to stylesheet? ----------------------------------
-// background color of main menu
-const mainMenuBackColor = "#B8C5D6";
-
-// background color of game
-// TODO: use this
-const gameBackColor = "#000000";
-// TODO: move to stylesheet? ---------------------------------------
-
 // color of the snake
 const snakeColor = "#ff00f2";
 
