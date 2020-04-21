@@ -1,5 +1,5 @@
 class SingleSnakeRunner{
-    constructor(snakeIn, gridSize, appleVal, tickRateStart, callback){
+    constructor(snakeIn, gridSize, tickRateStart, callback){
         this.mySnake = snakeIn;
         this.gridSize = gridSize;
         this.callBack = callback;
@@ -22,9 +22,8 @@ class SingleSnakeRunner{
         }
 
         // apple
-        this.appleVal = appleVal;
         this.appleSpawned = false;
-        this.applePosition;
+        this.applePosition = -1;
 
         // ticks so far
         this.timeTicks = 0;
@@ -44,9 +43,6 @@ class SingleSnakeRunner{
         this.gameClock();
 
         this.mySnake.updateParentRunner(this);
-
-        // TODO: test
-        this.testVar = 0;
     }
 
     // function which handles the internal game clock and throttles framerate
@@ -149,10 +145,8 @@ class SingleSnakeRunner{
 
     // finish and callback
     finish(){
-        this.score = this.mySnake.myLength;
-        // alert("ded");
-        // TODO
-        // alert(this.callBack);
         this.callBack();
+        // this.score = this.mySnake.myLength;
+        // this.draw();
     }
 }

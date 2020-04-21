@@ -3,8 +3,9 @@
 //  -Takes in snake, gets info from there
 //  -Creates and returns an array
 //  -Inputlength is the length of the returned array
-class Input{
+class Input extends SnakeComponent{
     constructor(){
+        super();
         this.mySnake = null;
         this.inputLength = 0;
         this.inputID = -1;
@@ -75,6 +76,9 @@ class PlayerControlledInput extends Input{
         super();
         this.inputLength = 4;
         this.inputID = 0;
+
+        this.componentName = "Player Controlled Input";
+        this.componentDescription = "This takes input from the keyboard, namely WASD and the arrow keys"
     }
     generateInput(keyEvent) {
         if(keyEvent == null){

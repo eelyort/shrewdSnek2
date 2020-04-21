@@ -41,13 +41,33 @@ body {
     background-color: #1F2833;
 }
 
+.centeredTextBoxWrapper div{
+    font-size: calc(10px + 0.8vw);
+    color: #cfd0d1;
+    text-align: center;
+    /*vertical-align: middle;*/
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+}
+.centeredTextBoxWrapper.left div{
+    text-align: left;
+}
+.centeredTextBoxWrapper.right div{
+    text-align: right;
+}
+
 .gameButton {
     background-color: #66FCF1;
     border-radius: 25px;
-    border-color: #b9babb;
-    border-width: calc(4px + 0.08vw);
+    /*border-color: #b9babb;*/
+    /*border-width: calc(4px + 0.08vw);*/
     border-style: none;
     box-shadow: 0 0 0.9vw #64f5ea;
+    font-size: 240%;
+    color: #303944;
     /*background color change eases and takes x sec, scaling (transform) etc*/
     transition: background 150ms ease-in-out, transform 250ms ease, box-shadow 200ms ease;
 }
@@ -99,7 +119,25 @@ body {
 
 .imgButton {
     /*background-color: magenta;*/
-    border-radius: 1.4em;
+    border-radius: calc(42px - 0.7em);
+    background-color: #66FCF1;
+    box-shadow: 0 0 0.9vw #64f5ea;
+    transform: scale(1);
+
+    /*background color change eases and takes x sec, scaling (transform) etc*/
+    transition: background 150ms ease-in-out, transform 250ms ease, box-shadow 200ms ease;
+}
+.imgButton:hover {
+    box-shadow: 0 0 1.4vw #60cdbb;
+    background-color: #67fff4;
+    transform: scale(1.01);
+    /*transform: translateY(10px);*/
+}
+.imgButton:active {
+    box-shadow: none;
+    background-color: #5aefe4;
+    /*shrink on press*/
+    transform: scale(0.985);
 }
 
 /*Carousel Stuff*/
@@ -118,6 +156,7 @@ body {
     padding: 0;
     margin: 0;
     background-color: #d6d7d8;
+    box-shadow: none;
 
     /*border*/
     border-style: solid;
@@ -126,30 +165,50 @@ body {
     border-color: #979899;
     border-radius: 25px 25px 0 0;
 
-    transition: opacity 150ms ease, transform 250ms ease;
+    transition: opacity 150ms ease, transform 250ms ease, margin-top 80ms ease, padding-bottom 80ms ease, width 150ms ease-out, height 150ms ease-out, left 300ms ease-in, top 300ms ease-in;
 
     /*center text*/
     /*text-align: center;*/
     /*vertical-align: middle;*/
     /*font-size: x-large;*/
 }
+.selectCarouselMember:hover {
+    /*box-shadow: 0 -3px 2px #eeeeee;*/
+    /*border-top-style: none;*/
+    /*padding-top: 10px;*/
+    margin-top: -8px;
+    padding-bottom: 8px;
+}
+.selectCarouselMember.currentlySelected {
+    border-color: #60cdbb;
+    box-shadow: 0 -3px 2px #60cdbb;
+}
+.selectCarouselMember.currentlySelected:hover {
+    box-shadow: 0 -3px 6px #60cdbb;
+}
 /*text of member*/
 .selectCarouselMember div {
     /*margin: auto;*/
-    font-size: x-large;
-    text-align: center;
-    /*vertical-align: middle;*/
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 100%;
+    font-size: calc(3px + 1.8vw);
+    color: #1F2833;
+    /*text-align: center;*/
+    /*!*vertical-align: middle;*!*/
+    /*position: absolute;*/
+    /*top: 50%;*/
+    /*left: 0;*/
+    /*width: 100%;*/
+    /*transform: translateY(-50%);*/
 }
 .selectImgButton {
+    border-radius: 1.4em;
+    box-shadow: none;
+    /*transform: none;*/
     background-color: rgba(0, 0, 0, 0);
     opacity: 8%;
-    transition: opacity 250ms ease;
+    transition: opacity 250ms ease, transform 250ms ease;
 }
 .selectImgButton:hover {
+    box-shadow: 0 0 0.3vw #C5C6C7;
     background-color: rgba(0, 0, 0, 0.05);
     opacity: 100%;
 }

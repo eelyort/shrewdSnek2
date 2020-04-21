@@ -20,4 +20,6 @@ const gamePanelID = "gamePanel-1";
 // id of the subCanvas
 const subCanvasID = "snakeSubCanvas";
 
+// max char count of snake names
+const snakeNameChars = 12;
 // alert("Constants Instantiated");

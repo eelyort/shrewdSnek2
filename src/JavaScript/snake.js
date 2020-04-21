@@ -1,7 +1,7 @@
 // Modular snake, all logic should be elsewhere in input/brain/whatnot
 //  There should be very little actual code here
 class Snake{
-    constructor(inputIn, brainIn, headPosIn, startLengthIn) {
+    constructor(inputIn, brainIn, headPosIn, startLengthIn, appleVal) {
         // set variables
         // MOVED TO SINGLESNAKERUNNER CONSTRUCTOR
         this.mySingleSnakeRunner = null;
@@ -10,6 +10,7 @@ class Snake{
         this.myInput.updateParentSnake(this);
         this.myBrain = brainIn;
         // let these be ints of range: [0, gridSize^2)
+        this.startHeadPos = headPosIn;
         this.myHeadPos = headPosIn;
         this.myTailPos = this.myHeadPos;
         // queue of body segments so that can remove them when needed
@@ -19,14 +20,24 @@ class Snake{
         // N(0), E(1), S(2), W(3)
         this.myDirection = 1;
         this.previousDir = -1;
+        this.startLength = startLengthIn;
         this.myLength = startLengthIn;
 
         this.gridSize = -1;
 
-        this.score = 0;
+        this.appleVal = appleVal;
 
         // Used for labeling in output/input text files
         this.name = "";
+    }
+    // set name, caps at "snakeNameChars" chars
+    setName(name){
+        if(name.length < snakeNameChars){
+            this.name = name;
+        }
+        else{
+            this.name = name.substring(0, snakeNameChars);
+        }
     }
     // to set parent runner
     updateParentRunner(singleSnakeRunnerIn){
@@ -89,12 +100,15 @@ class Snake{
 
         // apple
         if(grid[newPos] == 2){
-            this.myLength += this.mySingleSnakeRunner.appleVal;
+            // console.log("Eating apple, this.appleVal: " + this.appleVal);
+            this.myLength += this.appleVal;
             // alert("Ate apple");
             this.mySingleSnakeRunner.appleSpawned = false;
         }
 
         // manage length
+        // console.log("my length: " + this.myLength);
+        // console.log("this.myBodySegs.size: " + this.myBodySegs.size);
         if(this.myBodySegs.size > this.myLength){
             grid[this.myBodySegs.poll()] = 0;
         }
@@ -154,8 +168,8 @@ class Snake{
         // ctx.closePath();
     }
     // returns a copy of this snake
-    cloneMe(headPosIn, startLengthIn){
-        let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), headPosIn, startLengthIn);
+    cloneMe(){
+        let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal);
         return clone;
     }
 }

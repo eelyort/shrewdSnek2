@@ -2,8 +2,9 @@
 // Specifications
 //  -Takes in an "input" into method, gets decision (direction) out
 //  -Can mutate with many methods, variable parameters
-class SnakeBrain{
+class SnakeBrain extends SnakeComponent{
     constructor(mutateMethod){
+        super();
         this.mutateMethod = mutateMethod;
         this.brainID = -1;
     }
@@ -34,6 +35,9 @@ class PlayerControlledBrain extends SnakeBrain{
         // alert("Player Controlled Brain");
         super(new MutateMethod());
         this.brainID = 0;
+
+        this.componentName = "Player Controlled Brain";
+        this.componentDescription = "This brain controls the snake based off of key inputs, meant to be used with Player Controlled Input";
     }
     // assumes the input is an array of 0-1
     getDecision(brainInput) {

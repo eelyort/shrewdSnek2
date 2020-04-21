@@ -143,7 +143,7 @@ class BaseHTMLElement{
 // button which is made using HTML
 class ButtonHTML extends BaseHTMLElement{
     // creates a button, from initialization to HTML creation
-    constructor(left, top, widthButton, heightButton, buttonText, parentElement, documentButton, buttonFunc){
+    constructor(left, top, widthButton, heightButton, parentElement, documentButton, buttonText, buttonFunc){
         super(left, top, widthButton, heightButton, 3, parentElement, documentButton);
         // initialize variables
         this.buttonText = buttonText;
@@ -157,7 +157,7 @@ class ButtonHTML extends BaseHTMLElement{
         // HTML stuff
         // create HTML button
         this.myButton = this.myDocument.createElement("button");
-        this.myButton.innerHTML = this.buttonText;
+        this.changeText(this.buttonText);
         this.myButton.classList.add("gameButton");
 
         // append to document
@@ -191,13 +191,24 @@ class ButtonHTML extends BaseHTMLElement{
     eventButtonClicked(){
         // alert("Parent");
         this.myButtonFunc();
+        this.blurClick();
+    }
+    // removes the focus on the button
+    blurClick(){
+        if(this.myDocument.activeElement != null){
+            this.myDocument.activeElement.blur();
+        }
+    }
+    changeText(txt){
+        this.buttonText = txt;
+        this.myButton.innerHTML = this.buttonText;
     }
 }
 
 // button that toggles between functions
 class ButtonHTMLToggle extends ButtonHTML{
-    constructor(xTopLeft, yTopLeft, widthButton, heightButton, buttonTexts, parentElement, documentButton, buttonFuncs){
-        super(xTopLeft, yTopLeft, widthButton, heightButton, buttonTexts[0], parentElement, documentButton, null);
+    constructor(left, top, widthButton, heightButton, parentElement, documentButton, buttonTexts, buttonFuncs){
+        super(left, top, widthButton, heightButton, parentElement, documentButton, buttonTexts[0], null);
         // what function the toggle is currently on
         this.funcIndex = 0;
         this.myButtonFunctions = buttonFuncs;
@@ -205,21 +216,26 @@ class ButtonHTMLToggle extends ButtonHTML{
     }
     toggleButtonFunc(){
         this.myButtonFunctions[this.funcIndex]();
-        this.myButton.innerHTML = this.buttonTexts[((this.funcIndex === this.myButtonFunctions.length - 1) ? (0) : (this.funcIndex + 1))];
-        this.funcIndex++;
-        if(this.funcIndex === this.myButtonFunctions.length){
-            this.funcIndex = 0;
-        }
+        this.gotoIndex((this.funcIndex === this.myButtonFunctions.length - 1) ? (0) : (this.funcIndex + 1));
+    }
+    gotoIndex(index){
+        this.funcIndex = index;
+        this.myButton.innerHTML = this.buttonTexts[this.funcIndex];
     }
     eventButtonClicked() {
         // alert("Child");
         this.toggleButtonFunc();
+        this.blurClick();
+    }
+    changeText(txt) {
+        // do nothing
+        alert("trying to change text of toggle button, doesn't work");
     }
 }
 
 // a select box merged with a button
 class SelectButton extends BaseHTMLElement{
-    constructor(xTopLeft, yTopLeft, widthButton, heightButton, buttonText, parentElement, documentButton, buttonFunc, percentSelectvsButton, options){
+    constructor(xTopLeft, yTopLeft, widthButton, heightButton, parentElement, documentButton, buttonText, buttonFunc, percentSelectvsButton, options){
         super(xTopLeft, yTopLeft, widthButton, heightButton, 3, parentElement, documentButton);
         // initialize variables
         this.buttonText = buttonText;
@@ -287,6 +303,135 @@ class SelectButton extends BaseHTMLElement{
     }
 }
 
+// alternative button which uses an image instead of text
+class ImgButton extends BaseHTMLElement{
+    constructor(left, top, width, height, zIndex, parentElement, document, src, func){
+        super(left, top, width, height, zIndex, parentElement, document);
+
+        this.mySrc = src;
+        this.myFunc = func;
+
+        // console.log("ImgButton construct, document/this.myDocument: " + document + ", " + this.myDocument);
+
+        // html stuff
+        this.myButton = this.myDocument.createElement("img");
+        this.myButton.src = this.mySrc;
+        this.myButton.width = 1000;
+        this.myButton.height = 1000;
+        this.setDimensions(this.myButton);
+        this.myButton.classList.add("imgButton");
+        this.myButton.addEventListener("click", this.eventButtonClicked.bind(this));
+
+        this.methodGetWidthHeight = -1;
+
+        this.onResize();
+    }
+    eventButtonClicked(){
+        this.myFunc();
+        this.blurClick();
+    }
+    // removes the focus on the button
+    blurClick(){
+        if(this.myDocument.activeElement != null){
+            this.myDocument.activeElement.blur();
+        }
+    }
+    onResize(){
+        let totWidth;
+        let totHeight;
+        if(this.methodGetWidthHeight == 0) {
+            totWidth = this.myParent.getBoundingClientRect().width;
+            totHeight = this.myParent.getBoundingClientRect().height;
+        }
+        else if(this.methodGetWidthHeight == 1){
+            totWidth = this.myParent.clientWidth;
+            totHeight = this.myParent.clientHeight;
+        }
+        else if(this.methodGetWidthHeight == -1){
+            if(this.myParent.getBoundingClientRect().width != 0){
+                this.methodGetWidthHeight = 0;
+            }
+            else if(this.myParent.clientWidth != 0){
+                this.methodGetWidthHeight = 1;
+            }
+            else{
+                console.log("onResize() could not find method");
+                return;
+            }
+            this.onResize();
+            return;
+        }
+        let maxWidth = this.myWidth * totWidth;
+        let maxHeight = this.myHeight * totHeight;
+
+        let side = Math.min(maxHeight, maxWidth);
+        this.myButton.style.left = (this.myLeft * totWidth + (maxWidth - side)/2).toString() + "px";
+        this.myButton.style.top = (this.myTop * totHeight + (maxHeight - side)/2).toString() + "px";
+        this.myButton.style.width = (side).toString() + "px";
+        this.myButton.style.height = (side).toString() + "px";
+    }
+}
+// button which goes on press and keeps going as long as hold rather than click
+class pressHoldImgButton extends ImgButton{
+    constructor(left, top, width, height, zIndex, parentElement, document, src, func, delay){
+        super(left, top, width, height, zIndex, parentElement, document, src, func);
+
+        // delay (ms) between activations
+        this.myDelay = delay;
+        // is it currently pressed
+        this.isPressed = false;
+
+        // press listener
+        this.myButton.addEventListener("mousedown", this.onPress.bind(this));
+        // unpress listener
+        this.myButton.addEventListener("mouseup", this.onRelease.bind(this));
+        // this.myButton.addEventListener("mouseleave", this.onRelease.bind(this));
+        this.myButton.addEventListener("dragleave", this.onRelease.bind(this));
+    }
+    onPress(){
+        // console.log("press");
+        this.isPressed = true;
+        this.causeEffect();
+    }
+    onRelease(){
+        // console.log("release");
+        this.isPressed = false;
+    }
+    // runs the effect
+    causeEffect(){
+        if(this.isPressed) {
+            this.myFunc();
+            setTimeout(this.causeEffect.bind(this), this.myDelay);
+        }
+        this.blurClick()
+    }
+    eventButtonClicked() {
+        // do nothing
+    }
+}
+// button that toggles between functions
+class ImgButtonHTMLToggle extends ImgButton{
+    constructor(left, top, width, height, zIndex, parent, doc, srcs, funcs){
+        super(left, top, width, height, zIndex, parent, doc, srcs[0], null);
+        // what function the toggle is currently on
+        this.funcIndex = 0;
+        this.mySRCs = srcs;
+        this.myToggleFuncs = funcs;
+    }
+    toggleFunc(){
+        this.myToggleFuncs[this.funcIndex]();
+        this.gotoIndex((this.funcIndex === this.myToggleFuncs.length - 1) ? (0) : (this.funcIndex + 1));
+    }
+    gotoIndex(index){
+        this.funcIndex = index;
+        this.myButton.src = this.mySRCs[this.funcIndex];
+    }
+    eventButtonClicked() {
+        this.toggleFunc();
+        this.blurClick();
+    }
+}
+
 // class which creates a pop up which is constantly loaded and hidden from view
 // assuming coords in percentage (0-1) and the popUp fills the screen and is centered
 class PopUp extends BaseHTMLElement{
@@ -313,7 +458,7 @@ class PopUp extends BaseHTMLElement{
 
         // buttons, eventListeners MUST be removed on hide
         this.myButtons = [
-            new ButtonHTML(.3, .875, .4, .075, "done", this.myCard, this.myDocument, (function () {
+            new ButtonHTML(.3, .875, .4, .075, this.myCard, this.myDocument, "done", (function () {
                 this.intermediateFunction(this.hidePopUp.bind(this));
             }).bind(this))
         ];
@@ -344,12 +489,32 @@ class PopUp extends BaseHTMLElement{
     }
 }
 
+// handler that automatically sets up eventlisteners for hover/unhover
+class HoverHandler{
+    constructor(obj, onHover, unHover){
+        this.obj = obj;
+        this.onHover = onHover;
+        this.unHover = unHover;
+
+        // hover
+        this.obj.addEventListener("dragenter", this.onHover);
+        this.obj.addEventListener("mouseenter", this.onHover);
+
+        // unhover
+        this.obj.addEventListener("dragleave", this.unHover);
+        this.obj.addEventListener("mouseleave", this.unHover);
+    }
+}
+
 // popup to select which snake to run
 class SelectSnakePopUp extends PopUp{
-    constructor(left, top, gamePanel, documentPopUp, optionsArr){
+    constructor(left, top, gamePanel, documentPopUp, optionsArr, selectCallback){
         super(left, top, gamePanel, documentPopUp);
 
         this.myCard.classList.add("selectPopUp-card");
+        this.selectCallback = selectCallback;
+
+        // console.log("SelectSnakePopUp, selectCallback: " + this.selectCallback);
 
         // option of the snakes to choose from
         this.optionsArr = optionsArr;
@@ -360,75 +525,17 @@ class SelectSnakePopUp extends PopUp{
         // create the select carousel on top
         // offset of carousel from left/right TODO: put this in constants or css?
         this.xOffset = 0.02;
-        this.carouselHeight = 0.15;
-        this.mySelectCarousel = new SelectCarousel(this.myLeft + this.xOffset, this.myTop, this.myWidth - (2 * this.xOffset), this.carouselHeight, this.myCard, this.myDocument, 4.1, 0.90, 0.80, this.optionsArr);
+        this.carouselHeight = 0.10;
+        this.mySelectCarousel = new SelectCarousel(this.myLeft + this.xOffset, this.myTop, this.myWidth - (2 * this.xOffset), this.carouselHeight, this.myCard, this.myDocument, 4.1, 0.90, 0.80, this.optionsArr, this.selectCallback);
 
         // alert("SelectSnakePopUp");
     }
-    // updates the display TODO: call on upload file
-    update(){
-
+    onResize(){
+        this.mySelectCarousel.onResize();
     }
-}
-
-// alternative button which uses an image instead of text
-class ImgButton extends BaseHTMLElement{
-    constructor(left, top, width, height, zIndex, parentElement, document, src, func){
-        super(left, top, width, height, zIndex, parentElement, document);
-
-        this.mySrc = src;
-        this.myFunc = func;
-
-        // console.log("ImgButton construct, document/this.myDocument: " + document + ", " + this.myDocument);
-
-        // html stuff
-        this.myButton = this.myDocument.createElement("img");
-        this.myButton.src = this.mySrc;
-        this.myButton.width = 100;
-        this.myButton.height = 100;
-        this.setDimensions(this.myButton);
-        this.myButton.classList.add("imgButton");
-        this.myButton.addEventListener("click", this.eventButtonClicked.bind(this));
-    }
-    eventButtonClicked(){
-        this.myFunc();
-    }
-}
-// button which goes on press and keeps going as long as hold rather than click
-class pressHoldImgButton extends ImgButton{
-    constructor(left, top, width, height, zIndex, parentElement, document, src, func, delay){
-        super(left, top, width, height, zIndex, parentElement, document, src, func);
-
-        // delay (ms) between activations
-        this.myDelay = delay;
-        // is it currently pressed
-        this.isPressed = false;
-
-        // press listener
-        this.myButton.addEventListener("mousedown", this.onPress.bind(this));
-        // unpress listener
-        this.myButton.addEventListener("mouseup", this.onRelease.bind(this));
-        // this.myButton.addEventListener("mouseleave", this.onRelease.bind(this));
-        this.myButton.addEventListener("dragleave", this.onRelease.bind(this));
-    }
-    onPress(){
-        console.log("press");
-        this.isPressed = true;
-        this.causeEffect();
-    }
-    onRelease(){
-        console.log("release");
-        this.isPressed = false;
-    }
-    // runs the effect
-    causeEffect(){
-        if(this.isPressed) {
-            this.myFunc();
-            setTimeout(this.causeEffect.bind(this), this.myDelay);
-        }
-    }
-    eventButtonClicked() {
-        // do nothing
+    showPopUp() {
+        super.showPopUp();
+        this.mySelectCarousel.onResize();
     }
 }
 
@@ -436,21 +543,23 @@ class pressHoldImgButton extends ImgButton{
 // carousel to select
 //  plan: options are little cards, show a set x at once, others hidden to sides, transitions
 class SelectCarousel extends BaseHTMLElement{
-    constructor(left, top, width, height, parentElement, document, numMembersOnScreen, scaleGradient, opacityGradient, carouselMembers){
+    constructor(left, top, width, height, parentElement, document, numMembersOnScreen, scaleGradient, opacityGradient, carouselMembers, selectCallback){
         super(left, top, width, height, 7, parentElement, document);
         this.mySnakes = carouselMembers;
 
         // create this HTML object (wrapper)
         this.myWrapper = this.myDocument.createElement("div");
-        this.myParent.appendChild(this.myWrapper);
+        // this.myParent.appendChild(this.myWrapper);
         this.setDimensions(this.myWrapper);
         this.myWrapper.classList.add("selectCarouselWrapper");
 
         // index of the currently selected member in "myMembers"
         this.currentlyFocused = 0;
-        this.currentlySelected = 0;
         this.percentageCenter = numMembersOnScreen;
         this.halfMaxMembers = this.percentageCenter/2;
+
+        // select callback
+        this.selectCallback = selectCallback;
 
         // calculate parameters
         // Constants
@@ -474,10 +583,39 @@ class SelectCarousel extends BaseHTMLElement{
         this.moveQueue = new CustomQueue();
 
         // left and right buttons TODO: constant variables?
-        this.leftButton = new pressHoldImgButton(0.02, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "left-arrow.png", function (){this.bufferMove(-1)}.bind(this), 130);
+        this.leftButton = new pressHoldImgButton(0.02, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./Images/left-arrow-800x800.png", function (){this.bufferMove(-1)}.bind(this), 130);
         this.leftButton.myButton.classList.add("selectImgButton");
-        this.rightButton = new pressHoldImgButton(0.92, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "right-arrow.png", function (){this.bufferMove(1)}.bind(this),130);
+        this.rightButton = new pressHoldImgButton(0.92, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./Images/right-arrow-800x800.png", function (){this.bufferMove(1)}.bind(this),130);
         this.rightButton.myButton.classList.add("selectImgButton");
+
+        // set the selected one
+        this.currentlySelected = 0;
+        this.changeSelected(0);
+
+        // hover TODO: fixme
+        // this.hoverHandler = new HoverHandler(this.myWrapper, this.onHover.bind(this), this.unHover.bind(this));
+    }
+    onResize(){
+        this.leftButton.onResize();
+        this.rightButton.onResize();
+    }
+    // hover functions
+    onHover(){
+        // console.log("onHover, this: " + this);
+        this.myMembers[this.currentlySelected].setDimensions(this.myMembers[this.currentlySelected].myCard);
+        this.setFocus();
+    }
+    unHover(){
+        // console.log("unHover, this: " + this);
+        // make the selected one expand
+        let card = this.myMembers[this.currentlySelected].myCard;
+        card.style.transform = "none";
+        card.style.left = "0";
+        card.style.top = "0";
+        card.style.width = "100%";
+        card.style.height = "100%";
+        card.style.opacity = "100%";
+        card.style.zIndex = (this.myZIndex + this.myMembers.length + 1).toString();
     }
     // function which updates myMembers to account for newly loaded members and whatnot
     createMembers(){
@@ -489,6 +627,15 @@ class SelectCarousel extends BaseHTMLElement{
                 }.bind(this), curr.name, this.centerWidth, this.myWrapper, this.myDocument));
             }
         }
+    }
+    // helper function to change the currently selected entry
+    changeSelected(newSelect){
+        if(this.myMembers[this.currentlySelected].myCard.classList.contains("currentlySelected")){
+            this.myMembers[this.currentlySelected].myCard.classList.remove("currentlySelected");
+        }
+        this.currentlySelected = newSelect;
+        this.selectCallback(this.currentlySelected);
+        this.myMembers[this.currentlySelected].myCard.classList.add("currentlySelected");
     }
     // helper function which sets the style of all elements
     setFocus(){
@@ -578,7 +725,7 @@ class SelectCarousel extends BaseHTMLElement{
     // move
     // right is +, left is -
     move(){
-        console.log("top of move: " + this.moveQueue.logQueue());
+        // console.log("top of move: " + this.moveQueue.logQueue());
         let dir = this.moveQueue.poll();
         // console.log("move: " + dir);
         // console.log("move(" + dir + ")");
@@ -596,8 +743,8 @@ class SelectCarousel extends BaseHTMLElement{
         this.setFocus();
         if(dir !== 0){
             this.moveQueue.pushFront(dir);
-            console.log("dir: " + dir);
-            console.log(this.moveQueue.logQueue());
+            // console.log("dir: " + dir);
+            // console.log(this.moveQueue.logQueue());
         }
         if(this.moveQueue.size > 0) {
             // TODO: these are constants? move to variables?
@@ -608,8 +755,13 @@ class SelectCarousel extends BaseHTMLElement{
     }
     // what the members call when clicked
     clicked(index){
-        console.log("Select carousel index clicked: " + index);
-        this.bufferMove(index - this.currentlyFocused);
+        // console.log("Select carousel index clicked: " + index);
+        if(index != this.currentlyFocused) {
+            this.bufferMove(index - this.currentlyFocused);
+        }
+        else{
+            this.changeSelected(index);
+        }
     }
 }
 class SelectCarouselMember extends BaseHTMLElement{
@@ -627,11 +779,12 @@ class SelectCarouselMember extends BaseHTMLElement{
         // setup html
         this.myCard = this.myDocument.createElement("div");
         this.myCard.classList.add("selectCarouselMember");
-        this.myParent.appendChild(this.myCard);
         this.myCard.addEventListener("click", this.intermediateFunc.bind(this));
-        this.myP = this.myDocument.createElement("div");
-        this.myCard.appendChild(this.myP);
-        this.myP.innerText = this.myText;
+        // this.myP = this.myDocument.createElement("div");
+        // this.myCard.appendChild(this.myP);
+        // this.myP.innerText = this.myText;
+
+        this.myCenteredTextBox = new CenteredTextBox(0, 0, 1, 1, this.myZIndex + 1, this.myCard, this.myDocument, this.myText);
 
         // width
         this.setDimensions(this.myCard);
@@ -649,5 +802,36 @@ class SelectCarouselMember extends BaseHTMLElement{
     }
     show(){
         this.shown = true;
+    }
+}
+
+// vertically centered text box which works on same system as the rest of the buttons and whatnot, can horizontally align text
+class VertCenteredTextBox extends BaseHTMLElement{
+    constructor(left, top, width, height, zIndex, parent, document, text, alignment){
+        super(left, top, width, height, zIndex, parent, document);
+
+        this.myText = text;
+
+        // wrapper
+        this.myTextWrapper = this.myDocument.createElement("div");
+        this.setDimensions(this.myTextWrapper);
+        this.myTextWrapper.classList.add("centeredTextBoxWrapper");
+
+        // text
+        this.myTextBox = this.myDocument.createElement("div");
+        this.myTextWrapper.appendChild(this.myTextBox);
+        this.changeText(this.myText);
+
+        this.myTextWrapper.classList.add(alignment);
+    }
+    changeText(text){
+        this.myText = text;
+        this.myTextBox.innerText = this.myText;
+    }
+}
+// centered text box which works on same system as the rest of the buttons and whatnot
+class CenteredTextBox extends VertCenteredTextBox {
+    constructor(left, top, width, height, zIndex, parent, document, text){
+        super(left, top, width, height, zIndex, parent, document, text, "center");
     }
 }

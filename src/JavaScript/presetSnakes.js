@@ -3,49 +3,55 @@ const presetPlayerControlled = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(),
     1,
+    3,
     3
 );
-presetPlayerControlled.name = "Player Controlled";
-
-let loadedSnakes = {presetPlayerControlled};
+presetPlayerControlled.setName("Player");
 
 // TODO: delete these
 const presetPlayerControlledB = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(),
     1,
-    4
+    4,
+    3
 );
-presetPlayerControlledB.name = "Player Controlled B";
+presetPlayerControlledB.setName("Player B");
 
 const presetPlayerControlledC = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(),
     1,
-    6
+    6,
+    5
 );
-presetPlayerControlledC.name = "Player Controlled C";
+presetPlayerControlledC.setName("Player Controlled C");
 
 const presetPlayerControlledD = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(),
     1,
-    6
+    6,
+    7
 );
-presetPlayerControlledD.name = "Player Controlled C";
+presetPlayerControlledD.setName("Player D");
 
 const presetPlayerControlledE = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(),
     1,
-    6
+    6,
+    10
 );
-presetPlayerControlledE.name = "Player Controlled C";
+presetPlayerControlledE.setName("Player E");
 
 const presetPlayerControlledF = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(),
     1,
-    6
+    6,
+    20
 );
-presetPlayerControlledF.name = "Player Controlled C";
+presetPlayerControlledF.setName("Player F");
+
+let loadedSnakes = [presetPlayerControlled, presetPlayerControlledB, presetPlayerControlledC, presetPlayerControlledD, presetPlayerControlledE, presetPlayerControlledF];
