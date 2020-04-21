@@ -583,9 +583,9 @@ class SelectCarousel extends BaseHTMLElement{
         this.moveQueue = new CustomQueue();
 
         // left and right buttons TODO: constant variables?
-        this.leftButton = new pressHoldImgButton(0.02, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./Images/left-arrow-800x800.png", function (){this.bufferMove(-1)}.bind(this), 130);
+        this.leftButton = new pressHoldImgButton(0.02, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./src/Images/left-arrow-800x800.png", function (){this.bufferMove(-1)}.bind(this), 130);
         this.leftButton.myButton.classList.add("selectImgButton");
-        this.rightButton = new pressHoldImgButton(0.92, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./Images/right-arrow-800x800.png", function (){this.bufferMove(1)}.bind(this),130);
+        this.rightButton = new pressHoldImgButton(0.92, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./src/Images/right-arrow-800x800.png", function (){this.bufferMove(1)}.bind(this),130);
         this.rightButton.myButton.classList.add("selectImgButton");
 
         // set the selected one

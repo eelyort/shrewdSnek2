@@ -13,7 +13,7 @@ class MainMenu extends InteractableLayer{
         // buttons and whatnot
         this.myInteractables = new Map();
         this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].name, (this.playButton).bind(this)));
-        this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 3, this.myGamePanel, this.myDocument, ["./Images/pause-button-200x200.png", "./Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
+        this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 3, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
         this.myInteractables.set("SelectSnake", new ButtonHTML(.6, .4, .3, .2, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
         // popups
         this.myPopUps = new Map();
