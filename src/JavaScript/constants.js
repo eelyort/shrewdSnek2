@@ -4,7 +4,7 @@
 const buttonColor = "red";
 
 // default fps
-const defaultFPS = 60;
+const defaultFPS = 30;
 
 // color of the snake
 const snakeColor = "#ff00f2";

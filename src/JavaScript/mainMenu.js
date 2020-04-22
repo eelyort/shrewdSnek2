@@ -3,7 +3,7 @@ class MainMenu extends InteractableLayer{
         // alert("Beginning of MainMenu constructor");
         super(documentIn, gamePanelIn);
         // this.myGamePanel.style.backgroundColor = mainMenuBackColor;
-        this.myGamePanel.classList.add("snakeMenu");
+        this.myGamePanel.classList.add("background");
         this.runningInstance = null;
 
         // index of currently selected snake in "loadedSnakes"
@@ -12,12 +12,12 @@ class MainMenu extends InteractableLayer{
         // stuff
         // buttons and whatnot
         this.myInteractables = new Map();
-        this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].name, (this.playButton).bind(this)));
-        this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 3, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
-        this.myInteractables.set("SelectSnake", new ButtonHTML(.6, .4, .3, .2, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
+        this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, 1, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].name, (this.playButton).bind(this)));
+        this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 1, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
+        this.myInteractables.set("SelectSnake", new ButtonHTML(.6, .4, .3, .2, 1, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
         // popups
         this.myPopUps = new Map();
-        this.myPopUps.set("SelectSnake", new SelectSnakePopUp(.05, .05, this.myGamePanel, this.myDocument, loadedSnakes, this.updateSelectedSnake.bind(this)));
+        this.myPopUps.set("SelectSnake", new SelectSnakePopUp(.05, .05, 3, this.myGamePanel, this.myDocument, loadedSnakes, this.updateSelectedSnake.bind(this)));
         // text fields, in map for easy access/changing
         this.myTextFields = new Map();
         // text boxes floating above canvas
@@ -26,8 +26,11 @@ class MainMenu extends InteractableLayer{
         this.subCanvasTextHeight = 0.08;
         // how much total width name takes vs score
         this.subCanvasTextRatio = 0.7;
-        this.myTextFields.set("SelectedSnakeName", new VertCenteredTextBox(0, 0, 0, this.subCanvasTextHeight, 5, this.myGamePanel, this.myDocument, "Playing: " + loadedSnakes[this.selectedSnake].name, "left"));
-        this.myTextFields.set("Score", new VertCenteredTextBox(0, 0, 0, this.subCanvasTextHeight, 5, this.myGamePanel, this.myDocument, "Score: " + (`     ${0}`).substring(-6), "right"));
+        this.myTextFields.set("SelectedSnakeName", new VertCenteredTextBox(0, 0, 0, this.subCanvasTextHeight, 5, this.myGamePanel, this.myDocument, "Playing: None", "left"));
+        this.myTextFields.set("Score", new VertCenteredTextBox(0, 0, 0, this.subCanvasTextHeight, 5, this.myGamePanel, this.myDocument, "Score: " + (`\xa0\xa0\xa0\xa0\xa0\xa0${0}`).substring(-6), "right"));
+
+        // store score and only update if necessary
+        this.displayScore = 0;
 
         // setup sub canvas for drawing game
         this.subCanvas = this.myDocument.createElement("canvas");
@@ -45,6 +48,7 @@ class MainMenu extends InteractableLayer{
         this.subCanvasLeft = 0.075;
         this.subCanvasTop = 0.12;
         this.formatSubCanvas();
+        this.subCanvas.classList.add("background");
 
         this.subCanvasCTX = this.subCanvas.getContext("2d");
 
@@ -120,14 +124,16 @@ class MainMenu extends InteractableLayer{
     // updates the score
     updateScore(){
         if(this.runningInstance != null){
-            // this.myTextFields.get("Score").changeText("Score: " + this.runningInstance.mySnake.myLength);
-            this.myTextFields.get("Score").changeText("Score: " + `     ${this.runningInstance.mySnake.myLength}`.slice(-6));
+            if(this.displayScore != this.runningInstance.mySnake.myLength) {
+                this.myTextFields.get("Score").changeText("Score: " + `\xa0\xa0\xa0\xa0\xa0\xa0${this.runningInstance.mySnake.myLength}`.slice(-6));
+                this.displayScore = this.runningInstance.mySnake.myLength;
+            }
         }
     }
 
     // updates current snake name
     updateSelectedName(){
-        this.myTextFields.get("SelectedSnakeName").changeText("Playing: " + loadedSnakes[this.selectedSnake].name);
+        this.myTextFields.get("SelectedSnakeName").typewrite("Playing: " + loadedSnakes[this.selectedSnake].name, 50);
     }
 
     // update selected snake
@@ -192,7 +198,7 @@ class MainMenu extends InteractableLayer{
         if(this.runningInstance != null){
             this.runningInstance.unpause();
         }
-}
+    }
 
     // loadButton(id){
     //     // TODO
@@ -210,6 +216,9 @@ class MainMenu extends InteractableLayer{
 
     // popup that shows the selection of all snakes and lets u choose and see details and whatnot
     selectButton(){
+        if(this.runningInstance != null && !this.runningInstance.paused) {
+            this.myInteractables.get("PausePlay").eventButtonClicked();
+        }
         this.myPopUps.get("SelectSnake").showPopUp();
     }
 
@@ -268,6 +277,7 @@ class MainMenu extends InteractableLayer{
         }
         this.runningInstance = runner;
         this.isRunning = true;
+        this.updateScore();
         this.startRun();
     }
 }

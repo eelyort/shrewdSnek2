@@ -143,8 +143,8 @@ class BaseHTMLElement{
 // button which is made using HTML
 class ButtonHTML extends BaseHTMLElement{
     // creates a button, from initialization to HTML creation
-    constructor(left, top, widthButton, heightButton, parentElement, documentButton, buttonText, buttonFunc){
-        super(left, top, widthButton, heightButton, 3, parentElement, documentButton);
+    constructor(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonText, buttonFunc){
+        super(left, top, widthButton, heightButton, zIndex, parentElement, documentButton);
         // initialize variables
         this.buttonText = buttonText;
         this.myButtonFunc = buttonFunc;
@@ -159,6 +159,7 @@ class ButtonHTML extends BaseHTMLElement{
         this.myButton = this.myDocument.createElement("button");
         this.changeText(this.buttonText);
         this.myButton.classList.add("gameButton");
+        this.myButton.classList.add("button");
 
         // append to document
         // this.myParent.appendChild(this.myButton);
@@ -207,8 +208,8 @@ class ButtonHTML extends BaseHTMLElement{
 
 // button that toggles between functions
 class ButtonHTMLToggle extends ButtonHTML{
-    constructor(left, top, widthButton, heightButton, parentElement, documentButton, buttonTexts, buttonFuncs){
-        super(left, top, widthButton, heightButton, parentElement, documentButton, buttonTexts[0], null);
+    constructor(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonTexts, buttonFuncs){
+        super(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonTexts[0], null);
         // what function the toggle is currently on
         this.funcIndex = 0;
         this.myButtonFunctions = buttonFuncs;
@@ -233,76 +234,6 @@ class ButtonHTMLToggle extends ButtonHTML{
     }
 }
 
-// a select box merged with a button
-class SelectButton extends BaseHTMLElement{
-    constructor(xTopLeft, yTopLeft, widthButton, heightButton, parentElement, documentButton, buttonText, buttonFunc, percentSelectvsButton, options){
-        super(xTopLeft, yTopLeft, widthButton, heightButton, 3, parentElement, documentButton);
-        // initialize variables
-        this.buttonText = buttonText;
-        this.myButtonFunc = buttonFunc;
-        // this.xTopLeft = xTopLeft;
-        // this.yTopLeft = yTopLeft;
-        // this.widthButton = widthButton;
-        // this.heightButton = heightButton;
-        this.percentSelectvsButton = percentSelectvsButton;
-        this.myOptions = options;
-        // this.myDocument = documentButton;
-
-        // HTML stuff
-        // container
-        this.mySelectContainer = this.myDocument.createElement("div");
-        this.mySelectContainer.classList.add("selectContainer");
-        // this.myParent.appendChild(this.mySelectContainer);
-        // so its "above" the canvas
-        // this.mySelectContainer.style.position = "absolute";
-        // this.mySelectContainer.style.zIndex = "5";
-        // position
-        this.setDimensions(this.mySelectContainer);
-        // this.mySelectContainer.style.left = (this.myLeft * 100.0).toString() + "%";
-        // this.mySelectContainer.style.top = (this.myTop * 100.0).toString() + "%";
-        // this.mySelectContainer.style.width = (this.myWidth * 100.0).toString() + "%";
-        // this.mySelectContainer.style.height = (this.myHeight * 100.0).toString() + "%";
-
-        // select
-        this.mySelect = this.myDocument.createElement("select");
-        this.mySelect.classList.add("select");
-        this.mySelectContainer.appendChild(this.mySelect);
-        // position
-        this.mySelect.style.width = (this.percentSelectvsButton * 100.0).toString() + "%";
-        // this.mySelect.style.zIndex = "6";
-        // positions
-        for (let i = 0; i < options.length; i++) {
-            let curr = this.myDocument.createElement("option");
-            curr.value = i.toString();
-            curr.innerHTML = this.myOptions[i];
-            this.mySelect.appendChild(curr);
-        }
-
-        // button
-        this.myButton = this.myDocument.createElement("button");
-        this.myButton.classList.add("selectButton");
-        this.mySelectContainer.appendChild(this.myButton);
-
-        this.myButton.innerHTML = this.buttonText;
-        this.myButton.style.width = (100.0 - (this.percentSelectvsButton * 100.0)).toString() + "%";
-        // this.myButton.style.zIndex = "6";
-        this.myButton.addEventListener("click", this.onPress.bind(this));
-    }
-    // adds another option, TODO: call on import snake from file
-    addOption(option){
-        let curr = this.myDocument.createElement("option");
-        curr.value = (this.myOptions.length).toString();
-        curr.innerHTML = option;
-        this.mySelect.appendChild(curr);
-
-        this.myOptions.append(option);
-    }
-    // calls callback with the id of the selection
-    onPress(){
-        this.myButtonFunc(parseInt(this.mySelect.value));
-    }
-}
-
 // alternative button which uses an image instead of text
 class ImgButton extends BaseHTMLElement{
     constructor(left, top, width, height, zIndex, parentElement, document, src, func){
@@ -320,6 +251,7 @@ class ImgButton extends BaseHTMLElement{
         this.myButton.height = 1000;
         this.setDimensions(this.myButton);
         this.myButton.classList.add("imgButton");
+        this.myButton.classList.add("button");
         this.myButton.addEventListener("click", this.eventButtonClicked.bind(this));
 
         this.methodGetWidthHeight = -1;
@@ -435,8 +367,8 @@ class ImgButtonHTMLToggle extends ImgButton{
 // class which creates a pop up which is constantly loaded and hidden from view
 // assuming coords in percentage (0-1) and the popUp fills the screen and is centered
 class PopUp extends BaseHTMLElement{
-    constructor(left, top, gamePanel, documentPopUp){
-        super(left, top, 1 - (2 * left), 1 - (2 * top), 6, gamePanel, documentPopUp);
+    constructor(left, top, zIndex, gamePanel, documentPopUp){
+        super(left, top, 1 - (2 * left), 1 - (2 * top), zIndex, gamePanel, documentPopUp);
         // this.myLeft = left;
         // this.myTop = top;
         // this.myWidth = 1 - (2 * this.myLeft);
@@ -458,7 +390,7 @@ class PopUp extends BaseHTMLElement{
 
         // buttons, eventListeners MUST be removed on hide
         this.myButtons = [
-            new ButtonHTML(.3, .875, .4, .075, this.myCard, this.myDocument, "done", (function () {
+            new ButtonHTML(.3, .875, .4, .075, 4, this.myCard, this.myDocument, "Done", (function () {
                 this.intermediateFunction(this.hidePopUp.bind(this));
             }).bind(this))
         ];
@@ -508,10 +440,11 @@ class HoverHandler{
 
 // popup to select which snake to run
 class SelectSnakePopUp extends PopUp{
-    constructor(left, top, gamePanel, documentPopUp, optionsArr, selectCallback){
-        super(left, top, gamePanel, documentPopUp);
+    constructor(left, top, zIndex, gamePanel, documentPopUp, optionsArr, selectCallback){
+        super(left, top, zIndex, gamePanel, documentPopUp);
 
         this.myCard.classList.add("selectPopUp-card");
+        this.myCard.classList.add("background");
         this.selectCallback = selectCallback;
 
         // console.log("SelectSnakePopUp, selectCallback: " + this.selectCallback);
@@ -526,9 +459,14 @@ class SelectSnakePopUp extends PopUp{
         // offset of carousel from left/right TODO: put this in constants or css?
         this.xOffset = 0.02;
         this.carouselHeight = 0.10;
-        this.mySelectCarousel = new SelectCarousel(this.myLeft + this.xOffset, this.myTop, this.myWidth - (2 * this.xOffset), this.carouselHeight, this.myCard, this.myDocument, 4.1, 0.90, 0.80, this.optionsArr, this.selectCallback);
+        this.carouselTop = 0.05;
+        this.mySelectCarousel = new SelectCarousel(this.myLeft + this.xOffset, this.carouselTop, this.myWidth - (2 * this.xOffset), this.carouselHeight, 3, this.myCard, this.myDocument, 4.1, 0.90, 0.80, this.optionsArr, this.selectCallback);
 
-        // alert("SelectSnakePopUp");
+        // box in center where text is displayed
+        this.myTextBox = new BaseHTMLElement(this.myLeft + this.xOffset/3, this.carouselTop + this.carouselHeight, this.myWidth - (2 * this.xOffset/3), 1 - this.carouselHeight - (2 * this.carouselTop), 0, this.myCard, this.myDocument);
+        let textBox = this.myDocument.createElement("div");
+        textBox.classList.add("background");
+        this.myTextBox.setDimensions(textBox);
     }
     onResize(){
         this.mySelectCarousel.onResize();
@@ -543,8 +481,8 @@ class SelectSnakePopUp extends PopUp{
 // carousel to select
 //  plan: options are little cards, show a set x at once, others hidden to sides, transitions
 class SelectCarousel extends BaseHTMLElement{
-    constructor(left, top, width, height, parentElement, document, numMembersOnScreen, scaleGradient, opacityGradient, carouselMembers, selectCallback){
-        super(left, top, width, height, 7, parentElement, document);
+    constructor(left, top, width, height, zIndex, parentElement, document, numMembersOnScreen, scaleGradient, opacityGradient, carouselMembers, selectCallback){
+        super(left, top, width, height, zIndex, parentElement, document);
         this.mySnakes = carouselMembers;
 
         // create this HTML object (wrapper)
@@ -552,6 +490,8 @@ class SelectCarousel extends BaseHTMLElement{
         // this.myParent.appendChild(this.myWrapper);
         this.setDimensions(this.myWrapper);
         this.myWrapper.classList.add("selectCarouselWrapper");
+        // make the wrapper disappear
+        this.myWrapper.style.backgroundColor = "rgba(0, 0, 0, 0)";
 
         // index of the currently selected member in "myMembers"
         this.currentlyFocused = 0;
@@ -758,6 +698,8 @@ class SelectCarousel extends BaseHTMLElement{
         // console.log("Select carousel index clicked: " + index);
         if(index != this.currentlyFocused) {
             this.bufferMove(index - this.currentlyFocused);
+            // TODO: different selected than focused?
+            this.changeSelected(index);
         }
         else{
             this.changeSelected(index);
@@ -778,6 +720,7 @@ class SelectCarouselMember extends BaseHTMLElement{
 
         // setup html
         this.myCard = this.myDocument.createElement("div");
+        this.myCard.classList.add("background");
         this.myCard.classList.add("selectCarouselMember");
         this.myCard.addEventListener("click", this.intermediateFunc.bind(this));
         // this.myP = this.myDocument.createElement("div");
@@ -805,9 +748,9 @@ class SelectCarouselMember extends BaseHTMLElement{
     }
 }
 
-// vertically centered text box which works on same system as the rest of the buttons and whatnot, can horizontally align text
-class VertCenteredTextBox extends BaseHTMLElement{
-    constructor(left, top, width, height, zIndex, parent, document, text, alignment){
+// html text box
+class TextBox extends BaseHTMLElement{
+    constructor(left, top, width, height, zIndex, parent, document, text){
         super(left, top, width, height, zIndex, parent, document);
 
         this.myText = text;
@@ -815,18 +758,70 @@ class VertCenteredTextBox extends BaseHTMLElement{
         // wrapper
         this.myTextWrapper = this.myDocument.createElement("div");
         this.setDimensions(this.myTextWrapper);
-        this.myTextWrapper.classList.add("centeredTextBoxWrapper");
+        this.myTextWrapper.classList.add("TextBoxWrapper");
 
         // text
         this.myTextBox = this.myDocument.createElement("div");
         this.myTextWrapper.appendChild(this.myTextBox);
         this.changeText(this.myText);
 
-        this.myTextWrapper.classList.add(alignment);
+        // prevent threading issues
+        this.typewriteInProgress = false;
+        this.currthreadID = 0;
     }
     changeText(text){
+        // console.log(`changeText(${text}) called in TextBox changeText()`);
         this.myText = text;
         this.myTextBox.innerText = this.myText;
+    }
+    // typewriter
+    typewrite(txt, speed){
+        this.myText = txt;
+        // kill previous thread
+        if(this.typewriteInProgress) {
+            if(this.currthreadID >= 10){
+                this.currthreadID = 0;
+            }
+            else{
+                this.currthreadID++;
+            }
+        }
+        this.typewriteInProgress = true;
+        this.myTextBox.innerText = "";
+
+        this.typewritePRIVATE(0, speed, this.currthreadID);
+    }
+    // internal private
+    typewritePRIVATE(i, speed, threadID){
+        // console.log(`typewritePRIVATE(${i}, ${speed}) called\n this.myText: "${this.myText}"\n this.myTextBox.innerText: "${this.myTextBox.innerText}"`);
+        // already finished
+        if(i >= this.myText.length || threadID != this.currthreadID){
+            this.typewriteInProgress = false;
+            return;
+        }
+        // output one char
+        let char = this.myText.charAt(i);
+        if (char == " ") {
+            char = "\xa0 ";
+        }
+        this.myTextBox.innerText += char;
+        i++;
+        setTimeout(function () {
+            this.typewritePRIVATE(i, speed, threadID);
+        }.bind(this), speed);
+    }
+}
+
+// vertically centered text box which works on same system as the rest of the buttons and whatnot, can horizontally align text
+class VertCenteredTextBox extends TextBox{
+    constructor(left, top, width, height, zIndex, parent, document, text, alignment){
+        super(left, top, width, height, zIndex, parent, document, text);
+
+        // to get the vert centering
+        this.myTextWrapper.classList.add("vertTextBoxWrapper");
+
+        // to get horizontal alignment
+        this.myTextWrapper.classList.add(alignment);
     }
 }
 // centered text box which works on same system as the rest of the buttons and whatnot
