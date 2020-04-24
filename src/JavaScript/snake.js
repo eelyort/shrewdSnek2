@@ -27,8 +27,20 @@ class Snake{
 
         this.appleVal = appleVal;
 
+        // whether this is being drawn every frame or not
+        this.focused = false;
+        // used to erase body segments, used only when focused
+        this.bodySegsToErase = new CustomQueue();
+        this.bodySegsToDraw = new CustomQueue();
+
         // Used for labeling in output/input text files
         this.name = "";
+    }
+    focusMe(){
+        this.focused = true;
+    }
+    focusEnd(){
+        this.focused = false;
     }
     // set name, caps at "snakeNameChars" chars
     setName(name){
@@ -103,20 +115,33 @@ class Snake{
             // console.log("Eating apple, this.appleVal: " + this.appleVal);
             this.myLength += this.appleVal;
             // alert("Ate apple");
-            this.mySingleSnakeRunner.appleSpawned = false;
+            this.mySingleSnakeRunner.appleEaten();
         }
 
         // manage length
         // console.log("my length: " + this.myLength);
         // console.log("this.myBodySegs.size: " + this.myBodySegs.size);
-        if(this.myBodySegs.size > this.myLength){
-            grid[this.myBodySegs.poll()] = 0;
+        while(this.myBodySegs.size > this.myLength){
+            let tailPos = this.myBodySegs.poll();
+            grid[tailPos] = 0;
+
+            // when focused, changed body segments get shoved into queues for drawing
+            if(this.focused){
+                this.bodySegsToErase.enqueue(tailPos);
+            }
         }
 
         // move
         this.myHeadPos = newPos;
         grid[newPos] = 1;
         this.myBodySegs.enqueue(newPos);
+
+        // when focused, changed body segments get shoved into queues for drawing
+        if(this.focused){
+            this.bodySegsToDraw.enqueue(newPos);
+        }
+
+        // console.log(`end of snake makeMove(), bodySegsToDraw.size: ${this.bodySegsToDraw.size}, this.bodySegsToErase.size: ${this.bodySegsToErase.size}`);
 
         return true;
     }
@@ -128,44 +153,84 @@ class Snake{
     }
     // draw
     draw(ctx){
-        // alert("Snake draw");
-        let curr = this.myBodySegs.startNode;
         let width = ctx.canvas.width;
         // width/height of one grid square
         let step = width/this.gridSize;
         // draw snake different color if ded
-        if(this.mySingleSnakeRunner.running == true) {
+        if(this.mySingleSnakeRunner.running) {
             ctx.fillStyle = snakeColor;
+            // console.log("alive");
         }
         else{
             ctx.fillStyle = snakeDedColor;
-        }
-        while(curr != null){
-            let currVal = curr.myVal;
-            // alert("currVal: " + currVal);
-            // alert("gridSize: " + this.gridSize);
-            let r = Math.floor(currVal / (this.gridSize+2));
-            // alert("row: " + r);
-            // minus one to account for the padding
-            let c = currVal % (this.gridSize+2) - 1;
-            // alert("col: " + c);
-            // alert("step: " + step);
-
-            ctx.beginPath();
-            // alert("rect is from x: " + c*step + ", y: " + r*step + ", w: " + step + ", h: " + step);
-            ctx.rect(c*step, r*step, step, step);
-            ctx.fill();
-            ctx.closePath();
-
-            curr = curr.myNext;
+            // console.log("ded");
         }
 
-        // alert(ctx);
-        // ctx.beginPath();
-        // ctx.rect(0, 50, 50, 50);
-        // ctx.fillStyle = "#0000ff";
-        // ctx.fill();
-        // ctx.closePath();
+        // full draw: assumed canvas is cleared, go through and draw all body segments
+        if(!this.focused || (!this.mySingleSnakeRunner.running && this.bodySegsToDraw.size > 0)){
+            // pseudo iterator
+            let curr = this.myBodySegs.startNode;
+
+            while(curr != null){
+                let currVal = curr.myVal;
+                let r = Math.floor(currVal / (this.gridSize+2));
+                // minus one to account for the padding
+                let c = currVal % (this.gridSize+2) - 1;
+
+                ctx.beginPath();
+                ctx.rect(c*step, r*step, step, step);
+                ctx.fill();
+                ctx.closePath();
+
+                curr = curr.myNext;
+            }
+        }
+        // partial draw, only erase the tail parts and draw the head parts
+        else{
+            // the very specific case of the snake just dying so only its front few segments are red
+            if(!this.mySingleSnakeRunner.running){
+                // pseudo iterator
+                let curr = this.myBodySegs.startNode;
+
+                while(curr != null){
+                    let currVal = curr.myVal;
+                    let r = Math.floor(currVal / (this.gridSize+2));
+                    // minus one to account for the padding
+                    let c = currVal % (this.gridSize+2) - 1;
+
+                    ctx.beginPath();
+                    ctx.rect(c*step, r*step, step, step);
+                    ctx.fill();
+                    ctx.closePath();
+
+                    curr = curr.myNext;
+                }
+            }
+            else {
+                // draw head
+                while (this.bodySegsToDraw.size > 0) {
+                    let currVal = this.bodySegsToDraw.poll();
+                    let r = Math.floor(currVal / (this.gridSize + 2));
+                    // minus one to account for the padding
+                    let c = currVal % (this.gridSize + 2) - 1;
+
+                    ctx.beginPath();
+                    ctx.rect(c * step, r * step, step, step);
+                    ctx.fill();
+                    ctx.closePath();
+                }
+            }
+
+            // erase tails
+            while(this.bodySegsToErase.size > 0){
+                let currVal = this.bodySegsToErase.poll();
+                let r = Math.floor(currVal / (this.gridSize+2));
+                // minus one to account for the padding
+                let c = currVal % (this.gridSize+2) - 1;
+
+                ctx.clearRect(c*step, r*step, step, step);
+            }
+        }
     }
     // returns a copy of this snake
     cloneMe(){

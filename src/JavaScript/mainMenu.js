@@ -95,6 +95,9 @@ class MainMenu extends InteractableLayer{
     startRun(){
         this.then = Date.now();
         this.run();
+
+        // small timeout so that the previous runner is ensured dead, screen cleared, etc
+        setTimeout(this.runningInstance.startMe(), 50);
     }
 
     // basically the "main" method
@@ -115,6 +118,7 @@ class MainMenu extends InteractableLayer{
                 // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
                 this.then = this.now - (elapsed % fpsInterval);
 
+                this.runningInstance.focusMe();
                 this.runningInstance.draw(this.subCanvasCTX);
                 this.updateScore();
             }
@@ -145,13 +149,10 @@ class MainMenu extends InteractableLayer{
 
     // callback function which ends the currently running thing
     callbackEndCurrent(){
-        // alert("callback1");
         this.run();
         this.isRunning = false;
         this.updateScore();
         this.runningInstance.draw(this.subCanvasCTX);
-        // this.runningInstance.draw(this.subCanvasCTX);
-        // alert("Done");
     }
 
     // draws ONLY the menu items
@@ -271,6 +272,9 @@ class MainMenu extends InteractableLayer{
         let runner = new SingleSnakeRunner(snake, this.gridSize, this.tickRate, this.callbackEndCurrent.bind(this));
         // clear canvas
         if(this.runningInstance != null){
+            // kill current
+            this.runningInstance.kill();
+
             // canvas has seperate coordinate system
             this.subCanvas.width = this.subCanvasInnerSize;
             this.subCanvas.height = this.subCanvasInnerSize;

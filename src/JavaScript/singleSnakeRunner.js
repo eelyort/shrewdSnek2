@@ -24,6 +24,7 @@ class SingleSnakeRunner{
         // apple
         this.appleSpawned = false;
         this.applePosition = -1;
+        this.appleDrawn = false;
 
         // ticks so far
         this.timeTicks = 0;
@@ -36,17 +37,41 @@ class SingleSnakeRunner{
         // still running
         this.paused = false;
         this.running = true;
+        // master kill switch
+        this.dead = false;
 
-        // TODO: game start
-
-        // start
-        this.gameClock();
+        // whether this is being drawn every frame or not
+        this.focused = false;
+        this.fullDraw = true;
 
         this.mySnake.updateParentRunner(this);
+    }
+    // start
+    startMe(){
+        // start
+        this.then = Date.now();
+        this.now = this.then;
+        this.gameClock();
+    }
+    // function which acts as if the menu or something just focused on this and began drawing it every draw call
+    focusMe(){
+        // console.log("runner focusMe() called");
+        this.focused = true;
+        // this.mySnake.focusMe();
+    }
+    focusEnd(){
+        this.focused = false;
+        this.fullDraw = true;
+        this.mySnake.focusEnd();
     }
 
     // function which handles the internal game clock and throttles framerate
     gameClock(){
+        // master kill switch
+        if(this.dead){
+            return;
+        }
+
         // game still running
         if(this.running) {
             // milliseconds btw ticks
@@ -72,6 +97,7 @@ class SingleSnakeRunner{
         }
         // game ended
         else if(!this.running && !this.paused){
+            // console.log("Game finished");
             this.finish();
             this.paused = true;
         }
@@ -107,18 +133,42 @@ class SingleSnakeRunner{
         // alert("Runner keyEvent2: " + keyEvent);
     }
 
+    // called from snake, processes the logic of apple eating
+    appleEaten(){
+        this.appleSpawned = false;
+        this.appleDrawn = false;
+    }
+
     // draw, call from outside
     draw(ctx){
         if(!this.running){
+            // draw ded snek
+            this.mySnake.draw(ctx);
 
+            // don't need to clear screen or draw apple or anything
+            return;
         }
-        ctx.clearRect(0, 0 , ctx.canvas.width, ctx.canvas.height);
 
-        // draw snake
+        // only clear screen if not focused
+        if(this.fullDraw) {
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            this.appleDrawn = false;
+
+            // last full draw before only doing partial draws
+            if(this.focused){
+                this.fullDraw = false;
+                this.mySnake.focusMe();
+            }
+        }
+
+        this.drawApple(ctx);
+
+        // draw snake - handles its fullDraw stuff on its own
         this.mySnake.draw(ctx);
-
-        // draw apple
-        if(this.appleSpawned) {
+    }
+    drawApple(ctx){
+        if(!this.appleDrawn && this.appleSpawned){
+            // draw apple
             ctx.fillStyle = appleColor;
 
             let r = Math.floor(this.applePosition / (this.gridSize+2));
@@ -129,6 +179,8 @@ class SingleSnakeRunner{
             ctx.rect(c*step, r*step, step, step);
             ctx.fill();
             ctx.closePath();
+
+            this.appleDrawn = true;
         }
     }
 
@@ -146,7 +198,13 @@ class SingleSnakeRunner{
     // finish and callback
     finish(){
         this.callBack();
+        this.dead = true;
         // this.score = this.mySnake.myLength;
         // this.draw();
+    }
+
+    // kills the thread
+    kill(){
+        this.dead = true;
     }
 }

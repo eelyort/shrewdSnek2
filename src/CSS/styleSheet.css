@@ -6,6 +6,14 @@ body {
     margin: 0;
 }
 
+.absolute {
+    position: absolute;
+}
+
+.flexboxBasic {
+    position: relative;
+}
+
 /*backgrounds*/
 /*main menu*/
 .background {
@@ -21,17 +29,22 @@ body {
 /*pop up cards*/
 .popUp-card.background{
     background-color: #404c58;
+    /*background-color: #d6d7d8;*/
     box-shadow: 0 0 2px #C5C6C7;
+
+    /*borders*/
     border-color: #C5C6C7;
     border-width: 2px;
     border-radius: 5vw;
     border-style: solid;
+
     opacity: 99.5%;
 }
 /*popup content*/
 .popUp-card .background {
     padding: 0;
     margin: 0;
+    /*background-color: #404c58;*/
     background-color: #d6d7d8;
     box-shadow: none;
 
@@ -40,6 +53,13 @@ body {
     border-width: 2px;
     border-color: #979899;
     border-radius: 25px;
+
+    /*flexbox*/
+    display: flex;
+}
+.popUp-card .textWrapper .background {
+    background-color: magenta;
+    margin: 10px;
 }
 /*end backgrounds*/
 
@@ -103,6 +123,10 @@ body {
     /*background color change eases and takes x sec, scaling (transform) etc*/
     transition: background 150ms ease-in-out, transform 250ms ease, box-shadow 200ms ease;
 }
+/*.popUp-card .button.imgButton {*/
+/*    background-color: rgba(0, 0, 0, 0);*/
+/*    box-shadow: none;*/
+/*}*/
 .button:hover {
     box-shadow: 0 0 1.4vw #60cdbb;
     background-color: #67fff4;
@@ -171,73 +195,3 @@ body {
     background-color: rgba(0, 0, 0, 0.05);
     opacity: 100%;
 }
-
-/*!*Basically sets width and height to be the same so that it is a square which fits in a given range*!*/
-/*!*div around content to be squared*!*/
-/*.squareMeWrap {*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*}*/
-/*!*content to be squared*!*/
-/*.squareMe {*/
-/*    !*width: min();*!*/
-/*    !*square the content*!*/
-/*    !*set vars in JS or IDs*!*/
-/*    --max-width: 0;*/
-/*    --max-height: 0;*/
-/*    width: var(--max-width);*/
-/*    height: var(--max-height);*/
-/*    max-width: var(--max-height);*/
-/*    max-height: var(--max-width);*/
-/*    !*center the content*!*/
-/*    display: block;*/
-/*    margin: auto;*/
-
-/*    !*position: static;*!*/
-/*}*/
-
-/*1:1 aspect ratio*/
-
-/*.squareMe * {*/
-/*    !*square the content*!*/
-/*    !*set vars in JS or IDs*!*/
-/*    --max-width: 0;*/
-/*    --max-height: 0;*/
-/*    width: var(--max-width);*/
-/*    height: var(--max-height);*/
-/*    max-width: var(--max-height);*/
-/*    max-height: var(--max-width);*/
-/*    !*center the content*!*/
-/*    margin: auto;*/
-/*}*/
-
-/*Aspect ratio things: https://jsbin.com/nehituxuqe/edit?html,css,output*/
-/*.aspectRatioWrapper {*/
-/*    position: relative;*/
-/*}*/
-/*.aspectRatio .ratio {*/
-/*    !*Set padding-bottom*!*/
-/*}*/
-/*.aspectRatio .aspectRatio-content {*/
-/*    position: absolute;*/
-/*    top: 0;*/
-/*    bottom: 0;*/
-/*    left: 0;*/
-/*    right: 0;*/
-/*}*/
-
-/*button {*/
-/*    height: 100%;*/
-/*    background-color: rgb(177, 224, 232);*/
-/*    border: 2px solid rgb(78, 190, 208);*/
-/*    box-shadow: 0 0 0.5em #000;*/
-/*    padding-bottom: 1em;*/
-/*}*/
-/*button:hover {*/
-/*    background-color: rgb(204, 235, 240);*/
-/*}*/
-
-/*button:active {*/
-/*    background-color: rgb(113, 199, 213);*/
-/*    box-shadow: 0 0 0.15em #000;*/
-/*}*/

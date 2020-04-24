@@ -128,16 +128,34 @@ class BaseHTMLElement{
         this.myParent = parentElement;
         this.myDocument = document;
         this.myZIndex = zIndex;
+
+        this.myMainObject = null;
     }
     // set the dimensions according to left, top, width, height
-    setDimensions(object){
-        object.style.position = "absolute";
-        object.style.left = (this.myLeft * 100.0).toString() + "%";
-        object.style.top = (this.myTop * 100.0).toString() + "%";
-        object.style.width = (this.myWidth * 100.0).toString() + "%";
-        object.style.height = (this.myHeight * 100.0).toString() + "%";
-        object.style.zIndex = (this.myZIndex).toString();
+    //  option to add flexbox - removes style info and adds flexGrow
+    setDimensions(object, flexBox = false, flexGrow = 0){
+        this.myMainObject = object;
+
+        this.myMainObject.style.zIndex = (this.myZIndex).toString();
         this.myParent.appendChild(object);
+
+        this.myMainObject.classList.add("absolute");
+        this.myMainObject.style.left = (this.myLeft * 100.0).toString() + "%";
+        this.myMainObject.style.top = (this.myTop * 100.0).toString() + "%";
+        this.myMainObject.style.width = (this.myWidth * 100.0).toString() + "%";
+        this.myMainObject.style.height = (this.myHeight * 100.0).toString() + "%";
+    }
+    // adds flexbox - removes style info and adds flexGrow
+    addFlex(flexGrow){
+        this.myFlexGrow = flexGrow;
+
+        this.myMainObject.style.left = "";
+        this.myMainObject.style.top = "";
+        this.myMainObject.style.width = "";
+        this.myMainObject.style.height = "";
+
+        this.myMainObject.classList.add("flexboxBasic");
+        this.myMainObject.style.flexGrow = this.myFlexGrow.toString();
     }
 }
 // button which is made using HTML
@@ -389,11 +407,21 @@ class PopUp extends BaseHTMLElement{
         this.myCard.style.zIndex = "6";
 
         // buttons, eventListeners MUST be removed on hide
-        this.myButtons = [
-            new ButtonHTML(.3, .875, .4, .075, 4, this.myCard, this.myDocument, "Done", (function () {
-                this.intermediateFunction(this.hidePopUp.bind(this));
-            }).bind(this))
-        ];
+        // this.myButtons = [
+        //     // new ButtonHTML(.3, .875, .4, .075, 4, this.myCard, this.myDocument, "Done", (function () {
+        //     //     this.intermediateFunction(this.hidePopUp.bind(this));
+        //     // }).bind(this))
+        //     // new ImgButton(.95, .05, .05, .05, 12, this.myCard, this.myDocument, "./src/Images/x-button-512x512.png", function () {
+        //     //         this.intermediateFunction(this.hidePopUp.bind(this));
+        //     //     }.bind(this))
+        // ];
+
+        // listen for clicks outside the popup
+        this.myDocument.addEventListener("click", function (click) {
+            // console.log("click: " + click);
+            this.intermediateFunction(function (){this.clickedOutside(click)}.bind(this));
+        }.bind(this));
+        this.onCooldown = false;
 
         // hidden by default
         this.hidePopUp();
@@ -401,11 +429,22 @@ class PopUp extends BaseHTMLElement{
     showPopUp(){
         this.myCard.style.display = "initial";
         this.isShowing = true;
+        this.onCooldown = true;
+        setTimeout(function () {
+            this.onCooldown = false;
+        }.bind(this), 5);
     }
     hidePopUp(){
         this.myCard.style.display = "none";
         this.isShowing = false;
         // alert("Hide pop up")
+    }
+    // hides the popup when clicked outside the popup
+    clickedOutside(click){
+        // console.log("Top of clickedOutside");
+        if(!this.onCooldown && !this.myCard.contains(click.target)){
+            this.hidePopUp();
+        }
     }
     // function which ALL event listeners should call
     // makes nothing happen if the display is hidden
@@ -464,9 +503,26 @@ class SelectSnakePopUp extends PopUp{
 
         // box in center where text is displayed
         this.myTextBox = new BaseHTMLElement(this.myLeft + this.xOffset/3, this.carouselTop + this.carouselHeight, this.myWidth - (2 * this.xOffset/3), 1 - this.carouselHeight - (2 * this.carouselTop), 0, this.myCard, this.myDocument);
-        let textBox = this.myDocument.createElement("div");
-        textBox.classList.add("background");
-        this.myTextBox.setDimensions(textBox);
+        this.textWrapper = this.myDocument.createElement("div");
+        this.textWrapper.classList.add("textWrapper");
+        this.textWrapper.classList.add("background");
+        this.myTextBox.setDimensions(this.textWrapper);
+
+        // left side text box - displays the start position, start length, apple value
+        this.parameterBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
+        this.parameterBox.myTextWrapper.classList.add("background");
+        this.parameterBox.addFlex(2);
+
+        // TODO: this is all temporary, add visuals or something
+        // inputs
+        this.inputsBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
+        this.inputsBox.myTextWrapper.classList.add("background");
+        this.inputsBox.addFlex(4);
+
+        // brain
+        this.brainBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
+        this.brainBox.myTextWrapper.classList.add("background");
+        this.brainBox.addFlex(4);
     }
     onResize(){
         this.mySelectCarousel.onResize();
@@ -474,6 +530,13 @@ class SelectSnakePopUp extends PopUp{
     showPopUp() {
         super.showPopUp();
         this.mySelectCarousel.onResize();
+    }
+    selectCallbackIntermediate(index){
+        // change text shown
+        // TODO
+
+        // call previous callback
+        this.selectCallback(index);
     }
 }
 
@@ -758,7 +821,8 @@ class TextBox extends BaseHTMLElement{
         // wrapper
         this.myTextWrapper = this.myDocument.createElement("div");
         this.setDimensions(this.myTextWrapper);
-        this.myTextWrapper.classList.add("TextBoxWrapper");
+        this.myTextWrapper.classList.add("textBoxWrapper");
+        // this.myTextWrapper.classList.add("background");
 
         // text
         this.myTextBox = this.myDocument.createElement("div");
@@ -766,7 +830,6 @@ class TextBox extends BaseHTMLElement{
         this.changeText(this.myText);
 
         // prevent threading issues
-        this.typewriteInProgress = false;
         this.currthreadID = 0;
     }
     changeText(text){
@@ -778,16 +841,15 @@ class TextBox extends BaseHTMLElement{
     typewrite(txt, speed){
         this.myText = txt;
         // kill previous thread
-        if(this.typewriteInProgress) {
-            if(this.currthreadID >= 10){
-                this.currthreadID = 0;
-            }
-            else{
-                this.currthreadID++;
-            }
+        if(this.currthreadID >= 1000){
+            this.currthreadID = 0;
         }
-        this.typewriteInProgress = true;
+        else{
+            this.currthreadID++;
+        }
         this.myTextBox.innerText = "";
+
+        // console.log("typewrite: currThreadID: " + this.currthreadID);
 
         this.typewritePRIVATE(0, speed, this.currthreadID);
     }
@@ -796,7 +858,6 @@ class TextBox extends BaseHTMLElement{
         // console.log(`typewritePRIVATE(${i}, ${speed}) called\n this.myText: "${this.myText}"\n this.myTextBox.innerText: "${this.myTextBox.innerText}"`);
         // already finished
         if(i >= this.myText.length || threadID != this.currthreadID){
-            this.typewriteInProgress = false;
             return;
         }
         // output one char
