@@ -110,7 +110,7 @@ function readOneSnakeLines(lines){
                 brain = brainIDs[parseInt(lines[lineIndex].split(" ")[0])];
             }
             else{
-                alert("!!!More than brain detected in readOneSnakeLines!!!");
+                alert("!!!More than one brain detected in readOneSnakeLines!!!");
                 return null;
             }
         }

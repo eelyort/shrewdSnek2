@@ -106,7 +106,21 @@ class Snake extends SnakeComponent{
 
         // running into wall or self
         if(newPos < 0 || newPos >= grid.length || grid[newPos] == -1 || grid[newPos] == 1){
+            // console.log(`Dead: toErase.len: ${this.bodySegsToErase.size}, toDraw.len: ${this.bodySegsToDraw.size}, bodySegs.len: ${this.myBodySegs.size}`);
             return false;
+        }
+
+        // manage length
+        while(this.myBodySegs.size > this.myLength - 1){
+            let tailPos = this.myBodySegs.poll();
+            if(grid[tailPos] !== -1) {
+                grid[tailPos] = 0;
+            }
+
+            // when focused, changed body segments get shoved into queues for drawing
+            if(this.focused){
+                this.bodySegsToErase.enqueue(tailPos);
+            }
         }
 
         // apple
@@ -115,19 +129,6 @@ class Snake extends SnakeComponent{
             this.myLength += this.appleVal;
             // alert("Ate apple");
             this.mySingleSnakeRunner.appleEaten();
-        }
-
-        // manage length
-        // console.log("my length: " + this.myLength);
-        // console.log("this.myBodySegs.size: " + this.myBodySegs.size);
-        while(this.myBodySegs.size > this.myLength){
-            let tailPos = this.myBodySegs.poll();
-            grid[tailPos] = 0;
-
-            // when focused, changed body segments get shoved into queues for drawing
-            if(this.focused){
-                this.bodySegsToErase.enqueue(tailPos);
-            }
         }
 
         // move
@@ -162,11 +163,10 @@ class Snake extends SnakeComponent{
         }
         else{
             ctx.fillStyle = snakeDedColor;
-            // console.log("ded");
         }
 
         // full draw: assumed canvas is cleared, go through and draw all body segments
-        if(!this.focused || (!this.mySingleSnakeRunner.running && this.bodySegsToDraw.size > 0)){
+        if(!this.focused){
             // pseudo iterator
             let curr = this.myBodySegs.startNode;
 

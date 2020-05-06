@@ -6,6 +6,9 @@ const buttonColor = "red";
 // default fps
 const defaultFPS = 30;
 
+// tick rate at which the evolving species are run
+const speciesRunnerTickRate = 1;
+
 // color of the snake
 const snakeColor = "#ff00f2";
 

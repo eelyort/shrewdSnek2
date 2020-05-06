@@ -148,7 +148,6 @@ class MainMenu extends InteractableLayer{
 
     // callback function which ends the currently running thing
     callbackEndCurrent(){
-        this.run();
         this.isRunning = false;
         this.updateScore();
         this.runningInstance.draw(this.subCanvasCTX);
