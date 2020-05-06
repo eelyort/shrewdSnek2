@@ -27,6 +27,23 @@ class SnakeBrain extends SnakeComponent{
         clone.getDecision = this.getDecision;
         return clone;
     }
+    // assumes the output array is a 4 length array
+    //  N(0), E(1), S(2), W(3)
+    getOutput(outputArr){
+        // search for max
+        let maxI = 0;
+        for (let i = 1; i < 4; i++) {
+            if(outputArr[i] > outputArr[maxI]){
+                maxI = i;
+            }
+        }
+
+        // if max is 0, assume no decision
+        return ((outputArr[maxI] == 0) ? (4) : (maxI));
+    }
+    updateWithInput(input){
+        // do nothing
+    }
 }
 
 // Player controlled snake, basically just parses an array to a direction
@@ -44,20 +61,209 @@ class PlayerControlledBrain extends SnakeBrain{
         if(brainInput == null){
             return 4;
         }
-        if(brainInput[0]){
-            return 0;
+        return this.getOutput(brainInput);
+    }
+}
+
+// Neural network brain
+class NeuralNetBrain extends SnakeBrain{
+    constructor(mutateMethod, normalizer, depth, width, startWeight, startBias){
+        super(mutateMethod);
+
+        this.componentName = "Basic Neural Network";
+        this.componentDescription = "This brain is a simple neural network, with a set depth and width. It can be used with most forms of machine learning. It makes all of its decisions via forward propagation.";
+
+        // sigmoid/htan func to normalize/activate nodes
+        this.myNormalizer = normalizer;
+
+        // number of hidden layers
+        this.myDepth = depth;
+        // number of nodes in every hidden layer
+        this.myWidth = width;
+        // number of nodes in input
+        this.myInputWidth = -1;
+        // initial values for weights and biases
+        this.startWeight = startWeight;
+        this.startBias = startBias;
+
+        // Create the matrix containing all the values
+        //
+        // First dimension: layers
+        //  this.myMat[i] returns the i-th layer
+        //  this.myDepth = outputs
+        //
+        // Second dimension: value type
+        //  For all this.myMat[layer], this.myMat[layer][0].length = this.myMat[layer][1].length = this.myMat[layer][2].length
+        //  General:
+        //   this.myMat[layer][0] = activated values
+        //   this.myMat[layer][1] = weights array
+        //   this.myMat[layer][2] = biases
+        //
+        // Third dimension
+        //  this.myMat[layer][type][i] = i-th node
+        //  weights:
+        //   this.myMat[layer][type][1][i] = array of weights for the i-th node
+        //   this.myMat[layer][type][1][i][j] = weight: (last layer's node j) -> (this layer's node i)
+        //
+        // First dimension
+        this.myMat = Array.apply(null, {length: (this.myDepth + 1)});
+        // Second dimension
+        for (let layer = 0; layer < this.myMat.length; layer++) {
+            this.myMat[layer] = Array.apply(null, {length: 3});
         }
-        if(brainInput[1]){
-            return 1;
+        // Third dimension
+        // hidden layers
+        for (let layer = 0; layer < this.myMat.length - 1; layer++) {
+
+            // values
+            this.myMat[layer][0] = Array.apply(null, {length: this.myWidth});
+            for (let node = 0; node < this.myMat[layer][0].length; node++) {
+                this.myMat[layer][0][node] = 0;
+            }
+
+            // weights
+            this.myMat[layer][1] = Array.apply(null, {length: this.myWidth});
+            for (let node = 0; node < this.myWidth; node++) {
+
+                // from input
+                if(layer === 0){
+                    break;
+                }
+
+                // from previous hidden layer
+                else {
+                    this.myMat[layer][1][node] = Array.apply(null, {length: this.myWidth});
+                    for (let source = 0; source < this.myMat[layer][1][node].length; source++) {
+                        this.myMat[layer][1][node][source] = 0;
+                    }
+                }
+            }
+
+            // biases
+            this.myMat[layer][2] = Array.apply(null, {length: this.myWidth});
+            for (let node = 0; node < this.myMat[layer][2].length; node++) {
+                this.myMat[layer][2][node] = 0;
+            }
         }
-        if(brainInput[2]){
-            // alert("brain getDecision: 2");
-            return 2;
+        // output layer
+        // values
+        this.myMat[this.myMat.length - 1][0] = Array.apply(null, {length: 4});
+        for (let node = 0; node < this.myMat[this.myMat.length - 1][0].length; node++) {
+            this.myMat[this.myMat.length - 1][0][node] = 0;
         }
-        if(brainInput[3]){
-            return 3;
+
+        // weights
+        this.myMat[this.myMat.length - 1][1] = Array.apply(null, {length: 4});
+        for (let node = 0; node < 4; node++) {
+            this.myMat[this.myMat.length - 1][1][node] = Array.apply(null, {length: this.myWidth});
+            for (let source = 0; source < this.myMat[this.myMat.length - 1][1][node].length; source++) {
+                this.myMat[this.myMat.length - 1][1][node][source] = 0;
+            }
         }
-        // alert("brain getDecision: 4");
-        return 4;
+
+        // biases
+        this.myMat[this.myMat.length - 1][2] = Array.apply(null, {length: 4});
+        for (let node = 0; node < this.myMat[this.myMat.length - 1][2].length; node++) {
+            this.myMat[this.myMat.length - 1][2][node] = 0;
+        }
+    }
+    // forward propagation
+    getDecision(brainInput) {
+        // console.log("getDecision, brainInput: " + brainInput);
+        // input to first hidden layer
+        // pre-activation
+        for (let node = 0; node < this.myWidth; node++) {
+            this.myMat[0][0][node] = math.dot(brainInput, this.myMat[0][1][node]) + this.myMat[0][2][node];
+        }
+        // activation
+        this.myNormalizer.normalizeCol(this.myMat[0][0]);
+
+        // everything else
+        for (let layer = 1; layer < this.myMat.length; layer++) {
+            // pre-activation
+            for (let node = 0; node < this.myMat[layer][0].length; node++) {
+                this.myMat[layer][0][node] = math.dot(this.myMat[layer - 1][0], this.myMat[layer][1][node]) + this.myMat[layer][2][node];
+            }
+            // activation
+            this.myNormalizer.normalizeCol(this.myMat[layer][0]);
+        }
+
+        // output
+        return this.getOutput(this.myMat[this.myMat.length - 1][0]);
+    }
+
+    // called in snake.js to update the brain with the length of the inputs
+    updateWithInput(input){
+        this.myInputWidth = input.inputLength;
+
+        // update network
+        for (let node = 0; node < this.myWidth; node++) {
+            this.myMat[0][1][node] = Array.apply(null, {length: this.myInputWidth});
+            for (let source = 0; source < this.myMat[0][1][node].length; source++) {
+                this.myMat[0][1][node][source] = 0;
+            }
+        }
+    }
+    // override clone method
+    cloneMe() {
+        let clone = new NeuralNetBrain(this.mutateMethod.cloneMe(), this.myNormalizer.cloneMe(), this.myDepth, this.myWidth, this.startWeight, this.startBias);
+
+        // copy everything
+        for (let layer = 0; layer < this.myMat.length; layer++) {
+            // define layer if needed
+            if(clone.myMat[layer] === undefined){
+                clone.myMat[layer] = Array.apply(null, {length: this.myMat[layer].length});
+            }
+
+            for (let type = 0; type < this.myMat[layer].length; type++) {
+                // skip unneeded definitions
+                if(this.myMat[layer][type] === undefined){
+                    continue;
+                }
+
+                // define type if needed
+                if(clone.myMat[layer][type] === undefined){
+                    clone.myMat[layer][type] = Array.apply(null, {length: this.myMat[layer][type].length});
+                }
+
+                // weights
+                if(type === 1){
+                    // loop through nodes
+                    for (let node = 0; node < this.myMat[layer][type].length; node++) {
+                        // define array if needed
+                        if(clone.myMat[layer][type][node] === undefined){
+                            clone.myMat[layer][type][node] = Array.apply(0, {length: this.myMat[layer][type][node].length});
+                        }
+
+                        // copy values
+                        for (let source = 0; source < this.myMat[layer][type][node].length; source++) {
+                            clone.myMat[layer][type][node][source] = this.myMat[layer][type][node][source];
+                        }
+                    }
+                }
+                // biases and values
+                else {
+                    for (let node = 0; node < this.myMat[layer][type].length; node++) {
+                        clone.myMat[layer][type][node] = this.myMat[layer][type][node];
+                    }
+                }
+            }
+        }
+        return clone;
+    }
+    // init all values with random numbers
+    initRandom(){
+        // TODO
+        for (let layer = 0; layer < this.myMat.length; layer++) {
+            for (let node = 0; node < this.myMat[layer][0].length; node++) {
+                // weights
+                for (let source = 0; source < this.myMat[layer][1][node].length; source++) {
+                    this.myMat[layer][1][node][source] = this.startWeight/Math.sqrt(this.myMat[layer][0].length);
+                }
+                
+                // bias
+                this.myMat[layer][2][node] = this.startBias;
+            }
+        }
     }
 }

@@ -7,11 +7,12 @@ class BaseNormalizer extends SnakeComponent{
         return valIn;
     }
     normalizeCol(colIn){
-        let colOut = [];
         for (let i = 0; i < colIn.length; i++) {
-            colOut.push(this.normalizeOne(colIn[i]));
+            colIn[i] = this.normalizeOne(colIn[i]);
         }
-        return colOut;
+    }
+    cloneMe(){
+        return new BaseNormalizer();
     }
 }
 
@@ -25,6 +26,9 @@ class TanhNormalizer extends BaseNormalizer{
     }
     normalizeOne(valIn) {
         return Math.tanh(valIn);
+    }
+    cloneMe() {
+        return new TanhNormalizer();
     }
 }
 
@@ -62,8 +66,9 @@ class ZNormalizer extends BaseNormalizer{
 
         this.mean = -999;
         this.stanDev = -999;
-
-        return ans;
+    }
+    cloneMe() {
+        return new ZNormalizer();
     }
 }
 
@@ -105,8 +110,9 @@ class MinMaxLinearNormalization extends BaseNormalizer{
 
         this.min = 999;
         this.max = -999;
-
-        return ans;
+    }
+    cloneMe() {
+        return new MinMaxLinearNormalization();
     }
 }
 
@@ -136,7 +142,8 @@ class UnitVectorNormalization extends BaseNormalizer{
         let ans = super.normalizeCol(colIn);
 
         this.mag = -1;
-
-        return ans;
+    }
+    cloneMe() {
+        return new UnitVectorNormalization();
     }
 }

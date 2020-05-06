@@ -12,7 +12,7 @@ class MainMenu extends InteractableLayer{
         // stuff
         // buttons and whatnot
         this.myInteractables = new Map();
-        this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, 1, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].name, (this.playButton).bind(this)));
+        this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, 1, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].getComponentName(), (this.playButton).bind(this)));
         this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 1, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
         this.myInteractables.set("SelectSnake", new ButtonHTML(.6, .4, .3, .2, 1, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
         // popups
@@ -64,7 +64,6 @@ class MainMenu extends InteractableLayer{
         this.myDocument.addEventListener("keyup", this.keyEventInUp.bind(this), false);
 
         // runner variables TODO: add buttons
-        this.gridSize = 25;
         this.tickRate = 20;
     }
 
@@ -137,14 +136,14 @@ class MainMenu extends InteractableLayer{
 
     // updates current snake name
     updateSelectedName(){
-        this.myTextFields.get("SelectedSnakeName").typewrite("Playing: " + loadedSnakes[this.selectedSnake].name, 50);
+        this.myTextFields.get("SelectedSnakeName").typewrite("Playing: " + loadedSnakes[this.selectedSnake].getComponentName(), 50);
     }
 
     // update selected snake
     updateSelectedSnake(index){
         // console.log("updateSelectedSnake(" + index + "), this: " + this);
         this.selectedSnake = index;
-        this.myInteractables.get("Play").changeText("Play: " + loadedSnakes[this.selectedSnake].name);
+        this.myInteractables.get("Play").changeText("Play: " + loadedSnakes[this.selectedSnake].getComponentName());
     }
 
     // callback function which ends the currently running thing
@@ -269,7 +268,7 @@ class MainMenu extends InteractableLayer{
     // starts the selected snake
     startSelectedSnake(){
         let snake = loadedSnakes[this.selectedSnake].cloneMe();
-        let runner = new SingleSnakeRunner(snake, this.gridSize, this.tickRate, this.callbackEndCurrent.bind(this));
+        let runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this));
         // clear canvas
         if(this.runningInstance != null){
             // kill current

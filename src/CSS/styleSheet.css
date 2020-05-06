@@ -12,6 +12,7 @@ body {
 
 .flexboxBasic {
     position: relative;
+    min-width: 0;
 }
 
 /*backgrounds*/
@@ -28,8 +29,10 @@ body {
 }
 /*pop up cards*/
 .popUp-card.background{
+    /*set one*/
     background-color: #404c58;
-    /*background-color: #d6d7d8;*/
+    /*set two*/
+    /*background-color: #a4a5a6;*/
     box-shadow: 0 0 2px #C5C6C7;
 
     /*borders*/
@@ -44,8 +47,10 @@ body {
 .popUp-card .background {
     padding: 0;
     margin: 0;
-    /*background-color: #404c58;*/
+    /*set one*/
     background-color: #d6d7d8;
+    /*set two*/
+    /*background-color: #08090d;*/
     box-shadow: none;
 
     /*border*/
@@ -58,8 +63,14 @@ body {
     display: flex;
 }
 .popUp-card .textWrapper .background {
-    background-color: magenta;
-    margin: 10px;
+    /*see through background*/
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 1vw;
+    border-style: dashed;
+    margin: calc(1.2vw + 2px);
+    padding: 0.8vw;
+    /*set one*/
+    border-color: #2d5a56;
 }
 /*end backgrounds*/
 
@@ -94,6 +105,12 @@ body {
     /*height: 100%;*/
 }
 
+.textBoxWrapper *{
+    /*prevent text overflow*/
+    overflow-wrap: break-word;
+    max-width: 100%;
+    font-size: calc(0.9vh + 0.7vw);
+}
 .vertTextBoxWrapper div{
     font-size: calc(10px + 0.8vw);
     text-align: center;

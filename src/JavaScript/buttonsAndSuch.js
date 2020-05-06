@@ -499,7 +499,7 @@ class SelectSnakePopUp extends PopUp{
         this.xOffset = 0.02;
         this.carouselHeight = 0.10;
         this.carouselTop = 0.05;
-        this.mySelectCarousel = new SelectCarousel(this.myLeft + this.xOffset, this.carouselTop, this.myWidth - (2 * this.xOffset), this.carouselHeight, 3, this.myCard, this.myDocument, 4.1, 0.90, 0.80, this.optionsArr, this.selectCallback);
+        this.mySelectCarousel = new SelectCarousel(this.myLeft + this.xOffset, this.carouselTop, this.myWidth - (2 * this.xOffset), this.carouselHeight, 3, this.myCard, this.myDocument, 4.1, 0.90, 0.80, this.optionsArr, function (idx){this.selectCallbackIntermediate(idx)}.bind(this));
 
         // box in center where text is displayed
         this.myTextBox = new BaseHTMLElement(this.myLeft + this.xOffset/3, this.carouselTop + this.carouselHeight, this.myWidth - (2 * this.xOffset/3), 1 - this.carouselHeight - (2 * this.carouselTop), 0, this.myCard, this.myDocument);
@@ -508,9 +508,12 @@ class SelectSnakePopUp extends PopUp{
         this.textWrapper.classList.add("background");
         this.myTextBox.setDimensions(this.textWrapper);
 
+        this.typeSpeed = 8;
+
         // left side text box - displays the start position, start length, apple value
         this.parameterBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
         this.parameterBox.myTextWrapper.classList.add("background");
+        this.parameterBox.myTextWrapper.style.minWidth = "10vw";
         this.parameterBox.addFlex(2);
 
         // TODO: this is all temporary, add visuals or something
@@ -523,17 +526,70 @@ class SelectSnakePopUp extends PopUp{
         this.brainBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
         this.brainBox.myTextWrapper.classList.add("background");
         this.brainBox.addFlex(4);
+
+        // write all the text
+        this.writeAll(this.mySelectCarousel.currentlySelected);
     }
+    // master text function, writes/draws everything
+    writeAll(idx){
+        this.writeParameters(idx);
+        this.writeInputs(idx);
+        this.writeBrains(idx);
+    }
+    writeParameters(idx){
+        let snek = this.optionsArr[idx];
+        let text = `Snake Selected:\n${snek.getComponentName()}`;
+        text += `\n\nDescription:\n${snek.getComponentDescription()}`;
+        text += `\n\nParameters:`;
+        text += `\n Grid Size:\n  ${snek.gridSize}`;
+        text += `\n\n Starting Length:\n  ${snek.startLength}`;
+        text += `\n\n Apple Value:\n  ${snek.appleVal}`;
+
+        this.parameterBox.typewrite(text, this.typeSpeed);
+    }
+    // TODO: temp - eventually best to replace this with images/graphs
+    writeInputs(idx){
+        let snek = this.optionsArr[idx];
+        let text = "";
+        let input = snek.myInput;
+        if(input.getComponentName() == "Multiple Input") {
+            text += `Inputs:`;
+            let curr = input.myInputs.startNode;
+            while(curr != null){
+                let val = curr.myVal;
+                text += `\n\n${val.getComponentName()}:\n\n${val.getComponentDescription()}`;
+                curr = curr.myNext;
+            }
+        }
+        else{
+            text += `Input:\n\n`;
+            text += `${input.getComponentName()}:\n\n${input.getComponentDescription()}`;
+        }
+
+        this.inputsBox.typewrite(text, this.typeSpeed);
+    }
+    writeBrains(idx){
+        let snek = this.optionsArr[idx];
+        let text = "";
+        let brain = snek.myBrain;
+
+        text += `Brain:\n\n`;
+        text += `${brain.getComponentName()}:\n\n${brain.getComponentDescription()}`;
+
+        this.brainBox.typewrite(text, this.typeSpeed);
+    }
+
     onResize(){
         this.mySelectCarousel.onResize();
     }
     showPopUp() {
         super.showPopUp();
         this.mySelectCarousel.onResize();
+        this.writeAll(this.mySelectCarousel.currentlySelected);
     }
     selectCallbackIntermediate(index){
         // change text shown
-        // TODO
+        this.writeAll(index);
 
         // call previous callback
         this.selectCallback(index);
@@ -593,7 +649,7 @@ class SelectCarousel extends BaseHTMLElement{
 
         // set the selected one
         this.currentlySelected = 0;
-        this.changeSelected(0);
+        this.changeSelected(0, false);
 
         // hover TODO: fixme
         // this.hoverHandler = new HoverHandler(this.myWrapper, this.onHover.bind(this), this.unHover.bind(this));
@@ -627,17 +683,19 @@ class SelectCarousel extends BaseHTMLElement{
                 let curr = this.mySnakes[i];
                 this.myMembers.push(new SelectCarouselMember(this.startLeft, i, function () {
                     this.clicked(i);
-                }.bind(this), curr.name, this.centerWidth, this.myWrapper, this.myDocument));
+                }.bind(this), curr.getComponentName(), this.centerWidth, this.myWrapper, this.myDocument));
             }
         }
     }
     // helper function to change the currently selected entry
-    changeSelected(newSelect){
+    changeSelected(newSelect, doCallback = true){
         if(this.myMembers[this.currentlySelected].myCard.classList.contains("currentlySelected")){
             this.myMembers[this.currentlySelected].myCard.classList.remove("currentlySelected");
         }
         this.currentlySelected = newSelect;
-        this.selectCallback(this.currentlySelected);
+        if(doCallback) {
+            this.selectCallback(this.currentlySelected);
+        }
         this.myMembers[this.currentlySelected].myCard.classList.add("currentlySelected");
     }
     // helper function which sets the style of all elements
@@ -827,15 +885,21 @@ class TextBox extends BaseHTMLElement{
         // text
         this.myTextBox = this.myDocument.createElement("div");
         this.myTextWrapper.appendChild(this.myTextBox);
+        // this.myTextBox.style.whiteSpace = "pre";
         this.changeText(this.myText);
 
         // prevent threading issues
         this.currthreadID = 0;
+        this.currentlyDisplayed = "";
     }
     changeText(text){
         // console.log(`changeText(${text}) called in TextBox changeText()`);
         this.myText = text;
-        this.myTextBox.innerText = this.myText;
+        this.changeCurrDisplay(text);
+    }
+    changeCurrDisplay(text){
+        this.currentlyDisplayed = text;
+        this.myTextBox.innerText = this.currentlyDisplayed;
     }
     // typewriter
     typewrite(txt, speed){
@@ -848,6 +912,7 @@ class TextBox extends BaseHTMLElement{
             this.currthreadID++;
         }
         this.myTextBox.innerText = "";
+        this.currentlyDisplayed = "";
 
         // console.log("typewrite: currThreadID: " + this.currthreadID);
 
@@ -862,10 +927,18 @@ class TextBox extends BaseHTMLElement{
         }
         // output one char
         let char = this.myText.charAt(i);
-        if (char == " ") {
-            char = "\xa0 ";
+        let prevChar = "";
+        if(i > 0){
+            prevChar = this.myText.charAt(i-1);
         }
-        this.myTextBox.innerText += char;
+        // check for whitespace cuz html doesn't like it lol
+        if (char == " " && i > 0 && (prevChar == ":" || prevChar == "\n" || prevChar == " ")) {
+            char = "\xa0";
+        }
+        if(char == "\n" || char == "\r"){
+            char = String.fromCharCode(10) + " ";
+        }
+        this.changeCurrDisplay(this.currentlyDisplayed + char);
         i++;
         setTimeout(function () {
             this.typewritePRIVATE(i, speed, threadID);

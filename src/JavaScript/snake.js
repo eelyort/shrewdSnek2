@@ -1,7 +1,9 @@
 // Modular snake, all logic should be elsewhere in input/brain/whatnot
 //  There should be very little actual code here
-class Snake{
-    constructor(inputIn, brainIn, headPosIn, startLengthIn, appleVal) {
+class Snake extends SnakeComponent{
+    constructor(inputIn, brainIn, headPosIn, startLengthIn, appleVal, gridSizeIn, nameIn = "", descriptionIn = "") {
+        super("", descriptionIn);
+        this.setName(nameIn);
         // set variables
         // MOVED TO SINGLESNAKERUNNER CONSTRUCTOR
         this.mySingleSnakeRunner = null;
@@ -9,6 +11,7 @@ class Snake{
         this.myInput = inputIn;
         this.myInput.updateParentSnake(this);
         this.myBrain = brainIn;
+        this.myBrain.updateWithInput(this.myInput);
         // let these be ints of range: [0, gridSize^2)
         this.startHeadPos = headPosIn;
         this.myHeadPos = headPosIn;
@@ -23,7 +26,7 @@ class Snake{
         this.startLength = startLengthIn;
         this.myLength = startLengthIn;
 
-        this.gridSize = -1;
+        this.gridSize = gridSizeIn;
 
         this.appleVal = appleVal;
 
@@ -32,9 +35,6 @@ class Snake{
         // used to erase body segments, used only when focused
         this.bodySegsToErase = new CustomQueue();
         this.bodySegsToDraw = new CustomQueue();
-
-        // Used for labeling in output/input text files
-        this.name = "";
     }
     focusMe(){
         this.focused = true;
@@ -45,16 +45,15 @@ class Snake{
     // set name, caps at "snakeNameChars" chars
     setName(name){
         if(name.length < snakeNameChars){
-            this.name = name;
+            this.componentName = name;
         }
         else{
-            this.name = name.substring(0, snakeNameChars);
+            this.componentName = name.substring(0, snakeNameChars);
         }
     }
     // to set parent runner
     updateParentRunner(singleSnakeRunnerIn){
         this.mySingleSnakeRunner = singleSnakeRunnerIn;
-        this.gridSize = this.mySingleSnakeRunner.gridSize;
         // alert("gridSize snake update to: " + this.gridSize);
     }
     // for printing purposes
@@ -234,7 +233,8 @@ class Snake{
     }
     // returns a copy of this snake
     cloneMe(){
-        let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal);
+        console.log("cloning snake, this.gridSize: " + this.gridSize);
+        let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal, this.gridSize);
         return clone;
     }
 }

@@ -34,6 +34,7 @@ class MultipleInput extends Input{
         super();
         this.myInputs = new CustomQueue();
         this.addInput(firstInput);
+        this.componentName("Multiple Input");
     }
     addInput(inputToAdd){
         this.inputLength += inputToAdd.inputLength;

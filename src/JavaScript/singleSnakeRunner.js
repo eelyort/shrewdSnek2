@@ -1,7 +1,7 @@
 class SingleSnakeRunner{
-    constructor(snakeIn, gridSize, tickRateStart, callback){
+    constructor(snakeIn, tickRateStart, callback){
         this.mySnake = snakeIn;
-        this.gridSize = gridSize;
+        this.gridSize = this.mySnake.gridSize;
         this.callBack = callback;
 
         // grid is 1d array of width/height gridSize+2/gridSize
@@ -11,14 +11,14 @@ class SingleSnakeRunner{
         //   1 is body (including head)
         //   2 is apple
         //  -1 is invalid
-        this.grid = new Array((gridSize+2) * gridSize);
+        this.grid = new Array((this.gridSize+2) * this.gridSize);
         for (let i = 0; i < this.grid.length; i++) {
             this.grid[i] = 0;
         }
         // fill in invalid columns
-        for (let i = 0; i < this.grid.length; i += (gridSize+2)) {
+        for (let i = 0; i < this.grid.length; i += (this.gridSize+2)) {
             this.grid[i] = -1;
-            this.grid[i + (gridSize+1)] = -1;
+            this.grid[i + (this.gridSize+1)] = -1;
         }
 
         // apple
