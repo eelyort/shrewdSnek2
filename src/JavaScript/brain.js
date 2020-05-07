@@ -166,6 +166,9 @@ class NeuralNetBrain extends SnakeBrain{
         for (let node = 0; node < this.myMat[this.myMat.length - 1][2].length; node++) {
             this.myMat[this.myMat.length - 1][2][node] = 0;
         }
+
+        // track whether this has been given values already
+        this.hasValues = false;
     }
     // forward propagation
     getDecision(brainInput) {
@@ -194,6 +197,11 @@ class NeuralNetBrain extends SnakeBrain{
 
     // called in snake.js to update the brain with the length of the inputs
     updateWithInput(input){
+        if(this.hasValues){
+            console.log(`Warning: updateWithInput called on brain with values already, ignoring new input`);
+            return;
+        }
+
         this.myInputWidth = input.inputLength;
 
         // update network
@@ -251,9 +259,29 @@ class NeuralNetBrain extends SnakeBrain{
         }
         return clone;
     }
+    // IMPORTANT: loads all the needed parameters given a string
+    //  assumes that input size is correct
+    //  string:
+    //   pure json.stringify
+    loadParams(str){
+        // json map
+        let map = JSON.parse(str);
+
+        // set map
+        this.myMat = map.get("matrix");
+
+        // track
+        this.hasValues = true;
+
+        console.log("loadParams() called: this.myMat: " + this.myMat);
+    }
     // init all values with random numbers
     initRandom(){
-        // TODO
+        if(this.hasValues){
+            console.log("!!! InitRandom called on a brain that already had values, overriding... !!!");
+            alert("!!! InitRandom called on a brain that already had values, overriding... !!!");
+        }
+
         for (let layer = 0; layer < this.myMat.length; layer++) {
             for (let node = 0; node < this.myMat[layer][0].length; node++) {
                 // weights
@@ -265,5 +293,9 @@ class NeuralNetBrain extends SnakeBrain{
                 this.myMat[layer][2][node] = this.startBias;
             }
         }
+
+        this.hasValues = true;
+
+        console.log(`initRandom() success: this.myMat: ${this.myMat}`);
     }
 }

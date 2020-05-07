@@ -21,7 +21,7 @@ class SpeciesRunner{
         this.scoreFunc = scoringFunction;
 
         // speed constant, control performance by number of speciesRunners
-        this.tickRate = 200;
+        this.tickRate = speciesRunnerTickRate;
 
         this.currIndex = 0;
         this.runningInstance = null;

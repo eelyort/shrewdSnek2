@@ -24,6 +24,8 @@ End Snake
 
  */
 
+// TODO: replace this with JSON.parse?
+
 // id of inputs so can initialize them by id, assume multiple input is implied
 const inputIDs = [
     function () {

@@ -322,8 +322,8 @@ class ImgButton extends BaseHTMLElement{
     }
 }
 // button which goes on press and keeps going as long as hold rather than click
-class pressHoldImgButton extends ImgButton{
-    constructor(left, top, width, height, zIndex, parentElement, document, src, func, delay){
+class PressHoldImgButton extends ImgButton{
+    constructor(left, top, width, height, zIndex, parentElement, document, src, func, delay, releaseFunc = null){
         super(left, top, width, height, zIndex, parentElement, document, src, func);
 
         // delay (ms) between activations
@@ -337,6 +337,16 @@ class pressHoldImgButton extends ImgButton{
         this.myButton.addEventListener("mouseup", this.onRelease.bind(this));
         // this.myButton.addEventListener("mouseleave", this.onRelease.bind(this));
         this.myButton.addEventListener("dragleave", this.onRelease.bind(this));
+
+        // release function
+        if(releaseFunc == null){
+            this.myReleaseFunc = function () {
+                // nothing
+            };
+        }
+        else{
+            this.myReleaseFunc = releaseFunc;
+        }
     }
     onPress(){
         // console.log("press");
@@ -346,6 +356,7 @@ class pressHoldImgButton extends ImgButton{
     onRelease(){
         // console.log("release");
         this.isPressed = false;
+        this.myReleaseFunc();
     }
     // runs the effect
     causeEffect(){
@@ -557,13 +568,13 @@ class SelectSnakePopUp extends PopUp{
             let curr = input.myInputs.startNode;
             while(curr != null){
                 let val = curr.myVal;
-                text += `\n\n${val.getComponentName()}:\n\n${val.getComponentDescription()}`;
+                text += `\n\n${val.getComponentName()}:\n${val.getComponentDescription()}`;
                 curr = curr.myNext;
             }
         }
         else{
             text += `Input:\n\n`;
-            text += `${input.getComponentName()}:\n\n${input.getComponentDescription()}`;
+            text += `${input.getComponentName()}:\n${input.getComponentDescription()}`;
         }
 
         this.inputsBox.typewrite(text, this.typeSpeed);
@@ -574,7 +585,7 @@ class SelectSnakePopUp extends PopUp{
         let brain = snek.myBrain;
 
         text += `Brain:\n\n`;
-        text += `${brain.getComponentName()}:\n\n${brain.getComponentDescription()}`;
+        text += `${brain.getComponentName()}:\n${brain.getComponentDescription()}`;
 
         this.brainBox.typewrite(text, this.typeSpeed);
     }
@@ -642,9 +653,9 @@ class SelectCarousel extends BaseHTMLElement{
         this.moveQueue = new CustomQueue();
 
         // left and right buttons TODO: constant variables?
-        this.leftButton = new pressHoldImgButton(0.02, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./src/Images/left-arrow-800x800.png", function (){this.bufferMove(-1)}.bind(this), 130);
+        this.leftButton = new PressHoldImgButton(0.02, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./src/Images/left-arrow-800x800.png", function (){this.bufferMove(-1)}.bind(this), 130);
         this.leftButton.myButton.classList.add("selectImgButton");
-        this.rightButton = new pressHoldImgButton(0.92, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./src/Images/right-arrow-800x800.png", function (){this.bufferMove(1)}.bind(this),130);
+        this.rightButton = new PressHoldImgButton(0.92, 0.08, .076, 0.92, this.myZIndex + this.myMembers.length + 1, this.myWrapper, this.myDocument, "./src/Images/right-arrow-800x800.png", function (){this.bufferMove(1)}.bind(this),130);
         this.rightButton.myButton.classList.add("selectImgButton");
 
         // set the selected one
