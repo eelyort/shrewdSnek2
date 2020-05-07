@@ -94,9 +94,7 @@ class MainMenu extends InteractableLayer{
     startRun(){
         this.then = Date.now();
         this.run();
-
-        // small timeout so that the previous runner is ensured dead, screen cleared, etc
-        setTimeout(this.runningInstance.startMe(), 50);
+        this.runningInstance.startMe();
     }
 
     // basically the "main" method
