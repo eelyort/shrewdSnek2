@@ -113,9 +113,7 @@ class Snake extends SnakeComponent{
         // manage length
         while(this.myBodySegs.size > this.myLength - 1){
             let tailPos = this.myBodySegs.poll();
-            if(grid[tailPos] !== -1) {
-                grid[tailPos] = 0;
-            }
+            grid[tailPos] = 0;
 
             // when focused, changed body segments get shoved into queues for drawing
             if(this.focused){
@@ -233,7 +231,7 @@ class Snake extends SnakeComponent{
     }
     // returns a copy of this snake
     cloneMe(){
-        console.log("cloning snake, this.gridSize: " + this.gridSize);
+        // console.log("cloning snake, this.gridSize: " + this.gridSize);
         let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal, this.gridSize);
         return clone;
     }

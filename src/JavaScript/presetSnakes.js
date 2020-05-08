@@ -5,7 +5,7 @@ let loadedSnakes = [];
 const presetPlayerControlled = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(),
-    0,
+    1,
     3,
     3,
     25,
@@ -21,7 +21,7 @@ const protectedSnakes = loadedSnakes.length;
 const testSnake = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(null),
-    0,
+    1,
     3,
     3,
     5,

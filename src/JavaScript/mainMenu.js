@@ -24,12 +24,14 @@ class MainMenu extends InteractableLayer{
         this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, 1, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].getComponentName(), (this.playButton).bind(this)));
         this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 1, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
         this.myInteractables.set("SelectSnake", new ButtonHTML(.6, .4, .3, .2, 1, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
+        // TODO: change icons
         this.myInteractables.set("TickUp", new PressHoldImgButton(.32, .86, .1, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/play-button-200x200.png", function () {
             this.changeTickRate(1);
-        }.bind(this), this.tickHoldDelay, function () {this.tickHoldTime = 0;}.bind(this)));
+        }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
         this.myInteractables.set("TickDown", new PressHoldImgButton(.18, .86, .1, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/play-button-200x200.png", function () {
             this.changeTickRate(-1);
-        }.bind(this), this.tickHoldDelay, function () {this.tickHoldTime = 0;}.bind(this)));
+        }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
+        this.myInteractables.set("TEST", new ButtonHTML(.6, .65, .3, .2, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
         // popups
         this.myPopUps = new Map();
         this.myPopUps.set("SelectSnake", new SelectSnakePopUp(.05, .05, 3, this.myGamePanel, this.myDocument, loadedSnakes, this.updateSelectedSnake.bind(this)));
@@ -43,6 +45,9 @@ class MainMenu extends InteractableLayer{
         this.subCanvasTextRatio = 0.7;
         this.myTextFields.set("SelectedSnakeName", new VertCenteredTextBox(0, 0, 0, this.subCanvasTextHeight, 5, this.myGamePanel, this.myDocument, "Playing: None", "left"));
         this.myTextFields.set("Score", new VertCenteredTextBox(0, 0, 0, this.subCanvasTextHeight, 5, this.myGamePanel, this.myDocument, "Score: " + (`\xa0\xa0\xa0\xa0\xa0\xa0${0}`).substring(-6), "right"));
+        this.myTextFields.set("TickRate", new CenteredTextBox(0, 0, 0, this.subCanvasTextHeight, 5, this.myGamePanel, this.myDocument, "Tick Rate"));
+        this.displayTickRate();
+        setTimeout(this.releaseTickRate.bind(this), 1);
 
         // store score and only update if necessary
         this.displayScore = 0;
@@ -78,6 +83,7 @@ class MainMenu extends InteractableLayer{
         this.keysDown = new Set();
         this.myDocument.addEventListener("keyup", this.keyEventInUp.bind(this), false);
     }
+
     // tick rate changer: positive makes it faster, negative slower
     changeTickRate(val){
         // every 5 "ticks" held it starts increasing faster by a factor of 2 (ie: 1/per -> 2/per -> 4/per)
@@ -92,10 +98,40 @@ class MainMenu extends InteractableLayer{
             this.runningInstance.tickRate = this.tickRate;
         }
 
-        // TODO: display
-        console.log(`Tick rate changed to ${this.tickRate}`);
+        // display
+        this.displayTickRate();
 
         this.tickHoldTime++;
+    }
+    // function to make the tick rate display nice
+    displayTickRate(){
+        let a = this.myTextFields.get("TickRate");
+
+        // setup
+        a.myTextWrapper.style.color = "#FFFFFF";
+        if(!a.myTextWrapper.classList.contains("fadeOut")){
+            a.myTextWrapper.classList.add("fadeOut");
+        }
+
+        // change the text
+        a.changeText(`Tick Rate: ${this.tickRate}`);
+
+        // make it appear
+        if(a.myTextWrapper.classList.contains("fadeOut2")){
+            a.myTextWrapper.classList.remove("fadeOut2");
+        }
+
+        // setTimeout(function () {
+        //     // make it disappear
+        //     a.myTextWrapper.classList.add("fadeOut2");
+        // }, 0.01);
+    }
+    // when the tick rate buttons are released
+    releaseTickRate(){
+        this.tickHoldTime = 0;
+
+        // make it disappear
+        this.myTextFields.get("TickRate").myTextWrapper.classList.add("fadeOut2");
     }
 
     // called on keyEvent press
@@ -125,6 +161,8 @@ class MainMenu extends InteractableLayer{
     startRun(){
         this.then = Date.now();
         this.run();
+        this.displayTickRate();
+        setTimeout(this.releaseTickRate.bind(this), 1);
         this.runningInstance.startMe();
     }
 
@@ -250,11 +288,6 @@ class MainMenu extends InteractableLayer{
         this.myPopUps.get("SelectSnake").showPopUp();
     }
 
-    // TODO: delete
-    TEST_FUNC(){
-        alert("Test");
-    }
-
     // formats the sub canvas's size and position
     formatSubCanvas(){
         let totWidth = this.myGamePanel.getBoundingClientRect().width;
@@ -274,6 +307,7 @@ class MainMenu extends InteractableLayer{
         this.subCanvas.style.height = (sideLength).toString(10) + "px";
 
         // Text boxes floating above the canvas
+        // selected snake and score
         let textWidth = sideLength - 2*totWidth*this.subCanvasTextXOffset;
         this.myTextFields.get("SelectedSnakeName").myTextWrapper.style.left = (left + this.subCanvasTextXOffset*totWidth).toString() + "px";
         this.myTextFields.get("SelectedSnakeName").myTextWrapper.style.top = (top - this.subCanvasTextHeight*totHeight).toString() + "px";
@@ -283,6 +317,11 @@ class MainMenu extends InteractableLayer{
         this.myTextFields.get("Score").myTextWrapper.style.left = (left + this.subCanvasTextXOffset*totWidth + width).toString() + "px";
         this.myTextFields.get("Score").myTextWrapper.style.top = (top - this.subCanvasTextHeight*totHeight).toString() + "px";
         this.myTextFields.get("Score").myTextWrapper.style.width = (textWidth*(1-this.subCanvasTextRatio)).toString() + "px";
+
+        // tick rate
+        this.myTextFields.get("TickRate").myTextWrapper.style.width = sideLength.toString() + "px";
+        this.myTextFields.get("TickRate").myTextWrapper.style.left = left.toString() + "px";
+        this.myTextFields.get("TickRate").myTextWrapper.style.top = (top + 0.9 * sideLength).toString() + "px";
     }
 
     // called when window is resized
@@ -312,5 +351,15 @@ class MainMenu extends InteractableLayer{
         this.isRunning = true;
         this.updateScore();
         this.startRun();
+    }
+
+    // TODO: delete
+    TESTFUNC(){
+        console.log("Test:");
+        let speciesRunner = new SpeciesRunner(loadedSnakes[this.selectedSnake].cloneMe(), 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, 0);
+        speciesRunner.runNext();
+    }
+    TESTCALLBACK(a){
+        console.log("Test Callback: " + a.toString());
     }
 }

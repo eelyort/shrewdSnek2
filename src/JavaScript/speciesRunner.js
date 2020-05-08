@@ -39,7 +39,7 @@ class SpeciesRunner{
         if(this.runningInstance != null){
             this.runningInstance.kill();
         }
-        this.runningInstance = new SingleSnakeRunner(snek, this.tickRate, this.endOne().bind(this));
+        this.runningInstance = new SingleSnakeRunner(snek, this.tickRate, this.endOne.bind(this));
         this.runningInstance.startMe();
     }
     // callback called whenever an instance finishes

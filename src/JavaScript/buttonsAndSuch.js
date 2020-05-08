@@ -149,6 +149,11 @@ class BaseHTMLElement{
     addFlex(flexGrow){
         this.myFlexGrow = flexGrow;
 
+        // add flex to parent
+        if(!this.myParent.classList.contains("flexParent")){
+            this.myParent.classList.add("flexParent");
+        }
+
         this.myMainObject.style.left = "";
         this.myMainObject.style.top = "";
         this.myMainObject.style.width = "";
@@ -521,26 +526,42 @@ class SelectSnakePopUp extends PopUp{
 
         this.typeSpeed = 8;
 
+        // text boxes
+        this.textHeight = 0.88;
+        this.textWidth = 0.28;
+        this.numTextBox = 3;
+        let remainPadding = 1 - (this.textWidth * this.numTextBox);
+        this.textPadding = remainPadding/(this.numTextBox + 1);
+
         // left side text box - displays the start position, start length, apple value
-        this.parameterBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
+        this.parameterBox = new TextBox(this.textPadding, (1-this.textHeight)/2, this.textWidth, this.textHeight, 1, this.textWrapper, this.myDocument, "");
         this.parameterBox.myTextWrapper.classList.add("background");
         this.parameterBox.myTextWrapper.style.minWidth = "10vw";
-        this.parameterBox.addFlex(2);
+        // this.parameterBox.addFlex(2);
+        // TODO img here
+        this.editParameterButton = new ButtonHTML(0.12, 0.92, 0.76, 0.06, 2, this.parameterBox.myTextWrapper, this.myDocument, "Edit", this.editParam.bind(this));
 
         // TODO: this is all temporary, add visuals or something
         // inputs
-        this.inputsBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
+        this.inputsBox = new TextBox((2*this.textPadding) + this.textWidth, (1-this.textHeight)/2, this.textWidth, this.textHeight, 1, this.textWrapper, this.myDocument, "");
         this.inputsBox.myTextWrapper.classList.add("background");
-        this.inputsBox.addFlex(4);
+        // this.inputsBox.addFlex(4);
 
         // brain
-        this.brainBox = new TextBox(0, 0, 0, 1, 1, this.textWrapper, this.myDocument, "");
+        this.brainBox = new TextBox((3*this.textPadding) + (2*this.textWidth), (1-this.textHeight)/2, this.textWidth, this.textHeight, 1, this.textWrapper, this.myDocument, "");
         this.brainBox.myTextWrapper.classList.add("background");
-        this.brainBox.addFlex(4);
+        // this.brainBox.addFlex(4);
 
         // write all the text
         this.writeAll(this.mySelectCarousel.currentlySelected);
+
+        this.onResize();
     }
+    // edit parameter
+    editParam(){
+        console.log("editParam()");
+    }
+
     // master text function, writes/draws everything
     writeAll(idx){
         this.writeParameters(idx);
@@ -592,10 +613,11 @@ class SelectSnakePopUp extends PopUp{
 
     onResize(){
         this.mySelectCarousel.onResize();
+        // this.editParameterButton.onResize();
     }
     showPopUp() {
         super.showPopUp();
-        this.mySelectCarousel.onResize();
+        this.onResize();
         this.writeAll(this.mySelectCarousel.currentlySelected);
     }
     selectCallbackIntermediate(index){
@@ -913,7 +935,7 @@ class TextBox extends BaseHTMLElement{
         this.myTextBox.innerText = this.currentlyDisplayed;
     }
     // typewriter
-    typewrite(txt, speed){
+    typewrite(txt, speed, /*optionalFunc = null*/){
         this.myText = txt;
         // kill previous thread
         if(this.currthreadID >= 1000){
@@ -927,10 +949,10 @@ class TextBox extends BaseHTMLElement{
 
         // console.log("typewrite: currThreadID: " + this.currthreadID);
 
-        this.typewritePRIVATE(0, speed, this.currthreadID);
+        this.typewritePRIVATE(0, speed, this.currthreadID, /*optionalFunc*/);
     }
     // internal private
-    typewritePRIVATE(i, speed, threadID){
+    typewritePRIVATE(i, speed, threadID, /*optionalFunc*/){
         // console.log(`typewritePRIVATE(${i}, ${speed}) called\n this.myText: "${this.myText}"\n this.myTextBox.innerText: "${this.myTextBox.innerText}"`);
         // already finished
         if(i >= this.myText.length || threadID != this.currthreadID){
@@ -951,6 +973,11 @@ class TextBox extends BaseHTMLElement{
         }
         this.changeCurrDisplay(this.currentlyDisplayed + char);
         i++;
+
+        // // call optional func
+        // if(optionalFunc != null){
+        //     optionalFunc();
+        // }
         setTimeout(function () {
             this.typewritePRIVATE(i, speed, threadID);
         }.bind(this), speed);

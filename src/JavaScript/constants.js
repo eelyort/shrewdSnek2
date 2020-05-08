@@ -7,7 +7,11 @@ const buttonColor = "red";
 const defaultFPS = 30;
 
 // tick rate at which the evolving species are run
-const speciesRunnerTickRate = 500;
+const speciesRunnerTickRate = 600;
+// default scoring function, just returns score, no time sensitivity
+const defaultScoreFunc = function (score, time) {
+    return score;
+};
 
 // color of the snake
 const snakeColor = "#ff00f2";

@@ -10,10 +10,15 @@ body {
     position: absolute;
 }
 
+/*flex box*/
 .flexboxBasic {
     position: relative;
     min-width: 0;
 }
+.flexParent{
+    display: flex;
+}
+/*end flex box*/
 
 /*backgrounds*/
 /*main menu*/
@@ -58,19 +63,20 @@ body {
     border-width: 2px;
     border-color: #979899;
     border-radius: 25px;
-
-    /*flexbox*/
-    display: flex;
 }
 .popUp-card .textWrapper .background {
     /*see through background*/
     background-color: rgba(0, 0, 0, 0);
     border-radius: 1vw;
     border-style: dashed;
-    margin: calc(1.2vw + 2px);
-    padding: 0.8vw;
     /*set one*/
     border-color: #2d5a56;
+}
+.popUp-card .textWrapper .background div {
+    font-size: calc(1.0vw + 0.35vh);
+    /*font-size: calc(80% * 1.5);*/
+    text-overflow: fade;
+    padding: 1.2vh;
 }
 /*end backgrounds*/
 
@@ -128,6 +134,15 @@ body {
     text-align: right;
 }
 
+/*fade code, element should have .fadeOut, add .fadeOut2 to fade*/
+.fadeOut{
+    opacity: 80%;
+}
+.fadeOut2{
+    transition: opacity 900ms ease-in;
+    opacity: 0;
+}
+
 /*buttons of all types*/
 .button {
     background-color: #66FCF1;
@@ -140,10 +155,6 @@ body {
     /*background color change eases and takes x sec, scaling (transform) etc*/
     transition: background 150ms ease-in-out, transform 250ms ease, box-shadow 200ms ease;
 }
-/*.popUp-card .button.imgButton {*/
-/*    background-color: rgba(0, 0, 0, 0);*/
-/*    box-shadow: none;*/
-/*}*/
 .button:hover {
     box-shadow: 0 0 1.4vw #60cdbb;
     background-color: #67fff4;
@@ -162,6 +173,15 @@ body {
 }
 .button.gameButton:focus {
     outline: none;
+}
+.popUp-card .button {
+    background-color: #b5b6b7;
+    /*color: #ffffff;*/
+    border-color: rgba(31, 40, 51, 0.71);
+    border-style: solid;
+    border-width: 1px;
+    font-size: 100%;
+    box-shadow: none;
 }
 /*end buttons*/
 
