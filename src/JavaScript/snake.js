@@ -35,7 +35,10 @@ class Snake extends SnakeComponent{
         // used to erase body segments, used only when focused
         this.bodySegsToErase = new CustomQueue();
         this.bodySegsToDraw = new CustomQueue();
-        this.bodySegsToDraw.enqueue(this.myHeadPos);
+        this.bodySegsToDraw.enqueue(this.startHeadPos);
+
+        // // weird glitches happen cuz of timing of the first draw
+        // this.firstDrawn = false;
 
         this.uuid = "normal";
     }
@@ -57,6 +60,7 @@ class Snake extends SnakeComponent{
     // to set parent runner
     updateParentRunner(singleSnakeRunnerIn){
         this.mySingleSnakeRunner = singleSnakeRunnerIn;
+        this.mySingleSnakeRunner.grid[this.startHeadPos] = 1;
         // alert("gridSize snake update to: " + this.gridSize);
     }
     // for printing purposes
@@ -166,70 +170,86 @@ class Snake extends SnakeComponent{
             ctx.fillStyle = snakeDedColor;
         }
 
+        // // weird drawing glitches on first draw
+        // if(!this.firstDrawn){
+        //     this.firstDrawn = true;
+        //     ctx.canvas.width = width;
+        //     ctx.canvas.height = width;
+        //
+        //     // draw the starting block
+        //     if(this.mySingleSnakeRunner.grid[this.startHeadPos] === 1){
+        //         let r = Math.floor(this.startHeadPos / (this.gridSize + 2));
+        //         // minus one to account for the padding
+        //         let c = this.startHeadPos % (this.gridSize + 2) - 1;
+        //
+        //         ctx.beginPath();
+        //         ctx.rect(c * step, r * step, step, step);
+        //         ctx.fill();
+        //         ctx.closePath();
+        //     }
+        //     this.drawAllBodySegs(ctx, step);
+        //     console.log("bodySegs: " + this.myBodySegs);
+        //     return;
+        // }
+
         // full draw: assumed canvas is cleared, go through and draw all body segments
         if(!this.focused){
-            // pseudo iterator
-            let curr = this.myBodySegs.startNode;
-
-            while(curr != null){
-                let currVal = curr.myVal;
-                let r = Math.floor(currVal / (this.gridSize+2));
-                // minus one to account for the padding
-                let c = currVal % (this.gridSize+2) - 1;
-
-                ctx.beginPath();
-                ctx.rect(c*step, r*step, step, step);
-                ctx.fill();
-                ctx.closePath();
-
-                curr = curr.myNext;
-            }
+            this.drawAllBodySegs(ctx, step);
         }
         // partial draw, only erase the tail parts and draw the head parts
         else{
             // the very specific case of the snake just dying so only its front few segments are red
             if(!this.mySingleSnakeRunner.running){
-                // pseudo iterator
-                let curr = this.myBodySegs.startNode;
-
-                while(curr != null){
-                    let currVal = curr.myVal;
-                    let r = Math.floor(currVal / (this.gridSize+2));
-                    // minus one to account for the padding
-                    let c = currVal % (this.gridSize+2) - 1;
-
-                    ctx.beginPath();
-                    ctx.rect(c*step, r*step, step, step);
-                    ctx.fill();
-                    ctx.closePath();
-
-                    curr = curr.myNext;
-                }
+                this.drawAllBodySegs(ctx, step);
             }
             else {
                 // draw head
                 while (this.bodySegsToDraw.size > 0) {
                     let currVal = this.bodySegsToDraw.poll();
-                    let r = Math.floor(currVal / (this.gridSize + 2));
-                    // minus one to account for the padding
-                    let c = currVal % (this.gridSize + 2) - 1;
 
-                    ctx.beginPath();
-                    ctx.rect(c * step, r * step, step, step);
-                    ctx.fill();
-                    ctx.closePath();
+                    if(this.mySingleSnakeRunner.grid[currVal] === 1) {
+                        let r = Math.floor(currVal / (this.gridSize + 2));
+                        // minus one to account for the padding
+                        let c = currVal % (this.gridSize + 2) - 1;
+
+                        ctx.beginPath();
+                        ctx.rect(c * step, r * step, step, step);
+                        ctx.fill();
+                        ctx.closePath();
+                    }
                 }
             }
 
             // erase tails
             while(this.bodySegsToErase.size > 0){
                 let currVal = this.bodySegsToErase.poll();
-                let r = Math.floor(currVal / (this.gridSize+2));
-                // minus one to account for the padding
-                let c = currVal % (this.gridSize+2) - 1;
 
-                ctx.clearRect(c*step, r*step, step, step);
+                if(this.mySingleSnakeRunner.grid[currVal] !== 1) {
+                    let r = Math.floor(currVal / (this.gridSize + 2));
+                    // minus one to account for the padding
+                    let c = currVal % (this.gridSize + 2) - 1;
+
+                    ctx.clearRect(c * step, r * step, step, step);
+                }
             }
+        }
+    }
+    drawAllBodySegs(ctx, step){
+        // pseudo iterator
+        let curr = this.myBodySegs.startNode;
+
+        while(curr != null){
+            let currVal = curr.myVal;
+            let r = Math.floor(currVal / (this.gridSize+2));
+            // minus one to account for the padding
+            let c = currVal % (this.gridSize+2) - 1;
+
+            ctx.beginPath();
+            ctx.rect(c*step, r*step, step, step);
+            ctx.fill();
+            ctx.closePath();
+
+            curr = curr.myNext;
         }
     }
     // returns a copy of this snake

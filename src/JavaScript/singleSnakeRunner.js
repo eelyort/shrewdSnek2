@@ -31,8 +31,8 @@ class SingleSnakeRunner{
 
         // tick rate and throttling
         this.tickRate = tickRateStart;
-        this.then = Date.now();
-        this.now = this.then;
+        // this.then = Date.now();
+        // this.now = this.then;
         // tick interval holder
         this.intervalID = null;
 
@@ -69,8 +69,8 @@ class SingleSnakeRunner{
     // start
     startMe(){
         // start
-        this.then = Date.now();
-        this.now = this.then;
+        // this.then = Date.now();
+        // this.now = this.then;
         this.changeTickRate(this.tickRate);
     }
     // function which acts as if the menu or something just focused on this and began drawing it every draw call

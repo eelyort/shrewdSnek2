@@ -192,7 +192,6 @@ class MainMenu extends InteractableLayer{
                 // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
                 this.then = this.now - (elapsed % fpsInterval);
 
-                this.runningInstance.focusMe();
                 this.runningInstance.draw(this.subCanvasCTX);
                 this.updateScore();
             }
@@ -370,6 +369,7 @@ class MainMenu extends InteractableLayer{
         this.runningInstance = runner;
         this.isRunning = true;
         this.updateScore();
+        this.runningInstance.focusMe();
         this.startRun();
     }
 
