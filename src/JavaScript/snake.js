@@ -35,6 +35,9 @@ class Snake extends SnakeComponent{
         // used to erase body segments, used only when focused
         this.bodySegsToErase = new CustomQueue();
         this.bodySegsToDraw = new CustomQueue();
+        this.bodySegsToDraw.enqueue(this.myHeadPos);
+
+        this.uuid = "normal";
     }
     focusMe(){
         this.focused = true;
@@ -233,6 +236,7 @@ class Snake extends SnakeComponent{
     cloneMe(){
         // console.log("cloning snake, this.gridSize: " + this.gridSize);
         let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal, this.gridSize);
+        clone.uuid = this.uuid;
         return clone;
     }
 }

@@ -1,4 +1,9 @@
-//
+console.log(-1 % 2 === -1);
+
+if(-1 % 2){
+    console.log("hi");
+}
+
 //
 // // Parent skeleton brain class
 // // Specifications

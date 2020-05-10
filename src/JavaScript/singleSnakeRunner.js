@@ -1,5 +1,5 @@
 class SingleSnakeRunner{
-    constructor(snakeIn, tickRateStart, callback){
+    constructor(snakeIn, tickRateStart, callback, appleSpawnIn = null){
         this.mySnake = snakeIn;
         this.gridSize = this.mySnake.gridSize;
         this.callBack = callback;
@@ -33,6 +33,8 @@ class SingleSnakeRunner{
         this.tickRate = tickRateStart;
         this.then = Date.now();
         this.now = this.then;
+        // tick interval holder
+        this.intervalID = null;
 
         // still running
         this.paused = false;
@@ -44,14 +46,32 @@ class SingleSnakeRunner{
         this.focused = false;
         this.fullDraw = true;
 
+        // apple spawner function
+        this.appleSpawn = ((appleSpawnIn == null) ? (defaultAppleSpawn.bind(this)) : (appleSpawnIn.bind(this)));
+
         this.mySnake.updateParentRunner(this);
+    }
+    // sets the interval to call
+    changeTickRate(newVal){
+        this.tickRate = newVal;
+
+        // milliseconds btw ticks
+        let tickInterval = 1000 / this.tickRate;
+
+        // clear previous
+        if(this.intervalID != null){
+            clearInterval(this.intervalID);
+        }
+
+        // start new
+        this.intervalID = setInterval(this.gameClock.bind(this), tickInterval);
     }
     // start
     startMe(){
         // start
         this.then = Date.now();
         this.now = this.then;
-        this.gameClock();
+        this.changeTickRate(this.tickRate);
     }
     // function which acts as if the menu or something just focused on this and began drawing it every draw call
     focusMe(){
@@ -65,7 +85,7 @@ class SingleSnakeRunner{
         this.mySnake.focusEnd();
     }
 
-    // function which handles the internal game clock and throttles framerate
+    // function which handles the clock
     gameClock(){
         // master kill switch
         if(this.dead){
@@ -74,26 +94,7 @@ class SingleSnakeRunner{
 
         // game still running
         if(this.running) {
-            // milliseconds btw ticks
-            let tickInterval = 1000 / this.tickRate;
-
-            // call this method in a certain amount of time
-            setTimeout(() => {
-                this.gameClock();
-            }, Math.ceil(tickInterval / 5));
-
-            // not paused
-            if(!this.paused) {
-                this.now = Date.now();
-                if (this.now >= this.then + tickInterval) {
-                    this.then = this.then + tickInterval;
-                    this.tick();
-                }
-            }
-            // paused
-            else{
-                this.then = Date.now();
-            }
+            this.tick();
         }
         // game ended
         else if(!this.running && !this.paused){
@@ -111,18 +112,19 @@ class SingleSnakeRunner{
         }
         // spawn apple
         if(!this.appleSpawned){
-            let r, c, index;
-            while(!this.appleSpawned) {
-                r = Math.floor(Math.random() * this.gridSize);
-                c = Math.floor(Math.random() * this.gridSize);
-                index = (r * (this.gridSize + 2)) + c + 1;
-
-                if(this.grid[index] == 0){
-                    this.appleSpawned = true;
-                    this.grid[index] = 2;
-                    this.applePosition = index;
-                }
-            }
+            // let r, c, index;
+            // while(!this.appleSpawned) {
+            //     r = Math.floor(Math.random() * this.gridSize);
+            //     c = Math.floor(Math.random() * this.gridSize);
+            //     index = (r * (this.gridSize + 2)) + c + 1;
+            //
+            //     if(this.grid[index] == 0){
+            //         this.appleSpawned = true;
+            //         this.grid[index] = 2;
+            //         this.applePosition = index;
+            //     }
+            // }
+            this.appleSpawn();
         }
     }
 

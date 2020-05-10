@@ -14,9 +14,9 @@ class MainMenu extends InteractableLayer{
         // buttons
         // holding the buttons increases the speed at which it changes
         this.tickHoldTime = 0;
-        this.tickHoldDelay = 95;
+        this.tickHoldDelay = 120;
         this.tickBottomLimit = 1;
-        this.tickUpperLimit = 9999;
+        this.tickUpperLimit = 99999;
 
         // stuff
         // buttons and whatnot
@@ -24,6 +24,9 @@ class MainMenu extends InteractableLayer{
         this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, 1, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].getComponentName(), (this.playButton).bind(this)));
         this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 1, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
         this.myInteractables.set("SelectSnake", new ButtonHTML(.6, .4, .3, .2, 1, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
+        this.myInteractables.set("Draw", new ButtonHTML(.6, .65, .3, .2, 1, this.myGamePanel, this.myDocument, "Draw", function () {
+            this.myPopUps.get("Draw").showPopUp();
+        }.bind(this)));
         // TODO: change icons
         this.myInteractables.set("TickUp", new PressHoldImgButton(.32, .86, .1, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/play-button-200x200.png", function () {
             this.changeTickRate(1);
@@ -31,9 +34,10 @@ class MainMenu extends InteractableLayer{
         this.myInteractables.set("TickDown", new PressHoldImgButton(.18, .86, .1, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/play-button-200x200.png", function () {
             this.changeTickRate(-1);
         }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
-        this.myInteractables.set("TEST", new ButtonHTML(.6, .65, .3, .2, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
+        this.myInteractables.set("TEST", new ButtonHTML(.6, .9, .3, .06, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
         // popups
         this.myPopUps = new Map();
+        this.myPopUps.set("Draw", new DrawPopUp(.05, .05, 3, this.myGamePanel, this.myDocument, 40));
         this.myPopUps.set("SelectSnake", new SelectSnakePopUp(.05, .05, 3, this.myGamePanel, this.myDocument, loadedSnakes, this.updateSelectedSnake.bind(this)));
         // text fields, in map for easy access/changing
         this.myTextFields = new Map();
@@ -58,7 +62,7 @@ class MainMenu extends InteractableLayer{
         this.subCanvas.id = subCanvasID;
         this.subCanvas.classList.add("subGameCanvas");
         this.subCanvas.style.zIndex = "1";
-        this.subCanvas.style.position = "absolute";
+        this.subCanvas.classList.add("absolute");
         // set height and width cuz 2 separate coord systems
         this.subCanvasInnerSize = 2400;
         this.subCanvas.width = this.subCanvasInnerSize;
@@ -87,15 +91,19 @@ class MainMenu extends InteractableLayer{
     // tick rate changer: positive makes it faster, negative slower
     changeTickRate(val){
         // every 5 "ticks" held it starts increasing faster by a factor of 2 (ie: 1/per -> 2/per -> 4/per)
-        let newVal = this.tickRate + (val * Math.pow(2, (Math.floor(this.tickHoldTime / (0.8 + this.tickHoldTime/9)))));
+        this.tickRate = this.tickRate + (val * Math.pow(2, (Math.floor(this.tickHoldTime / (0.8 + this.tickHoldTime/11)))));
 
         // don't exceed bounds
-        this.tickRate = Math.min(this.tickUpperLimit, newVal);
-        this.tickRate = Math.max(this.tickBottomLimit, newVal);
+        if(this.tickRate > this.tickUpperLimit){
+            this.tickRate = this.tickUpperLimit;
+        }
+        if(this.tickRate < this.tickBottomLimit){
+            this.tickRate = this.tickBottomLimit;
+        }
 
         // update currently running
         if(this.runningInstance != null){
-            this.runningInstance.tickRate = this.tickRate;
+            this.runningInstance.changeTickRate(this.tickRate);
         }
 
         // display
@@ -331,13 +339,25 @@ class MainMenu extends InteractableLayer{
         this.myInteractables.get("PausePlay").onResize();
         this.myInteractables.get("TickUp").onResize();
         this.myInteractables.get("TickDown").onResize();
-        this.myPopUps.get("SelectSnake").onResize();
+
+        this.myPopUps.forEach(function (val, key, map) {
+            val.onResize();
+        }.bind(this));
+        // this.myPopUps.get("SelectSnake").onResize();
     }
 
     // starts the selected snake
     startSelectedSnake(){
         let snake = loadedSnakes[this.selectedSnake].cloneMe();
-        let runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this));
+        let runner;
+        // special for mother's day
+        if(snake.uuid && snake.uuid === "Mother's Day!!!"){
+            console.log("Mother's Day!");
+            runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this), pathAppleSpawn);
+        }
+        else {
+            runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this));
+        }
         // clear canvas
         if(this.runningInstance != null){
             // kill current

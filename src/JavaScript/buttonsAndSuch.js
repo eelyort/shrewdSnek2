@@ -398,6 +398,23 @@ class ImgButtonHTMLToggle extends ImgButton{
     }
 }
 
+// handler that automatically sets up eventlisteners for hover/unhover
+class HoverHandler{
+    constructor(obj, onHover, unHover){
+        this.obj = obj;
+        this.onHover = onHover;
+        this.unHover = unHover;
+
+        // hover
+        this.obj.addEventListener("dragenter", this.onHover);
+        this.obj.addEventListener("mouseenter", this.onHover);
+
+        // unhover
+        this.obj.addEventListener("dragleave", this.unHover);
+        this.obj.addEventListener("mouseleave", this.unHover);
+    }
+}
+
 // class which creates a pop up which is constantly loaded and hidden from view
 // assuming coords in percentage (0-1) and the popUp fills the screen and is centered
 class PopUp extends BaseHTMLElement{
@@ -416,6 +433,7 @@ class PopUp extends BaseHTMLElement{
         // create the card on which the popup sits
         this.myCard = this.myDocument.createElement("div");
         this.myCard.classList.add("popUp-card");
+        this.myCard.classList.add("background");
         // this.myParent.appendChild(this.myCard);
 
         // position
@@ -444,11 +462,12 @@ class PopUp extends BaseHTMLElement{
     }
     showPopUp(){
         this.myCard.style.display = "initial";
-        this.isShowing = true;
         this.onCooldown = true;
         setTimeout(function () {
+            this.isShowing = true;
             this.onCooldown = false;
         }.bind(this), 5);
+        this.onResize();
     }
     hidePopUp(){
         this.myCard.style.display = "none";
@@ -474,22 +493,230 @@ class PopUp extends BaseHTMLElement{
             // alert("doing nothing");
         }
     }
+    onResize(){
+
+    }
 }
 
-// handler that automatically sets up eventlisteners for hover/unhover
-class HoverHandler{
-    constructor(obj, onHover, unHover){
-        this.obj = obj;
-        this.onHover = onHover;
-        this.unHover = unHover;
+// drawing popup
+class DrawPopUp extends PopUp{
+    constructor(left, top, zIndex, gamePanel, documentPopUp, size){
+        super(left, top, zIndex, gamePanel, documentPopUp);
+        this.size = size;
 
-        // hover
-        this.obj.addEventListener("dragenter", this.onHover);
-        this.obj.addEventListener("mouseenter", this.onHover);
+        // canvas
+        this.canvas = this.myDocument.createElement("canvas");
+        this.canvas.classList.add("absolute");
+        this.canvas.classList.add("subGameCanvas");
+        this.canvas.classList.add("background");
+        this.canvas.style.backgroundColor = "#000000";
+        this.gridSize = 14;
+        this.canvasInnerSize = this.size * this.gridSize;
+        this.canvas.width = this.canvasInnerSize;
+        this.canvas.height = this.canvasInnerSize;
+        this.canvasMaxWidth = 1;
+        this.canvasMaxHeight = 0.8;
+        this.myCard.appendChild(this.canvas);
+        this.formatCanvas();
 
-        // unhover
-        this.obj.addEventListener("dragleave", this.unHover);
-        this.obj.addEventListener("mouseleave", this.unHover);
+        this.ctx = this.canvas.getContext("2d");
+
+        this.path = mothersDayWrite;
+        // for redo
+        this.changes = [];
+
+        this.xOffset = 0;
+        this.yOffset = 0;
+
+        // click
+        this.myDocument.addEventListener("click", function (click) {
+            this.intermediateFunction(function (){this.click(click)}.bind(this));
+        }.bind(this));
+        // undo and output buttons
+        this.myDocument.addEventListener("keypress", function (event) {
+            this.keyEvent(event);
+        }.bind(this));
+
+        this.clearRedraw();
+    }
+    // clears and redraws everything
+    clearRedraw(){
+        // console.log("clearRedraw");
+
+        // clear
+        this.canvas.width = this.canvasInnerSize;
+        this.canvas.height = this.canvasInnerSize;
+
+        // grid
+        this.drawGrid();
+
+        // draw pieces
+        for (let i = 0; i < this.path.length; i++) {
+            this.fillRC(this.path[i][0] - this.yOffset, this.path[i][1] - this.xOffset);
+        }
+    }
+    keyEvent(event){
+        // console.log(`keyEvent: ${event}, .key: ${event.key}`);
+        // undo on z
+        if(event.key === 'z' || event.key === 'Z'){
+            this.undo();
+        }
+        // redo on x
+        if(event.key === 'x' || event.key === 'X'){
+            this.redo();
+        }
+        // output on p
+        if(event.key === 'p' || event.key === 'P'){
+            this.output();
+        }
+        // clear on q
+        if(event.key === 'q' || event.key === 'Q'){
+            this.clearRedraw();
+        }
+        // shift right on right arrow (d)
+        if(event.key === "d"){
+            this.xOffset++;
+            this.clearRedraw();
+        }
+        if(event.key === "a"){
+            if(this.xOffset > 0) {
+                this.xOffset--;
+                this.clearRedraw();
+            }
+        }
+        if(event.key === "w"){
+            if(this.yOffset > 0) {
+                this.yOffset--;
+                this.clearRedraw();
+            }
+        }
+        if(event.key === "s"){
+            this.yOffset++;
+            this.clearRedraw();
+        }
+    }
+    click(click){
+        // console.log("click");
+
+        const rect = this.canvas.getBoundingClientRect();
+        let x = click.clientX - rect.left;
+        let y = click.clientY - rect.top;
+
+        let ratio = this.canvasInnerSize/rect.width;
+        x = x * ratio;
+        y = y * ratio;
+
+        let r = Math.floor(y / this.gridSize) + this.yOffset;
+        let c = Math.floor(x / this.gridSize) + this.xOffset;
+
+        let len = this.path.length;
+        if(this.path.length === 0 || (Math.abs(this.path[len - 1][0] - r) === 0 && Math.abs(this.path[len - 1][1] - c) === 1) || (Math.abs(this.path[len - 1][1] - c) === 0 && Math.abs(this.path[len - 1][0] - r) === 1)){
+            this.fillRC(r - this.yOffset, c - this.xOffset);
+            this.path.push([r, c]);
+            this.changes = [];
+        }
+        // console.log(this.path);
+        // console.log(`x: ${x}, y: ${y}, width: ${rect.width}, r: ${r}, c: ${c}`);
+    }
+    // outputs in array format
+    output(){
+        let str = "[";
+        for (let i = 0; i < this.path.length; i++) {
+            str += `[${this.path[i][0]}, ${this.path[i][1]}], `;
+        }
+        str = ((str.length === 1) ? ("[") : (str.substring(0, str.length - 2))) + "]";
+        alert(str);
+        console.log(str);
+    }
+    fillRC(r, c){
+        if(r < 0 || r >= this.size || c < 0 || c >= this.size){
+            // console.log("fillRC outside range, ignore");
+            return;
+        }
+        this.ctx.fillStyle = "#faff29";
+        this.ctx.beginPath();
+        this.ctx.rect(c * this.gridSize, r * this.gridSize, this.gridSize, this.gridSize);
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+    unfillRC(r, c){
+        if(r < 0 || r >= this.size || c < 0 || c >= this.size){
+            // console.log("unfillRC outside range, ignore");
+            return;
+        }
+
+        this.ctx.fillStyle = "#979899";
+        this.ctx.beginPath();
+        this.ctx.rect(c * this.gridSize, r * this.gridSize, this.gridSize, this.gridSize);
+        this.ctx.fill();
+        this.ctx.closePath();
+
+        this.ctx.fillStyle = "#000000";
+        this.ctx.beginPath();
+        this.ctx.rect(c * this.gridSize + 1, r * this.gridSize + 1, this.gridSize - 2, this.gridSize - 2);
+        this.ctx.fill();
+        this.ctx.closePath();
+    }
+    // undo's last
+    undo(){
+        if(this.path.length > 0) {
+            let last = this.path.pop();
+
+            // this.changes = [];
+
+            this.changes.push(last);
+
+            this.unfillRC(last[0] - this.yOffset, last[1] - this.xOffset);
+        }
+    }
+    redo(){
+        if(this.changes.length > 0){
+            let last = this.changes.pop();
+
+            this.path.push(last);
+
+            this.fillRC(last[0] - this.yOffset, last[1] - this.xOffset);
+        }
+    }
+    // draws grid on canvas
+    drawGrid(){
+        // horizontal lines
+        for (let r = 0; r < this.size; r++) {
+            this.ctx.fillStyle = "#979899";
+            this.ctx.beginPath();
+            this.ctx.rect(0, (r * this.gridSize) + (this.gridSize - 1), this.canvas.width, 2);
+            this.ctx.fill();
+            this.ctx.closePath();
+        }
+
+        // verticcal lines
+        for (let c = 0; c < this.size; c++) {
+            this.ctx.fillStyle = "#979899";
+            this.ctx.beginPath();
+            this.ctx.rect((c * this.gridSize) + (this.gridSize - 1), 0, 2, this.canvas.height);
+            this.ctx.fill();
+            this.ctx.closePath();
+        }
+    }
+    formatCanvas(){
+        let totWidth = this.myParent.getBoundingClientRect().width;
+        let totHeight = this.myParent.getBoundingClientRect().height;
+        let maxWidth = totWidth * this.canvasMaxWidth;
+        let maxHeight = totHeight * this.canvasMaxHeight;
+
+        // side length of square
+        let sideLength = Math.min(maxWidth, maxHeight);
+
+        // set properties
+        let left = (-.05 * totWidth) + (maxWidth - sideLength) / 2;
+        let top = (0.05 * totHeight) + (maxHeight - sideLength) / 2;
+        this.canvas.style.left = (left).toString() + "px";
+        this.canvas.style.top = (top).toString() + "px";
+        this.canvas.style.width = (sideLength).toString(10) + "px";
+        this.canvas.style.height = (sideLength).toString(10) + "px";
+    }
+    onResize() {
+        this.formatCanvas();
     }
 }
 
@@ -499,7 +726,6 @@ class SelectSnakePopUp extends PopUp{
         super(left, top, zIndex, gamePanel, documentPopUp);
 
         this.myCard.classList.add("selectPopUp-card");
-        this.myCard.classList.add("background");
         this.selectCallback = selectCallback;
 
         // console.log("SelectSnakePopUp, selectCallback: " + this.selectCallback);
@@ -617,7 +843,6 @@ class SelectSnakePopUp extends PopUp{
     }
     showPopUp() {
         super.showPopUp();
-        this.onResize();
         this.writeAll(this.mySelectCarousel.currentlySelected);
     }
     selectCallbackIntermediate(index){

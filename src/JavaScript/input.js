@@ -103,3 +103,19 @@ class PlayerControlledInput extends Input{
         return ansInput;
     }
 }
+
+// Simple input, snake follows a path infinitely, made for Mother's Day
+//  works with PathBrain
+class SimpleInput extends Input{
+    constructor(){
+        super();
+    }
+    // returns headpos, gridsize
+    generateInput(keyEvent) {
+        if(keyEvent){
+            // console.log("hi");
+            return [];
+        }
+        return [this.mySnake.myHeadPos, this.mySnake.gridSize];
+    }
+}

@@ -27,6 +27,7 @@ class SnakeBrain extends SnakeComponent{
         clone.getDecision = this.getDecision;
         return clone;
     }
+    // private, meant to be used by other brains only
     // assumes the output array is a 4 length array
     //  N(0), E(1), S(2), W(3)
     getOutput(outputArr){
@@ -38,11 +39,172 @@ class SnakeBrain extends SnakeComponent{
             }
         }
 
-        // if max is 0, assume no decision
-        return ((outputArr[maxI] == 0) ? (4) : (maxI));
+        // return decision
+        return maxI;
     }
     updateWithInput(input){
         // do nothing
+    }
+}
+
+// Path Brain, snake follows a path infinitely, made for Mother's Day
+class PathBrain extends SnakeBrain{
+    // path format: array of values
+    //  single number: goto that index
+    //  array of [r, c]: goto that r, c
+    //  negatives: go in one direction until hit next val or wall (not body segments)
+    //   -1: north
+    //   -2: east
+    //   -3: south
+    //   -4: west
+    constructor(path){
+        super(new MutateMethod());
+
+        this.myRawPath = path;
+        this.currIdx = 0;
+
+        // decompiled path, turns all [r, c] into actual indexes
+        this.myDecompiledPath = null;
+    }
+    // decompiler
+    decompile(gridSize){
+        // init
+        this.myDecompiledPath = Array.apply(null, {length: this.myRawPath.length});
+        for(let i = 0; i < this.myDecompiledPath.length; i++){
+            this.myDecompiledPath[i] = 0;
+        }
+
+        // loop through and decompile
+        for (let i = 0; i < this.myRawPath.length; i++) {
+            let curr = this.myRawPath[i];
+
+            // console.log(`curr: ${curr}`);
+
+            // need to decompile
+            if(Array.isArray(curr)){
+                // console.log("Is array");
+
+                let r = curr[0];
+                let c = curr[1];
+
+                // console.log(`r: ${r}, c: ${c}`);
+
+                this.myDecompiledPath[i] = (r * (gridSize + 2)) + c + 1;
+            }
+            // keep
+            else{
+                this.myDecompiledPath[i] = curr;
+            }
+        }
+    }
+    // follow the path
+    getDecision(brainInput) {
+        if(brainInput.length === 0){
+            return 4;
+        }
+
+        // decompile
+        if(this.myDecompiledPath == null){
+            this.decompile(brainInput[1]);
+            // console.log("Decompiled to: " + this.myDecompiledPath);
+        }
+
+        // pull input
+        let headPos = brainInput[0];
+        let gridSize = brainInput[1];
+
+        let curr = this.myDecompiledPath[this.currIdx];
+
+        // edge case: exiting from a negative number
+        while(curr === headPos){
+            // update index
+            this.currIdx++;
+            if(this.currIdx === this.myDecompiledPath.length){
+                this.currIdx = 0;
+            }
+            curr = this.myDecompiledPath[this.currIdx];
+        }
+
+        // negative numbers
+        if(curr < 0){
+            // going to absolute value
+            let adjacents = [0, -(gridSize + 2), 1, (gridSize + 2), -1];
+
+            // get positions
+            let nextPos = headPos + adjacents[Math.abs(curr)];
+            let nextPath = this.myDecompiledPath[((this.currIdx === this.myDecompiledPath.length - 1) ? (0) : (this.currIdx + 1))];
+            // console.log(`headPos: ${headPos}, nextPos: ${nextPos}, nextPath: ${nextPath}`);
+
+            // deconstruct
+            let r = Math.floor(nextPos / (gridSize + 2));
+            let c = (nextPos % (gridSize + 2)) - 1;
+
+            // stop moving sideways next call if
+            //  moving into next path square
+            if(nextPos === nextPath){
+                // update index
+                this.currIdx++;
+                if(this.currIdx === this.myDecompiledPath.length){
+                    this.currIdx = 0;
+                }
+            }
+            //  next to wall on top or bottom
+            if(curr % 2 && (r === 0 || r === gridSize - 1)){
+                // update index
+                this.currIdx++;
+                if(this.currIdx === this.myDecompiledPath.length){
+                    this.currIdx = 0;
+                }
+            }
+            //  next to wall on left/right
+            if(!(curr % 2) && (c === 0 || c === gridSize - 1)){
+                // update index
+                this.currIdx++;
+                if(this.currIdx === this.myDecompiledPath.length){
+                    this.currIdx = 0;
+                }
+            }
+
+            // go in correct direction
+            return (Math.abs(curr) - 1);
+        }
+        // index
+        else{
+            // update index
+            this.currIdx++;
+            if(this.currIdx === this.myDecompiledPath.length){
+                this.currIdx = 0;
+            }
+
+            // console.log(`curr: ${curr}, headPos: ${headPos}`);
+
+            // return this.getOutput([curr === headPos - 1, curr === headPos + 1, curr === headPos - (gridSize +2 ), curr === headPos + (gridSize + 2)]);
+            // left
+            if(curr === headPos - 1){
+                return 3;
+            }
+            // right
+            if(curr === headPos + 1){
+                return 1;
+            }
+            // up
+            if(curr === headPos - (gridSize + 2)){
+                return 0;
+            }
+            // down
+            if(curr === headPos + (gridSize + 2)){
+                return 2;
+            }
+
+            // should never get here
+            console.log("Error at PathBrain getDecision!");
+
+            return 4;
+        }
+    }
+    // clone
+    cloneMe() {
+        return new PathBrain(this.myRawPath);
     }
 }
 
