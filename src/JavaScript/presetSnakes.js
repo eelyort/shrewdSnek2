@@ -44,11 +44,21 @@ const happyMothersDay = new Snake(
 happyMothersDay.uuid = "Mother's Day!!!";
 loadedSnakes.push(happyMothersDay);
 
-
 // snakes which you cannot edit
 const protectedSnakes = loadedSnakes.length;
 
 // TODO delete me
+const testDirectionalSnake = new Snake(
+    new MultipleInput([new PlayerControlledInput(), new CardinalDirectionalInput([1])]),
+    new PlayerControlledBrain(null),
+    1,
+    10,
+    20,
+    25,
+    "Test Directional Snake",
+    "TEST"
+);
+loadedSnakes.push(testDirectionalSnake);
 const testSnake = new Snake(
     new PlayerControlledInput(),
     new PlayerControlledBrain(null),

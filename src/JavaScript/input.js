@@ -4,10 +4,10 @@
 //  -Creates and returns an array
 //  -Inputlength is the length of the returned array
 class Input extends SnakeComponent{
-    constructor(){
+    constructor(inputLength){
         super();
         this.mySnake = null;
-        this.inputLength = 0;
+        this.inputLength = inputLength;
         this.inputID = -1;
     }
     generateInput(keyEvent){
@@ -30,23 +30,44 @@ class Input extends SnakeComponent{
 // Specifications
 //  -Basically appends input arrays to each other
 class MultipleInput extends Input{
-    constructor(firstInput){
-        super();
+    constructor(input){
+        super(0);
+
         this.myInputs = new CustomQueue();
-        this.addInput(firstInput);
-        this.componentName("Multiple Input");
+        this.componentName = "Multiple Input";
+
+        // read starting inputs
+        if(Array.isArray(input)){
+            // console.log("hi");
+            for (let i = 0; i < input.length; i++) {
+                this.addInput(input[i]);
+            }
+        }
+        else{
+            // console.log("hi2");
+            this.addInput(input);
+        }
+
+        // console.log("Multiple Input, myInputs: \n" + this.myInputs.logQueue());
     }
     addInput(inputToAdd){
         this.inputLength += inputToAdd.inputLength;
         this.myInputs.enqueue(inputToAdd);
     }
     generateInput(keyEvent) {
-        let ansInput = new Array[this.inputLength];
+        // init ans array
+        let ansInput = Array.apply(null, {length: this.inputLength});
+        for(let i = 0; i < ansInput.length; i++){
+            ansInput[i] = 0;
+        }
+
         let index = 0;
         let currNode = this.myInputs.startNode;
-        while(currNode != null){
+        while(currNode){
             // get input from current module
             let tempIn = currNode.myVal.generateInput(keyEvent);
+            // console.log(`GenerateInput, currNode: ${currNode}, currNode.myVal: ${currNode.myVal.componentName}, tempIn: ${tempIn}, .generateInput: ${currNode.myVal.generateInput}`);
+
             // copy the contents
             for (let i = 0; i < tempIn.length; i++) {
                 ansInput[index] = tempIn[i];
@@ -62,10 +83,25 @@ class MultipleInput extends Input{
     }
     // returns a copy of this input, object type decays, but all functionality is preserved
     cloneMe(snake){
-        let clone = super.cloneMe(snake).bind(this);
-        clone.myInputs = this.myInputs;
-        clone.addInput = this.addInput;
+        let clone = new MultipleInput([]);
+
+        let curr = this.myInputs.startNode;
+        while(curr){
+            clone.addInput(curr.myVal.cloneMe());
+
+            curr = curr.myNext;
+        }
         return clone;
+    }
+    updateParentSnake(snake) {
+        super.updateParentSnake(snake);
+
+        let curr = this.myInputs.startNode;
+        while(curr){
+            // console.log(`updateParentSnake, curr: ${curr}, curr.myVal: ${curr.myVal}`);
+            curr.myVal.updateParentSnake(snake);
+            curr = curr.myNext;
+        }
     }
 }
 
@@ -74,8 +110,7 @@ class MultipleInput extends Input{
 class PlayerControlledInput extends Input{
     constructor(){
         // alert("Player Controlled Input");
-        super();
-        this.inputLength = 4;
+        super(4);
         this.inputID = 0;
 
         this.componentName = "Player Controlled Input";
@@ -83,7 +118,7 @@ class PlayerControlledInput extends Input{
     }
     generateInput(keyEvent) {
         if(keyEvent == null){
-            return null;
+            return [-1, -1, -1, -1];
         }
         // alert("generateInput with keyEvent.key: " + keyEvent.key);
         let ansInput = [false, false, false, false];
@@ -104,17 +139,123 @@ class PlayerControlledInput extends Input{
     }
 }
 
-// Simple input, snake follows a path infinitely, made for Mother's Day
+// searches in a direction for a specific grid value
+class DirectionalInput extends Input{
+    constructor(adjacents, vals){
+        super(adjacents.length);
+
+        // "step" with which to search
+        this.myAdjacents = adjacents;
+        this.vals = vals;
+
+        console.log(`Directional Input, adjacents: ${this.myAdjacents} | vals: ${this.vals}`);
+
+        this.componentName = "Directional Input";
+        this.componentDescription = "This input effectively looks in every specified direction and returns the minimum distance to the target values.";
+    }
+    // raycasts in every direction in adjacents, returning the minimum distance to vals or wall
+    generateInput(keyEvent) {
+        // init empty array
+        let ans = Array.apply(null, {length: this.myAdjacents.length});
+        for(let i = 0; i < ans.length; i++){
+            ans[i] = 0;
+        }
+
+        // helper vars
+        let head = this.mySnake.myHeadPos;
+        let grid = this.mySnake.mySingleSnakeRunner.grid;
+
+        // console.log(`Top of generateInput: adjacents: ${this.myAdjacents}`);
+
+        // for each direction in adjacents
+        for (let i = 0; i < this.myAdjacents.length; i++) {
+            let adj = this.myAdjacents[i];
+
+            // ignore adjacent's that would cause an infinite loop
+            if(adj === 0){
+                ans[i] = 0;
+                continue;
+            }
+
+            // loop until vals or wall encountered
+            let dist = 1;
+            let newPos = head + adj;
+            let curr = ((newPos < 0 || newPos >= grid.length) ? (-1) : (grid[newPos]));
+            // console.log(`adj: ${adj}, head: ${head}, newPos: ${newPos}, curr: ${curr}`);
+
+            while(curr !== -1 && !this.vals.includes(curr)){
+                newPos += adj;
+                curr = ((newPos < 0 || newPos >= grid.length) ? (-1) : (grid[newPos]));
+                dist++;
+            }
+
+            ans[i] = dist;
+        }
+
+        console.log(ans);
+
+        // return
+        return ans;
+    }
+    cloneMe(){
+        let adj = Array.apply(null, {length: this.myAdjacents.length});
+        for(let i = 0; i < adj.length; i++){
+            adj[i] = this.myAdjacents[i];
+        }
+
+        let valsN = Array.apply(null, {length: this.vals.length});
+        for(let i = 0; i < valsN.length; i++){
+            valsN[i] = this.vals[i];
+        }
+
+        return new DirectionalInput(adj, valsN);
+    }
+    updateParentSnake(snake) {
+        super.updateParentSnake(snake);
+    }
+}
+// raycasts all cardinal directions
+class CardinalDirectionalInput extends DirectionalInput{
+    constructor(vals) {
+        super([0, 1, 0, -1], vals);
+    }
+    // grab grid size and use to calculate adjacents
+    updateParentSnake(snake) {
+        super.updateParentSnake(snake);
+
+        let gridSize = this.mySnake.gridSize;
+        // N, E, S, W
+        this.myAdjacents = [-(gridSize+2), 1, (gridSize + 2), -1];
+
+        // console.log(`updateParentSnake, adj: ${this.myAdjacents} | vals: ${this.vals}`);
+    }
+}
+// intercardinal directions
+class InterCardinalDirectionalInput extends DirectionalInput{
+    constructor(vals) {
+        super([0, 0, 0, 0], vals);
+    }
+    // grab grid size and use to calculate adjacents
+    updateParentSnake(snake) {
+        super.updateParentSnake(snake);
+
+        let gridSize = this.mySnake.gridSize;
+        // NE, SE, SW, NW
+        this.myAdjacents = [-(gridSize+2) + 1, (gridSize + 2) + 1, (gridSize + 2) - 1, -(gridSize + 2) - 1];
+    }
+}
+
+// Simple input, made for Mother's Day
 //  works with PathBrain
 class SimpleInput extends Input{
     constructor(){
-        super();
+        super(2);
     }
     // returns headpos, gridsize
     generateInput(keyEvent) {
         if(keyEvent){
             // console.log("hi");
-            return [];
+            return [-1, -1];
         }
         return [this.mySnake.myHeadPos, this.mySnake.gridSize];
     }

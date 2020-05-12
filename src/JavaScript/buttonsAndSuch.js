@@ -810,11 +810,12 @@ class SelectSnakePopUp extends PopUp{
         let snek = this.optionsArr[idx];
         let text = "";
         let input = snek.myInput;
-        if(input.getComponentName() == "Multiple Input") {
+        if(input.getComponentName() === "Multiple Input") {
             text += `Inputs:`;
             let curr = input.myInputs.startNode;
             while(curr != null){
                 let val = curr.myVal;
+                // console.log("writeInputs: val: " + val);
                 text += `\n\n${val.getComponentName()}:\n${val.getComponentDescription()}`;
                 curr = curr.myNext;
             }

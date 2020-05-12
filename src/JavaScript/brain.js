@@ -99,7 +99,8 @@ class PathBrain extends SnakeBrain{
     }
     // follow the path
     getDecision(brainInput) {
-        if(brainInput.length === 0){
+        // filter out key presses
+        if(brainInput[0] === -1){
             return 4;
         }
 
@@ -220,7 +221,8 @@ class PlayerControlledBrain extends SnakeBrain{
     }
     // assumes the input is an array of 0-1
     getDecision(brainInput) {
-        if(brainInput == null){
+        // filter out when there is no keypress
+        if(brainInput[0] === -1){
             return 4;
         }
         return this.getOutput(brainInput);

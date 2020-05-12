@@ -7,11 +7,6 @@ class Snake extends SnakeComponent{
         // set variables
         // MOVED TO SINGLESNAKERUNNER CONSTRUCTOR
         this.mySingleSnakeRunner = null;
-        // input
-        this.myInput = inputIn;
-        this.myInput.updateParentSnake(this);
-        this.myBrain = brainIn;
-        this.myBrain.updateWithInput(this.myInput);
         // let these be ints of range: [0, gridSize^2)
         this.startHeadPos = headPosIn;
         this.myHeadPos = headPosIn;
@@ -41,6 +36,12 @@ class Snake extends SnakeComponent{
         // this.firstDrawn = false;
 
         this.uuid = "normal";
+
+        // input
+        this.myInput = inputIn;
+        this.myInput.updateParentSnake(this);
+        this.myBrain = brainIn;
+        this.myBrain.updateWithInput(this.myInput);
     }
     focusMe(){
         this.focused = true;
