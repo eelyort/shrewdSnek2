@@ -192,7 +192,7 @@ class DirectionalInput extends Input{
             ans[i] = dist;
         }
 
-        console.log(ans);
+        // console.log(ans);
 
         // return
         return ans;
@@ -218,6 +218,9 @@ class DirectionalInput extends Input{
 class CardinalDirectionalInput extends DirectionalInput{
     constructor(vals) {
         super([0, 1, 0, -1], vals);
+
+        this.componentName = "Cardinal Direction";
+        this.componentDescription = "This input effectively looks in every cardinal direction and returns the minimum distance to the target values.";
     }
     // grab grid size and use to calculate adjacents
     updateParentSnake(snake) {
@@ -234,6 +237,9 @@ class CardinalDirectionalInput extends DirectionalInput{
 class InterCardinalDirectionalInput extends DirectionalInput{
     constructor(vals) {
         super([0, 0, 0, 0], vals);
+
+        this.componentName = "Inter-cardinal Direction";
+        this.componentDescription = "This input effectively looks in every inter-cardinal direction and returns the minimum distance to the target values.";
     }
     // grab grid size and use to calculate adjacents
     updateParentSnake(snake) {

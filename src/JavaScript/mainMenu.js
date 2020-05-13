@@ -259,15 +259,12 @@ class MainMenu extends InteractableLayer{
     }
 
     pauseButton(){
-        // TODO
-        // alert("Pause");
         if(this.runningInstance != null){
             this.runningInstance.pause();
         }
     }
 
     unpauseButton(){
-        // TODO
         if(this.runningInstance != null){
             this.runningInstance.unpause();
         }

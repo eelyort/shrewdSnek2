@@ -49,7 +49,7 @@ const protectedSnakes = loadedSnakes.length;
 
 // TODO delete me
 const testDirectionalSnake = new Snake(
-    new MultipleInput([new PlayerControlledInput(), new CardinalDirectionalInput([1])]),
+    new MultipleInput([new PlayerControlledInput(), new InterCardinalDirectionalInput([1])]),
     new PlayerControlledBrain(null),
     1,
     10,

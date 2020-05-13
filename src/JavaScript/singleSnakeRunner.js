@@ -93,7 +93,7 @@ class SingleSnakeRunner{
         }
 
         // game still running
-        if(this.running) {
+        if(this.running && !this.paused) {
             this.tick();
         }
         // game ended

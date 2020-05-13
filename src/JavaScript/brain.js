@@ -3,9 +3,8 @@
 //  -Takes in an "input" into method, gets decision (direction) out
 //  -Can mutate with many methods, variable parameters
 class SnakeBrain extends SnakeComponent{
-    constructor(mutateMethod){
+    constructor(){
         super();
-        this.mutateMethod = mutateMethod;
         this.brainID = -1;
     }
     // takes in input(compress into array)
@@ -18,13 +17,12 @@ class SnakeBrain extends SnakeComponent{
     getDecision(brainInput){
         return 0;
     }
-    mutateMe(mutateParameters){
-        this.mutateMethod.mutate(mutateParameters, this);
-    }
     // returns a copy of this brain
     cloneMe(){
-        let clone = new SnakeBrain(this.mutateMethod.cloneMe());
+        let clone = new SnakeBrain();
         clone.getDecision = this.getDecision;
+        clone.componentName = this.componentName;
+        clone.componentDescription = this.componentDescription;
         return clone;
     }
     // private, meant to be used by other brains only
@@ -58,13 +56,16 @@ class PathBrain extends SnakeBrain{
     //   -3: south
     //   -4: west
     constructor(path){
-        super(new MutateMethod());
+        super();
 
         this.myRawPath = path;
         this.currIdx = 0;
 
         // decompiled path, turns all [r, c] into actual indexes
         this.myDecompiledPath = null;
+
+        this.componentName = "Path Brain";
+        this.componentDescription = "A brain which simply follows the given path until it dies.";
     }
     // decompiler
     decompile(gridSize){
@@ -213,7 +214,7 @@ class PathBrain extends SnakeBrain{
 class PlayerControlledBrain extends SnakeBrain{
     constructor(){
         // alert("Player Controlled Brain");
-        super(new MutateMethod());
+        super();
         this.brainID = 0;
 
         this.componentName = "Player Controlled Brain";
@@ -229,10 +230,10 @@ class PlayerControlledBrain extends SnakeBrain{
     }
 }
 
-// Neural network brain
+// Neural network brain - fixed topology and feedforward only
 class NeuralNetBrain extends SnakeBrain{
-    constructor(mutateMethod, normalizer, depth, width, startWeight, startBias){
-        super(mutateMethod);
+    constructor(normalizer, depth, width, startWeight, startBias){
+        super();
 
         this.componentName = "Basic Neural Network";
         this.componentDescription = "This brain is a simple neural network, with a set depth and width. It can be used with most forms of machine learning. It makes all of its decisions via forward propagation.";
@@ -378,7 +379,7 @@ class NeuralNetBrain extends SnakeBrain{
     }
     // override clone method
     cloneMe() {
-        let clone = new NeuralNetBrain(this.mutateMethod.cloneMe(), this.myNormalizer.cloneMe(), this.myDepth, this.myWidth, this.startWeight, this.startBias);
+        let clone = new NeuralNetBrain(this.myNormalizer.cloneMe(), this.myDepth, this.myWidth, this.startWeight, this.startBias);
 
         // copy everything
         for (let layer = 0; layer < this.myMat.length; layer++) {

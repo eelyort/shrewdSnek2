@@ -4,6 +4,14 @@ if(-1 % 2){
     console.log("hi");
 }
 
+function testMultipleArgs(hi){
+    for (let i = 0; i < arguments.length; i++) {
+        console.log(arguments[i]);
+    }
+}
+
+testMultipleArgs(1, 2, "hi");
+
 //
 // // Parent skeleton brain class
 // // Specifications

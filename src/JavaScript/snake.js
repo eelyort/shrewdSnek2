@@ -258,6 +258,8 @@ class Snake extends SnakeComponent{
         // console.log("cloning snake, this.gridSize: " + this.gridSize);
         let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal, this.gridSize);
         clone.uuid = this.uuid;
+        clone.componentName = this.componentName;
+        clone.componentDescription = this.componentDescription;
         return clone;
     }
 }
