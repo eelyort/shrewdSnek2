@@ -1,5 +1,6 @@
 // class which represents a single possible mutation
 //  pass it a brain - mutates a random weight/bias/node
+//  IMPORTANT: destructive, doesn't make a clone TODO: make clones in evolutionRunner
 class Mutation extends SnakeComponent{
     constructor(mutationParameters){
         super();
@@ -20,79 +21,12 @@ class Mutation extends SnakeComponent{
             this.mutationParameters[i][1] = arguments[i];
         }
     }
-    // given a value, returns a mutated version of that same value
-    mutateSingle(valIn){
-        return valIn;
-    }
-    // helper function, selects a random weight/bias from a brain
-    selectRandom(brain){
-        let mat = brain.myMat;
-
-        // select a random weight
-        // since its a non-square array this is going to weird
-        let total = 0;
-        // thresholds[i] = the number of elements in layer i
-        let thresholds = [];
-        for (let i = 0; i < mat.length; i++) {
-            /*  I'm here for clarity, please don't delete me
-            let sum = 0;
-
-            // number of unique weights: #nodes * #nodesPrev
-            sum += mat[i].length * ((i === 0) ? (brain.myInputWidth) : (mat[i-1].length));
-
-            // number of unique biases: #nodes
-            sum += mat[i].length;
-
-            thresholds[i] = sum;
-            */
-            thresholds[i] = mat[i][0].length * (1 + ((i === 0) ? (brain.myInputWidth) : (mat[i-1][0].length)));
-            total += thresholds[i];
-        }
-        let selected = Math.floor(Math.random() * total);
-
-        // deconstruct into correct indexes
-        let sLayer, sType, sNode, sJ;
-
-        // get the correct layer
-        for (let layer = 0; layer < mat.length; layer++) {
-            // use the thresholds
-            if(selected < thresholds[layer]){
-                selected -= thresholds[layer];
-                continue;
-            }
-
-            // correct layer
-            else{
-                sLayer = layer;
-                let prevW = ((layer === 0) ? (brain.myInputWidth) : (mat[layer-1][0].length));
-                let w = mat[layer][0].length;
-
-                // weights
-                if(selected < prevW * w){
-                    sType = 1;
-
-                    sNode = selected / prevW;
-                    sJ = selected % prevW;
-                }
-
-                // biases
-                else{
-                    sType = 2;
-                    sNode = selected - (prevW * w);
-                }
-
-                break;
-            }
-        }
-
-        return [sLayer, sType, sNode, sJ];
-    }
     // given a brain mutates it
     mutateBrain(brain){
         let mat = brain.myMat;
 
         // select a random weight
-        let select = this.selectRandom(brain);
+        let select = brain.selectRandom();
         let sLayer = select[0];
         let sType = select[1];
         let sNode = select[2];
@@ -105,6 +39,11 @@ class Mutation extends SnakeComponent{
         else{
             mat[sLayer][sType][sNode] = this.mutateSingle(mat[sLayer][sType][sNode]);
         }
+    }
+    // given a value, returns a mutated version of that same value
+    mutateSingle(valIn){
+        console.log("WARNING: EFFECT-LESS BASIC MUTATION CALLED");
+        return valIn;
     }
     // clones this Mutation, object type decays but otherwise all functionality is preserved
     cloneMe(){
@@ -119,16 +58,7 @@ class Mutation extends SnakeComponent{
         clone.componentDescription = this.componentDescription;
         
         // clone params
-        clone.mutationParameters = Array.apply(null, {length: this.mutationParameters.length});
-        // loop through parameters
-        for(let i = 0; i < clone.mutationParameters.length; i++){
-
-            // loop through values
-            clone.mutationParameters[i] = Array.apply(null, {length: this.mutationParameters[i].length});
-            for(let j = 0; j < clone.mutationParameters[j].length; j++){
-                clone.mutationParameters[i][j] = this.mutationParameters[i][j];
-            }
-        }
+        clone.mutationParameters = JSON.padrse(JSON.stringify(this.mutationParameters));
 
         return clone;
     }
@@ -222,7 +152,7 @@ class SwapMutation extends Mutation{
         let swapBias = this.mutationParameters[1][1];
 
         // randomly select the node
-        let select = this.selectRandom(brain);
+        let select = brain.selectRandom();
         let sLayer = select[0];
         let wLastLayer = ((sLayer === 0) ? (brain.myInputWidth) : (mat[sLayer-1][0].length));
         let sNode = select[2];
@@ -237,12 +167,12 @@ class SwapMutation extends Mutation{
                 let ran1 = Math.floor(Math.random() * (wLastLayer + 1));
                 // weight
                 if (ran1 < wLastLayer) {
-                    let type1 = 1;
-                    let j1 = ran1;
+                    type1 = 1;
+                    j1 = ran1;
                 }
                 // bias
                 else {
-                    let type1 = 2;
+                    type1 = 2;
                 }
 
                 // second one
@@ -250,12 +180,12 @@ class SwapMutation extends Mutation{
                 let ran2 = Math.floor(Math.random() * (wLastLayer + 1));
                 // weight
                 if (ran2 < wLastLayer) {
-                    let type2 = 1;
-                    let j2 = ran2;
+                    type2 = 1;
+                    j2 = ran2;
                 }
                 // bias
                 else {
-                    let type2 = 2;
+                    type2 = 2;
                 }
 
                 // swap the two

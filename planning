@@ -76,7 +76,7 @@ snake.js:
     score
         Comparable
     brain.js
-        mutateMethod.js
+        mutations.js
     getDecision()
         called from outside
 

@@ -377,51 +377,76 @@ class NeuralNetBrain extends SnakeBrain{
             }
         }
     }
+    // helper function, selects a random weight/bias from a brain
+    selectRandom(){
+        let mat = this.myMat;
+
+        // select a random weight
+        // since its a non-square array this is going to weird
+        let total = 0;
+        // thresholds[i] = the number of elements in layer i
+        let thresholds = [];
+        for (let i = 0; i < mat.length; i++) {
+            /*  I'm here for clarity, please don't delete me
+            let sum = 0;
+
+            // number of unique weights: #nodes * #nodesPrev
+            sum += mat[i].length * ((i === 0) ? (this.myInputWidth) : (mat[i-1].length));
+
+            // number of unique biases: #nodes
+            sum += mat[i].length;
+
+            thresholds[i] = sum;
+            */
+            thresholds[i] = mat[i][0].length * (1 + ((i === 0) ? (this.myInputWidth) : (mat[i-1][0].length)));
+            total += thresholds[i];
+        }
+        let selected = Math.floor(Math.random() * total);
+
+        // deconstruct into correct indexes
+        let sLayer, sType, sNode, sJ;
+
+        // get the correct layer
+        for (let layer = 0; layer < mat.length; layer++) {
+            // use the thresholds
+            if(selected < thresholds[layer]){
+                selected -= thresholds[layer];
+                continue;
+            }
+
+            // correct layer
+            else{
+                sLayer = layer;
+                let prevW = ((layer === 0) ? (this.myInputWidth) : (mat[layer-1][0].length));
+                let w = mat[layer][0].length;
+
+                // weights
+                if(selected < prevW * w){
+                    sType = 1;
+
+                    sNode = selected / prevW;
+                    sJ = selected % prevW;
+                }
+
+                // biases
+                else{
+                    sType = 2;
+                    sNode = selected - (prevW * w);
+                }
+
+                break;
+            }
+        }
+
+        return [sLayer, sType, sNode, sJ];
+    }
     // override clone method
     cloneMe() {
         let clone = new NeuralNetBrain(this.myNormalizer.cloneMe(), this.myDepth, this.myWidth, this.startWeight, this.startBias);
 
-        // copy everything
-        for (let layer = 0; layer < this.myMat.length; layer++) {
-            // define layer if needed
-            if(clone.myMat[layer] === undefined){
-                clone.myMat[layer] = Array.apply(null, {length: this.myMat[layer].length});
-            }
+        // deepcopy everything
+        clone.myMat = JSON.parse(JSON.stringify(this.myMat));
 
-            for (let type = 0; type < this.myMat[layer].length; type++) {
-                // skip unneeded definitions
-                if(this.myMat[layer][type] === undefined){
-                    continue;
-                }
-
-                // define type if needed
-                if(clone.myMat[layer][type] === undefined){
-                    clone.myMat[layer][type] = Array.apply(null, {length: this.myMat[layer][type].length});
-                }
-
-                // weights
-                if(type === 1){
-                    // loop through nodes
-                    for (let node = 0; node < this.myMat[layer][type].length; node++) {
-                        // define array if needed
-                        if(clone.myMat[layer][type][node] === undefined){
-                            clone.myMat[layer][type][node] = Array.apply(0, {length: this.myMat[layer][type][node].length});
-                        }
-
-                        // copy values
-                        for (let source = 0; source < this.myMat[layer][type][node].length; source++) {
-                            clone.myMat[layer][type][node][source] = this.myMat[layer][type][node][source];
-                        }
-                    }
-                }
-                // biases and values
-                else {
-                    for (let node = 0; node < this.myMat[layer][type].length; node++) {
-                        clone.myMat[layer][type][node] = this.myMat[layer][type][node];
-                    }
-                }
-            }
-        }
         return clone;
     }
     // IMPORTANT: loads all the needed parameters given a string
@@ -443,7 +468,7 @@ class NeuralNetBrain extends SnakeBrain{
     // init all values with random numbers
     initRandom(){
         if(this.hasValues){
-            console.log("!!! InitRandom called on a brain that already had values, overriding... !!!");
+            console.log("!!! InitRandom called on a this that already had values, overriding... !!!");
             alert("!!! InitRandom called on a brain that already had values, overriding... !!!");
         }
 

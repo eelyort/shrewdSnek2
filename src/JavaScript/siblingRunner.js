@@ -28,7 +28,6 @@ class SiblingRunner{
         this.currIndex++;
         if(this.currIndex === this.runners.length){
             // finish
-            // console.log(`Finish, runners: ${this.runners}`);
             // sort scores
             this.runners.sort(function (a, b) {
                 return b[1] - a[1];
