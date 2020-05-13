@@ -25,9 +25,6 @@ class SpeciesRunner{
 
         this.currIndex = 0;
         this.runningInstance = null;
-
-        // TODO: probably better to call this in evolutionRunner or something
-        // this.runNext();
     }
     runNext(){
         if(this.currIndex === this.numRuns){

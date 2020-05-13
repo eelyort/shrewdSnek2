@@ -15,7 +15,10 @@ class SnakeComponent{
     }
     getComponentDescription(){
         if(this.componentDescription.length > 0){
-            return this.componentDescription;
+            if(this.componentDescription.charAt(this.componentDescription.length - 1) === '.') {
+                return this.componentDescription;
+            }
+            return this.componentDescription + ".";
         }
         return this.defaultDesc;
     }

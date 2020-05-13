@@ -24,8 +24,8 @@ class Mutation extends SnakeComponent{
     mutateSingle(valIn){
         return valIn;
     }
-    // given a brain mutates it
-    mutateBrain(brain){
+    // helper function, selects a random weight/bias from a brain
+    selectRandom(brain){
         let mat = brain.myMat;
 
         // select a random weight
@@ -45,8 +45,8 @@ class Mutation extends SnakeComponent{
 
             thresholds[i] = sum;
             */
-             thresholds[i] = mat[i][0].length * (1 + ((i === 0) ? (brain.myInputWidth) : (mat[i-1][0].length)));
-             total += thresholds[i];
+            thresholds[i] = mat[i][0].length * (1 + ((i === 0) ? (brain.myInputWidth) : (mat[i-1][0].length)));
+            total += thresholds[i];
         }
         let selected = Math.floor(Math.random() * total);
 
@@ -85,6 +85,19 @@ class Mutation extends SnakeComponent{
             }
         }
 
+        return [sLayer, sType, sNode, sJ];
+    }
+    // given a brain mutates it
+    mutateBrain(brain){
+        let mat = brain.myMat;
+
+        // select a random weight
+        let select = this.selectRandom(brain);
+        let sLayer = select[0];
+        let sType = select[1];
+        let sNode = select[2];
+        let sJ = select[3];
+
         // mutate the weight
         if(sType === 1){
             mat[sLayer][sType][sNode][sJ] = this.mutateSingle(mat[sLayer][sType][sNode][sJ]);
@@ -99,6 +112,7 @@ class Mutation extends SnakeComponent{
         
         // clone functions
         clone.mutateSingle = this.mutateSingle;
+        clone.mutateBrain = this.mutateBrain;
         
         // clone name and description
         clone.componentName = this.componentName;
@@ -134,7 +148,7 @@ class PercentMutation extends Mutation{
     mutateSingle(valIn) {
         let max = this.mutationParameters[1][1];
         let min = this.mutationParameters[0][1];
-        let ran = Math.floor(Math.random() * (max - min)) + min;
+        let ran = (Math.random() * (max - min)) + min;
 
         return valIn * ran;
     }
@@ -144,7 +158,133 @@ class PercentMutation extends Mutation{
 class ReplaceMutation extends Mutation{
     constructor(){
         super([
-
+            ["Minimum", -1, "The minimum scalar the weight can be changed to."],
+            ["Maximum", 1, "The maximum scalar the weight can be changed to."]
         ]);
+
+        this.componentName = "Replace Mutation";
+        this.componentDescription = "Replaces the current weight with a new random weight.";
+    }
+    mutateSingle(valIn) {
+        let max = this.mutationParameters[1][1];
+        let min = this.mutationParameters[0][1];
+
+        return (Math.random() * (max - min)) + min;
+    }
+}
+
+// adds a random number
+class AddMutation extends Mutation{
+    constructor(){
+        super([
+            ["Minimum", -1, "The minimum scalar added to the weight."],
+            ["Maximum", 1, "The maximum scalar added to the weight."]
+        ]);
+
+        this.componentName = "Addition/Subtraction Mutation";
+        this.componentDescription = "Adds a random number to the weight.";
+    }
+    mutateSingle(valIn) {
+        let max = this.mutationParameters[1][1];
+        let min = this.mutationParameters[0][1];
+
+        return valIn + ((Math.random() * (max - min)) + min);
+    }
+}
+
+// changes the sign of the weight
+class NegateMutation extends Mutation{
+    constructor(){
+        super([]);
+
+        this.componentName = "Negation Mutation";
+        this.componentDescription = "This changes the sign of the selected weight";
+    }
+    mutateSingle(valIn) {
+        return -valIn;
+    }
+}
+
+// swaps x pairs of the weights on the currently selected node
+class SwapMutation extends Mutation{
+    constructor() {
+        super([
+            ["Number Pairs", 1, "The number of pairs of weight on the selected node to swap"],
+            ["Include Biases", false, "Whether to allow bias swapping, this is not recommended because bias and weights are typically different."]
+        ]);
+
+        this.componentName = "Swap Mutation";
+        this.componentDescription = "This swaps some of the weights on the selected node.";
+    }
+    mutateBrain(brain) {
+        let mat = brain.myMat;
+        let numPairs = this.mutationParameters[0][1];
+        let swapBias = this.mutationParameters[1][1];
+
+        // randomly select the node
+        let select = this.selectRandom(brain);
+        let sLayer = select[0];
+        let wLastLayer = ((sLayer === 0) ? (brain.myInputWidth) : (mat[sLayer-1][0].length));
+        let sNode = select[2];
+
+        // pairs
+        for (let i = 0; i < numPairs; i++) {
+            // can swap bias
+            if(swapBias) {
+                // choose 2 random weights
+                // first one
+                let type1, j1;
+                let ran1 = Math.floor(Math.random() * (wLastLayer + 1));
+                // weight
+                if (ran1 < wLastLayer) {
+                    let type1 = 1;
+                    let j1 = ran1;
+                }
+                // bias
+                else {
+                    let type1 = 2;
+                }
+
+                // second one
+                let type2, j2;
+                let ran2 = Math.floor(Math.random() * (wLastLayer + 1));
+                // weight
+                if (ran2 < wLastLayer) {
+                    let type2 = 1;
+                    let j2 = ran2;
+                }
+                // bias
+                else {
+                    let type2 = 2;
+                }
+
+                // swap the two
+                let temp = ((type1 === 1) ? (mat[sLayer][type1][sNode][j1]) : (mat[sLayer][type2][sNode]));
+                if(type1 === 1){
+                    mat[sLayer][type1][sNode][j1] = ((type2 === 1) ? (mat[sLayer][type2][sNode][j2]) : (mat[sLayer][type2][sNode]));
+                }
+                else{
+                    mat[sLayer][type1][sNode] = ((type2 === 1) ? (mat[sLayer][type2][sNode][j2]) : (mat[sLayer][type2][sNode]));
+                }
+                if(type2 === 1){
+                    mat[sLayer][type2][sNode][j2] = temp;
+                }
+                else{
+                    mat[sLayer][type2][sNode] = temp;
+                }
+            }
+
+            // only swap weights
+            else{
+                // choose 2 random weights
+                let j1 = Math.floor(Math.random() * wLastLayer);
+                let j2 = Math.floor(Math.random() * wLastLayer);
+
+                // swap the two
+                let temp = mat[sLayer][1][sNode][j1];
+                mat[sLayer][1][sNode][j1] = mat[sLayer][1][sNode][j2];
+                mat[sLayer][1][sNode][j2] = temp;
+            }
+        }
     }
 }
