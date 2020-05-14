@@ -1,5 +1,5 @@
 // this class is just a base class for all snake components, stores name and description
-class SnakeComponent{
+class Component{
     constructor(name = "", desc = "") {
         this.componentName = name;
         this.componentDescription = desc;

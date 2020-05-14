@@ -2,7 +2,7 @@
 // Specifications
 //  -Takes in an "input" into method, gets decision (direction) out
 //  -Can mutate with many methods, variable parameters
-class SnakeBrain extends SnakeComponent{
+class SnakeBrain extends Component{
     constructor(){
         super();
         this.brainID = -1;

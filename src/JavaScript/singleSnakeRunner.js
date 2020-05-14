@@ -1,5 +1,5 @@
 class SingleSnakeRunner{
-    constructor(snakeIn, tickRateStart, callback, appleSpawnIn = null){
+    constructor(snakeIn, tickRateStart, callback, tickTimeOut = null, appleSpawnIn = null){
         this.mySnake = snakeIn;
         this.gridSize = this.mySnake.gridSize;
         this.callBack = callback;
@@ -28,6 +28,12 @@ class SingleSnakeRunner{
 
         // ticks so far
         this.timeTicks = 0;
+        // ticks since last apple
+        this.ticksSinceApple = 0;
+
+        // how long the snake can go without eating an apple (in ticks) before instantly dying
+        //  null makes the snake never time out
+        this.tickTimeOut = tickTimeOut;
 
         // tick rate and throttling
         this.tickRate = tickRateStart;
@@ -107,6 +113,14 @@ class SingleSnakeRunner{
     // one game tick
     tick(){
         this.timeTicks++;
+
+        this.ticksSinceApple++;
+        // time out
+        if(this.tickTimeOut && this.ticksSinceApple > this.tickTimeOut(this.mySnake.myLength)){
+            this.running = false;
+        }
+
+        // run the snake
         if(!this.mySnake.makeTick()){
             this.running = false;
         }
@@ -125,6 +139,7 @@ class SingleSnakeRunner{
             //     }
             // }
             this.appleSpawn();
+            this.ticksSinceApple = 0;
         }
     }
 

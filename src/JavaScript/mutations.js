@@ -1,7 +1,7 @@
 // class which represents a single possible mutation
 //  pass it a brain - mutates a random weight/bias/node
 //  IMPORTANT: destructive, doesn't make a clone TODO: make clones in evolutionRunner
-class Mutation extends SnakeComponent{
+class Mutation extends Component{
     constructor(mutationParameters){
         super();
 

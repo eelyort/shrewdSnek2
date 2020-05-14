@@ -3,7 +3,7 @@
 //  -Takes in snake, gets info from there
 //  -Creates and returns an array
 //  -Inputlength is the length of the returned array
-class Input extends SnakeComponent{
+class Input extends Component{
     constructor(inputLength){
         super();
         this.mySnake = null;

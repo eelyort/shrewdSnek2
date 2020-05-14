@@ -1,6 +1,6 @@
 // Modular snake, all logic should be elsewhere in input/brain/whatnot
 //  There should be very little actual code here
-class Snake extends SnakeComponent{
+class Snake extends Component{
     constructor(inputIn, brainIn, headPosIn, startLengthIn, appleVal, gridSizeIn, nameIn = "", descriptionIn = "") {
         super("", descriptionIn);
         this.setName(nameIn);

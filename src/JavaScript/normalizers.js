@@ -1,5 +1,5 @@
 // objects (functions really) that are used to normalize a single layer
-class BaseNormalizer extends SnakeComponent{
+class BaseNormalizer extends Component{
     constructor(){
         super();
     }

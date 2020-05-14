@@ -349,7 +349,7 @@ class MainMenu extends InteractableLayer{
         // special for mother's day
         if(snake.uuid && snake.uuid === "Mother's Day!!!"){
             console.log("Mother's Day!");
-            runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this), pathAppleSpawn);
+            runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this), null, pathAppleSpawn);
         }
         else {
             runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this));

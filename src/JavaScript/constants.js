@@ -9,7 +9,7 @@ const defaultFPS = 30;
 // tick rate at which the evolving species are run
 const speciesRunnerTickRate = 600;
 // default scoring function, just returns score, no time sensitivity
-const defaultScoreFunc = function (score, time) {
+const defaultScoreFunc = function (score, timeSinceLastApple) {
     return score;
 };
 

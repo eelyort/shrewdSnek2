@@ -17,7 +17,7 @@ class SpeciesRunner{
             this.scores[i] = 0;
         }
 
-        // function which is used to find the "score" of the snakes: (score, time)
+        // function which is used to find the "score" of the snakes: (score, timeSinceLastApple)
         this.scoreFunc = scoringFunction;
 
         // speed constant, control performance by number of speciesRunners
@@ -42,7 +42,7 @@ class SpeciesRunner{
     // callback called whenever an instance finishes
     endOne(){
         // record the score this run got
-        this.scores[this.currIndex] = this.scoreFunc(this.runningInstance.mySnake.myLength, this.runningInstance.timeTicks);
+        this.scores[this.currIndex] = this.scoreFunc(this.runningInstance.mySnake.myLength, this.runningInstance.ticksSinceApple);
 
         // update index and run next one
         this.currIndex++;

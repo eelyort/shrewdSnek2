@@ -1,6 +1,6 @@
 // similar to mutations.js, this deals with taking two "parents" and produces "offspring"
 //  works off of brains
-class Reproduction extends SnakeComponent{
+class Reproduction extends Component{
     constructor(reproductionParams){
         super();
 
