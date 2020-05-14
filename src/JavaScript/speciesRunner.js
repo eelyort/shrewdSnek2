@@ -1,9 +1,12 @@
 // Shell class which simply runs multiple "singleSnakeRunner"'s and returns mean/median score
 class SpeciesRunner{
     // callback should take a single parameter, the score
-    constructor(snakeIn, numRuns, callback, scoringFunction, modeIn = 0) {
+    constructor(snakeIn, numRuns, callback, scoringFunction, timeoutFunction, modeIn = 0) {
         this.origSnake = snakeIn;
         this.myCallback = callback;
+
+        // timeout func
+        this.timeoutFunction = timeoutFunction;
 
         // number of times this snake should be run
         this.numRuns = numRuns;
@@ -36,7 +39,7 @@ class SpeciesRunner{
         if(this.runningInstance != null){
             this.runningInstance.kill();
         }
-        this.runningInstance = new SingleSnakeRunner(snek, this.tickRate, this.endOne.bind(this));
+        this.runningInstance = new SingleSnakeRunner(snek, this.tickRate, this.endOne.bind(this), this.timeoutFunction);
         this.runningInstance.startMe();
     }
     // callback called whenever an instance finishes
