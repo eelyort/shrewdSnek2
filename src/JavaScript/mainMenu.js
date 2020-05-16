@@ -373,8 +373,10 @@ class MainMenu extends InteractableLayer{
     // TODO: delete
     TESTFUNC(){
         console.log("Test:");
-        let siblingRunner = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
+        let siblingRunner = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 8, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
+        let other = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
         siblingRunner.start();
+        other.start();
         // let speciesRunner = new SpeciesRunner(loadedSnakes[this.selectedSnake].cloneMe(), 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, 0);
         // speciesRunner.runNext();
     }

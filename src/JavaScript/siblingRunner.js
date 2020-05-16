@@ -1,9 +1,11 @@
 // shell which runs several "SpeciesRunner"'s, returning (callback) the score(s) and snake(s)
 class SiblingRunner{
-    // callback should take a matrix with 2 parameters: the score(s) and snake(s)
-    constructor(snakesIn, numReturn, numRuns, callback, scoringFunction, timeoutFunction, modeIn = 0) {
+    // callback should take index and a matrix with 2 parameters: the score(s) and snake(s)
+    constructor(snakesIn, numReturn, numRuns, callback, scoringFunction, timeoutFunction, modeIn = 0, index) {
         this.numReturn = numReturn;
         this.myCallback = callback;
+
+        this.index = index;
 
         // the runners with the scores
         this.runners = Array.apply(null, {length: snakesIn.length});
@@ -22,8 +24,8 @@ class SiblingRunner{
         }
     }
     // callback function
-    callback(score){
-        this.runners[this.currIndex][1] = score;
+    callback(index, snakeScores){
+        this.runners[this.currIndex][1] = snakeScores[0][1];
 
         this.currIndex++;
         if(this.currIndex === this.runners.length){
@@ -38,7 +40,7 @@ class SiblingRunner{
             for(let i = 0; i < ans.length; i++){
                 ans[i] = [this.runners[i][0].origSnake, this.runners[i][1]];
             }
-            this.myCallback(ans);
+            this.myCallback(index, ans);
         }
         else{
             this.runners[this.currIndex][0].runNext();

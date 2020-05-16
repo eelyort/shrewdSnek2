@@ -12,6 +12,74 @@ function testMultipleArgs(hi){
 
 testMultipleArgs(1, 2, "hi");
 
+if(1){
+    console.log("hi3");
+}
+else{
+    console.log("hi2")
+}
+
+console.log("\n");
+
+class hi{
+    constructor(n){
+        this.n = n;
+    }
+    hello(){
+        console.log(`Hello from hi: ${this.n}`);
+    }
+    changeN(n){
+        console.log(`hi ${this.n} changing to ${n}`);
+        this.n = n;
+    }
+}
+
+let i = 0;
+for (; i < 5; i++) {
+    console.log(`i: ${i}`);
+}
+
+console.log();
+
+console.log(1.1 % 1);
+
+// let shapeParam = 0.8;
+// let numParents = 100;
+// let f = function (x) {
+//     return Math.pow(shapeParam, x/Math.sqrt(numParents));
+// };
+// /*
+// r = a^(i/sqrt(c))
+//  */
+// let fI = function (x) {
+//     return (Math.log(x)/Math.log(shapeParam)) * Math.sqrt(numParents);
+// };
+// let min = Math.min(f(0), f(numParents));
+// let max = Math.max(f(0), f(numParents));
+// let pickRanParent = function () {
+//     return Math.floor(fI((Math.random() * (max-min)) + min));
+// };
+//
+// let a = "[";
+// for (let j = 0; j < 5000; j++) {
+//     a += pickRanParent().toString() + ",";
+// }
+// console.log(a.substring(0, a.length - 1) + "]");
+
+let orig = new hi("generic name");
+orig.hello();
+orig.changeN("wassup");
+
+console.log("\nNext:");
+
+let next = JSON.parse(JSON.stringify(orig));
+console.log(`next: ${next}, next.n: ${next.n}, next.hello: ${next.hello}`);
+next.hello();
+next.changeN("nextName");
+
+orig.hello();
+next.hello();
+
 //
 // // Parent skeleton brain class
 // // Specifications

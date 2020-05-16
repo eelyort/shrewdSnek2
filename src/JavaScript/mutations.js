@@ -58,7 +58,7 @@ class Mutation extends Component{
         clone.componentDescription = this.componentDescription;
         
         // clone params
-        clone.mutationParameters = JSON.padrse(JSON.stringify(this.mutationParameters));
+        clone.mutationParameters = JSON.parse(JSON.stringify(this.mutationParameters));
 
         return clone;
     }

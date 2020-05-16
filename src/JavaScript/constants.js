@@ -29,4 +29,11 @@ const subCanvasID = "snakeSubCanvas";
 
 // max char count of snake names
 const snakeNameChars = 12;
+
+// max number of threads allowed
+const maxNumThreads = 500;
+
+// number of times per second the display for evolution updates
+const evolutionUpdatePerSec = 5;
+
 // alert("Constants Instantiated");
