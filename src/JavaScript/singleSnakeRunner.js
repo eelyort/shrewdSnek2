@@ -11,7 +11,7 @@ class SingleSnakeRunner{
         //   1 is body (including head)
         //   2 is apple
         //  -1 is invalid
-        this.grid = new Array((this.gridSize+2) * this.gridSize);
+        this.grid = Array.apply(null, {length: (this.gridSize+2) * this.gridSize});
         for (let i = 0; i < this.grid.length; i++) {
             this.grid[i] = 0;
         }

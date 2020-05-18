@@ -18,17 +18,22 @@ class Evolution{
     //   max time score - a percentage of how many apple's scores a snake can potentially gain for time
     //  timeouttime - the number of ticks a snake can go without eating an apple before being killed
     //   timeoutgrowth - amount of ticks added to timeouttime per length
-    constructor(snakes, snakeScores = null){
+    constructor(snakes){
         this.parameters = null;
         this.setParams();
 
         this.generationNumber = 0;
 
-        // this stores the snakes in the current generation, it should always be ONLY snake objects
-        //  each i: [snake, index]
-        this.currentGeneration = Array.apply(null, {length: snakes.length});
-        for(let i = 0; i < this.currentGeneration.length; i++){
-            this.currentGeneration[i] = [snakes[i], 1];
+        if(Array.isArray(snakes)) {
+            // this stores the snakes in the current generation, it should always be ONLY snake objects
+            //  each i: [snake, index]
+            this.currentGeneration = Array.apply(null, {length: snakes.length});
+            for (let i = 0; i < this.currentGeneration.length; i++) {
+                this.currentGeneration[i] = [snakes[i], 1];
+            }
+        }
+        else{
+            this.currentGeneration = [[snakes, 1]];
         }
 
         // the snakes of the next generation, will be run on next run call
@@ -132,9 +137,8 @@ class Evolution{
         // the (temporary) variables in use when a generation is running
         this.runningResults = null;
         // index (of the next snake to be started), number running, number finished
-        this.runningBuffer = new SharedArrayBuffer(Uint16Array.BYTES_PER_ELEMENT * numRunVars);
-        this.runningVars = new Uint16Array(this.runningBuffer);
-        this.runningVars = [0, 0, 0];
+        this.runningBuffer = new SharedArrayBuffer(Int16Array.BYTES_PER_ELEMENT * numRunVars);
+        this.runningVars = new Int16Array(this.runningBuffer);
     }
 
     // creates the next generation from the current generation and its scores
@@ -148,13 +152,18 @@ class Evolution{
             this.nextGeneration[i] = null;
         }
 
-
         // edge case: first generation
         if(this.currentGeneration.length === 1){
             console.log("createNextGeneration() spawning mutated clones due to only one input snake");
 
             // input snake
-            let originator = this.currentGeneration[0].cloneMe();
+            let originator = this.currentGeneration[0][0].cloneMe();
+
+            if(!originator.myBrain.hasValues){
+                originator.myBrain.initRandom();
+            }
+
+            let numMutations = originator.myBrain.myDepth * originator.myBrain.myWidth * 50;
 
             // create the next generation with a bunch of mutated versions of the originator snake
             this.nextGeneration = Array.apply(null, {length: numPerGen});
@@ -163,32 +172,36 @@ class Evolution{
                 let snake = originator.cloneMe();
 
                 // mutate the snake a bunch of times
-                for (let j = 0; j < 100; j++) {
+                for (let j = 0; j < numMutations; j++) {
                     this.mutatePrivate(snake);
                 }
 
-                this.nextGeneration[i] = new SpeciesRunner(snake, this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1]);
+                this.nextGeneration[i] = new SpeciesRunner(snake, this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], i);
                 // this.nextGeneration[i] = snake;
             }
+
+            // console.log(this.nextGeneration);
 
             return;
         }
 
         // regular
+        console.log("Regular Create Next Generation:");
         // number of snakes in next generation
         let idx = 0;
 
         // the best snakes survive and continue on into the next generation unchanged
         let numSurvive = Math.floor(numPerGen * this.parameters[10][1]);
         for (; idx < numSurvive; idx++) {
-            this.nextGeneration[idx] = new SpeciesRunner(this.currentGeneration[idx][0].cloneMe(), this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1]);
+            this.nextGeneration[idx] = new SpeciesRunner(this.currentGeneration[idx][0].cloneMe(), this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
             // this.nextGeneration[idx] = this.currentGeneration[idx][0].cloneMe();
         }
+        // console.log(`numSurvive: ${numSurvive}, idx: ${idx}`);
 
         // get the proportions of which snakes should be chosen as parents by their scores
         //  the function here is: arg12^x
         let shapeParam = this.parameters[12][1];
-        let numParents = Math.floor(numPerGen * this.parameters[11][1]);
+        let numParents = Math.min(Math.max(2, Math.floor(numPerGen * this.parameters[11][1])), numPerGen);
         let f = function (x) {
             return Math.pow(shapeParam, x/Math.sqrt(numParents));
         };
@@ -200,6 +213,7 @@ class Evolution{
         let pickRanParent = function () {
             return Math.floor(fI((Math.random() * (max-min)) + min));
         };
+        // console.log(`numParents: ${numParents}`);
 
         // pick parents, clone, mutate, make offspring until next generation is filled
         while(idx < numPerGen){
@@ -226,24 +240,37 @@ class Evolution{
             let offspring = this.reproducePrivate(p1, p2);
 
             // chuck the offspring into a siblingRunner for next generation
-            this.nextGeneration[idx] = new SiblingRunner(offspring, 1, this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1]);
+            this.nextGeneration[idx] = new SiblingRunner(offspring, 1, this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
             // this.nextGeneration[idx] = offspring;
 
             idx++;
         }
+
+        // console.log(this.nextGeneration);
     }
 
     // --------------------------- Running Generation Methods ----------------------------------------------------------
     // main method to run a generation, call from outside
     runGeneration(){
+        // console.log("runGeneration, nextGeneration: ");
+        // console.log(this);
+        // console.log(this.nextGeneration);
+        // check if ready
+        if(!this.nextGeneration){
+            console.log("!!!!! Cannot Run Non-Existent Generation !!!!!");
+            return;
+        }
+
         // set parameters
         this.runningProgress = 0;
         this.runningResults = Array.apply(null, {length: this.parameters[0][1]});
         for(let i = 0; i < this.runningResults.length; i++){
             this.runningResults[i] = null;
         }
+        // index (of the next snake to be started), number running, number finished
+        this.runningVars = new Int16Array(this.runningBuffer);
         for (let i = 0; i < numRunVars; i++) {
-            this.runningVars[i] = 0;
+            Atomics.store(this.runningVars, i, 0);
         }
 
         // start the generation
@@ -255,9 +282,10 @@ class Evolution{
     update(){
         // update progress
         this.runningProgress = Atomics.load(this.runningVars, 0);
+        console.log(`update, progress: ${this.runningProgress}, numFinished: ${Atomics.load(this.runningVars, 2)}`);
         
         // finished
-        if(Atomics.load(this.runningVars, 2) === this.parameters[0][1] - 1){
+        if(Atomics.load(this.runningVars, 2) >= this.parameters[0][1]){
             this.finish();
             
             return;
@@ -266,18 +294,22 @@ class Evolution{
         // start new snakes - async so it doesn't freeze the screen
         setTimeout(function () {
             while(Atomics.load(this.runningVars, 1) < maxNumThreads){
-                this.startNextPrivate();
+                if(!this.startNextPrivate()){
+                    break;
+                }
             }
         }.bind(this), 1);
     }
 
     // called to end and process
     finish(){
-        // TODO
         // stop the update clock
         if(this.myInterval){
             clearInterval(this.myInterval);
         }
+
+        // console.log("finish, before sort, results:");
+        // console.log(this.runningResults);
 
         // sort
         this.runningResults.sort(function (a, b) {
@@ -285,16 +317,28 @@ class Evolution{
         });
 
         // delete and TODO save? last generation
-        console.log(`Old generation being deleted at EvolutionRunner finish(), old gen: ${JSON.stringify(this.currentGeneration)}`);
+        // console.log(`Old generation being deleted at EvolutionRunner finish(), old gen: ${JSON.stringify(this.currentGeneration)}`);
         this.currentGeneration = this.runningResults;
+
+        // log
+        console.log("evolutionRunner finish(), runningResults:");
+        console.log(this.currentGeneration);
+        console.log(`Best: ${JSON.stringify(this.currentGeneration[0][0].myBrain)}`);
     }
 
     // starts the next one
     startNextPrivate(){
         let idx = Atomics.load(this.runningVars, 0);
+
+        // end if no more to do
+        if(idx >= this.nextGeneration.length){
+            return false;
+        }
+
         let runner = this.nextGeneration[idx];
         // species runner
         if(runner instanceof SpeciesRunner){
+            // console.log("speciesRunner");
             let old = Atomics.add(this.runningVars, 0, 1);
             // test to make sure the same snake isn't run multiple times
             if(old !== idx){
@@ -306,6 +350,8 @@ class Evolution{
         }
         // sibling runner
         else{
+            // console.log("sibling runner");
+            // console.log(runner);
             let num = runner.numReturn;
             let old = Atomics.add(this.runningVars, 0, num);
             // test to make sure the same snake isn't run multiple times
@@ -316,10 +362,14 @@ class Evolution{
                 runner.start();
             }
         }
+
+        return true;
     }
 
     // callback method
     myCallback(index, snakeScoresMatrix){
+        // console.log(`callback, index: ${index}, snakeScores: ${snakeScoresMatrix}`);
+
         let origIndex = index;
 
         // update the info
@@ -333,7 +383,7 @@ class Evolution{
         index++;
 
         // update vars - // index, number running, number finished
-        let numFinished = origIndex - index;
+        let numFinished = index - origIndex;
         // number running
         Atomics.sub(this.runningVars, 1, numFinished);
         // number finished
@@ -377,10 +427,10 @@ class Evolution{
         else {
             let ran = Math.random();
             for (selected = 0; selected < this.reproductionPercents.length; selected++) {
-                if (ran < this.mutationPercents[selected]) {
+                if (ran < this.reproductionPercents[selected]) {
                     break;
                 }
-                ran -= this.mutationPercents[selected];
+                ran -= this.reproductionPercents[selected];
             }
         }
 

@@ -341,10 +341,13 @@ class NeuralNetBrain extends SnakeBrain{
         // input to first hidden layer
         // pre-activation
         for (let node = 0; node < this.myWidth; node++) {
+            // console.log(`node: ${node}, dotting: ${this.myMat[0][1][node]}, bias: ${this.myMat[0][2][node]}`);
             this.myMat[0][0][node] = math.dot(brainInput, this.myMat[0][1][node]) + this.myMat[0][2][node];
         }
         // activation
         this.myNormalizer.normalizeCol(this.myMat[0][0]);
+
+        // console.log("first col: " +  this.myMat[0][0]);
 
         // everything else
         for (let layer = 1; layer < this.myMat.length; layer++) {
@@ -356,6 +359,9 @@ class NeuralNetBrain extends SnakeBrain{
             this.myNormalizer.normalizeCol(this.myMat[layer][0]);
         }
 
+        // console.log("Brain output:");
+        // console.log(this.myMat[this.myMat.length - 1][0]);
+
         // output
         return this.getOutput(this.myMat[this.myMat.length - 1][0]);
     }
@@ -363,7 +369,7 @@ class NeuralNetBrain extends SnakeBrain{
     // called in snake.js to update the brain with the length of the inputs
     updateWithInput(input){
         if(this.hasValues){
-            console.log(`Warning: updateWithInput called on brain with values already, ignoring new input`);
+            // console.log(`Warning: updateWithInput called on brain with values already, ignoring new input`);
             return;
         }
 
@@ -376,40 +382,47 @@ class NeuralNetBrain extends SnakeBrain{
                 this.myMat[0][1][node][source] = 0;
             }
         }
+
+        // init random
+        if(!this.hasValues){
+            this.initRandom();
+        }
     }
     // helper function, selects a random weight/bias from a brain
     selectRandom(){
-        let mat = this.myMat;
-
         // select a random weight
         // since its a non-square array this is going to weird
         let total = 0;
         // thresholds[i] = the number of elements in layer i
-        let thresholds = [];
-        for (let i = 0; i < mat.length; i++) {
+        let thresholds = Array.apply(null, {length: this.myMat.length});
+        for (let i = 0; i < this.myMat.length; i++) {
             /*  I'm here for clarity, please don't delete me
             let sum = 0;
 
             // number of unique weights: #nodes * #nodesPrev
-            sum += mat[i].length * ((i === 0) ? (this.myInputWidth) : (mat[i-1].length));
+            sum += this.myMat[i].length * ((i === 0) ? (this.myInputWidth) : (this.myMat[i-1].length));
 
             // number of unique biases: #nodes
-            sum += mat[i].length;
+            sum += this.myMat[i].length;
 
             thresholds[i] = sum;
             */
-            thresholds[i] = mat[i][0].length * (1 + ((i === 0) ? (this.myInputWidth) : (mat[i-1][0].length)));
+            thresholds[i] = this.myMat[i][0].length * (1 + ((i === 0) ? (this.myInputWidth) : (this.myMat[i-1][0].length)));
             total += thresholds[i];
         }
+        // console.log(`selectRandom(), thresholds: ${thresholds}`);
+
+        // random number
         let selected = Math.floor(Math.random() * total);
+        // console.log(`selectRandom(), selected: ${selected}`);
 
         // deconstruct into correct indexes
         let sLayer, sType, sNode, sJ;
 
         // get the correct layer
-        for (let layer = 0; layer < mat.length; layer++) {
+        for (let layer = 0; layer < this.myMat.length; layer++) {
             // use the thresholds
-            if(selected < thresholds[layer]){
+            if(selected >= thresholds[layer]){
                 selected -= thresholds[layer];
                 continue;
             }
@@ -417,14 +430,14 @@ class NeuralNetBrain extends SnakeBrain{
             // correct layer
             else{
                 sLayer = layer;
-                let prevW = ((layer === 0) ? (this.myInputWidth) : (mat[layer-1][0].length));
-                let w = mat[layer][0].length;
+                let prevW = ((layer === 0) ? (this.myInputWidth) : (this.myMat[layer-1][0].length));
+                let w = this.myMat[layer][0].length;
 
                 // weights
                 if(selected < prevW * w){
                     sType = 1;
 
-                    sNode = selected / prevW;
+                    sNode = Math.floor(selected / prevW);
                     sJ = selected % prevW;
                 }
 
@@ -444,8 +457,21 @@ class NeuralNetBrain extends SnakeBrain{
     cloneMe() {
         let clone = new NeuralNetBrain(this.myNormalizer.cloneMe(), this.myDepth, this.myWidth, this.startWeight, this.startBias);
 
+        // console.log(`this.myMat: ${this.myMat}`);
+        // console.log("stringifyied: " + JSON.stringify(this.myMat));
+
         // deepcopy everything
         clone.myMat = JSON.parse(JSON.stringify(this.myMat));
+        clone.hasValues = this.hasValues;
+        clone.myInputWidth = this.myInputWidth;
+
+        // console.log("brain clone:");
+        // console.log(clone);
+
+        // if(!(clone instanceof NeuralNetBrain)){
+        //     console.log("cloned brain not brain...");
+        //     console.log(this);
+        // }
 
         return clone;
     }
@@ -486,6 +512,6 @@ class NeuralNetBrain extends SnakeBrain{
 
         this.hasValues = true;
 
-        console.log(`initRandom() success: this.myMat: ${this.myMat}`);
+        // console.log(`initRandom() success: this.myMat: ${this.myMat}`);
     }
 }

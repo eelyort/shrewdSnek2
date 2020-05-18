@@ -23,8 +23,6 @@ class Mutation extends Component{
     }
     // given a brain mutates it
     mutateBrain(brain){
-        let mat = brain.myMat;
-
         // select a random weight
         let select = brain.selectRandom();
         let sLayer = select[0];
@@ -32,12 +30,14 @@ class Mutation extends Component{
         let sNode = select[2];
         let sJ = select[3];
 
+        // console.log(`mutateBrain: select: ${select}`);
+
         // mutate the weight
         if(sType === 1){
-            mat[sLayer][sType][sNode][sJ] = this.mutateSingle(mat[sLayer][sType][sNode][sJ]);
+            brain.myMat[sLayer][sType][sNode][sJ] = this.mutateSingle(brain.myMat[sLayer][sType][sNode][sJ]);
         }
         else{
-            mat[sLayer][sType][sNode] = this.mutateSingle(mat[sLayer][sType][sNode]);
+            brain.myMat[sLayer][sType][sNode] = this.mutateSingle(brain.myMat[sLayer][sType][sNode]);
         }
     }
     // given a value, returns a mutated version of that same value
@@ -79,6 +79,8 @@ class PercentMutation extends Mutation{
         let max = this.mutationParameters[1][1];
         let min = this.mutationParameters[0][1];
         let ran = (Math.random() * (max - min)) + min;
+
+        // console.log(`PercentMutate, ran: ${ran}`);
 
         return valIn * ran;
     }
@@ -147,14 +149,13 @@ class SwapMutation extends Mutation{
         this.componentDescription = "This swaps some of the weights on the selected node.";
     }
     mutateBrain(brain) {
-        let mat = brain.myMat;
         let numPairs = this.mutationParameters[0][1];
         let swapBias = this.mutationParameters[1][1];
 
         // randomly select the node
         let select = brain.selectRandom();
         let sLayer = select[0];
-        let wLastLayer = ((sLayer === 0) ? (brain.myInputWidth) : (mat[sLayer-1][0].length));
+        let wLastLayer = ((sLayer === 0) ? (brain.myInputWidth) : (brain.myMat[sLayer-1][0].length));
         let sNode = select[2];
 
         // pairs
@@ -189,18 +190,18 @@ class SwapMutation extends Mutation{
                 }
 
                 // swap the two
-                let temp = ((type1 === 1) ? (mat[sLayer][type1][sNode][j1]) : (mat[sLayer][type2][sNode]));
+                let temp = ((type1 === 1) ? (brain.myMat[sLayer][type1][sNode][j1]) : (brain.myMat[sLayer][type2][sNode]));
                 if(type1 === 1){
-                    mat[sLayer][type1][sNode][j1] = ((type2 === 1) ? (mat[sLayer][type2][sNode][j2]) : (mat[sLayer][type2][sNode]));
+                    brain.myMat[sLayer][type1][sNode][j1] = ((type2 === 1) ? (brain.myMat[sLayer][type2][sNode][j2]) : (brain.myMat[sLayer][type2][sNode]));
                 }
                 else{
-                    mat[sLayer][type1][sNode] = ((type2 === 1) ? (mat[sLayer][type2][sNode][j2]) : (mat[sLayer][type2][sNode]));
+                    brain.myMat[sLayer][type1][sNode] = ((type2 === 1) ? (brain.myMat[sLayer][type2][sNode][j2]) : (brain.myMat[sLayer][type2][sNode]));
                 }
                 if(type2 === 1){
-                    mat[sLayer][type2][sNode][j2] = temp;
+                    brain.myMat[sLayer][type2][sNode][j2] = temp;
                 }
                 else{
-                    mat[sLayer][type2][sNode] = temp;
+                    brain.myMat[sLayer][type2][sNode] = temp;
                 }
             }
 
@@ -211,9 +212,9 @@ class SwapMutation extends Mutation{
                 let j2 = Math.floor(Math.random() * wLastLayer);
 
                 // swap the two
-                let temp = mat[sLayer][1][sNode][j1];
-                mat[sLayer][1][sNode][j1] = mat[sLayer][1][sNode][j2];
-                mat[sLayer][1][sNode][j2] = temp;
+                let temp = brain.myMat[sLayer][1][sNode][j1];
+                brain.myMat[sLayer][1][sNode][j1] = brain.myMat[sLayer][1][sNode][j2];
+                brain.myMat[sLayer][1][sNode][j2] = temp;
             }
         }
     }

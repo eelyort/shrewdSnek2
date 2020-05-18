@@ -34,7 +34,8 @@ class MainMenu extends InteractableLayer{
         this.myInteractables.set("TickDown", new PressHoldImgButton(.18, .86, .1, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/play-button-200x200.png", function () {
             this.changeTickRate(-1);
         }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
-        this.myInteractables.set("TEST", new ButtonHTML(.6, .9, .3, .06, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
+        this.myInteractables.set("TEST", new ButtonHTML(.6, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
+        this.myInteractables.set("TEST2", new ButtonHTML(.8, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST2", this.TESTFUNC2.bind(this)));
         // popups
         this.myPopUps = new Map();
         this.myPopUps.set("Draw", new DrawPopUp(.05, .05, 3, this.myGamePanel, this.myDocument, 40));
@@ -373,12 +374,47 @@ class MainMenu extends InteractableLayer{
     // TODO: delete
     TESTFUNC(){
         console.log("Test:");
-        let siblingRunner = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 8, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
-        let other = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
-        siblingRunner.start();
-        other.start();
+        // let siblingRunner = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 8, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
+        // let other = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
+        // siblingRunner.start();
+        // other.start();
         // let speciesRunner = new SpeciesRunner(loadedSnakes[this.selectedSnake].cloneMe(), 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, 0);
         // speciesRunner.runNext();
+
+        if(!this.TESTGENERATION) {
+            let snake = testBasicNeuralNetSnake.cloneMe();
+
+            this.TESTGENERATION = new Evolution(snake);
+            // gen.parameters[4][1] = 1;
+            this.TESTGENERATION.createNextGeneration();
+            this.TESTGENERATION.runGeneration();
+        }
+        else{
+            // console.log("Next Generation");
+            this.TESTGENERATION.createNextGeneration();
+            // console.log(this.TESTGENERATION.nextGeneration);
+            setTimeout(function () {
+                this.TESTGENERATION.runGeneration();
+            }.bind(this), 2000);
+        }
+    }
+    TESTFUNC2(){
+        console.log("Test2:");
+
+        let snake = loadedSnakes[2].cloneMe();
+
+        let mutate = new PercentMutation();
+
+        for (let i = 0; i < snake.myBrain.myWidth * snake.myBrain.myDepth * 50; i++) {
+            mutate.mutateBrain(snake.myBrain);
+        }
+
+        // console.log(snake);
+
+        loadedSnakes.push(snake);
+        this.selectedSnake = loadedSnakes.length - 1;
+
+        this.startSelectedSnake();
     }
     TESTCALLBACK(a){
         console.log("Test Callback: " + a.toString());

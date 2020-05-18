@@ -17,7 +17,10 @@ class SiblingRunner{
     }
     start(){
         if(this.currIndex === 0) {
+            // single run
             this.runners[0][0].runNext();
+            // multi thread
+
         }
         else{
             console.log("start() called twice on SiblingRunner");
@@ -40,7 +43,7 @@ class SiblingRunner{
             for(let i = 0; i < ans.length; i++){
                 ans[i] = [this.runners[i][0].origSnake, this.runners[i][1]];
             }
-            this.myCallback(index, ans);
+            this.myCallback(this.index, ans);
         }
         else{
             this.runners[this.currIndex][0].runNext();

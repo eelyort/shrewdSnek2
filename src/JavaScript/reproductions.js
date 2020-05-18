@@ -11,8 +11,9 @@ class Reproduction extends Component{
         this.componentName = "Empty Reproduction";
     }
     // produces offspring given two parents
-    produceOffspring(parent1Brain, parent2Brain){
-        return [parent1Brain.cloneMe(), parent2Brain.cloneMe()];
+    produceOffspring(parent1, parent2){
+        console.log("ALERT: empty reproduction called");
+        return [parent1.cloneMe(), parent2.cloneMe()];
     }
     // sets parameters
     setParams(){
@@ -55,15 +56,15 @@ class SingleWeightSwapReproduction extends Reproduction{
         this.componentDescription = "This swaps a number of the weights/biases of the two parents to produce 2 offspring, 1 of which will survive";
     }
     // assumes brains have same topology
-    produceOffspring(parent1Brain, parent2Brain) {
+    produceOffspring(parent1, parent2) {
         // children
-        let child1Brain = parent1Brain.cloneMe();
-        let child2Brain = parent2Brain.cloneMe();
+        let child1 = parent1.cloneMe();
+        let child2 = parent2.cloneMe();
 
         // swap
         for (let i = 0; i < this.reproductionParameters[0][1]; i++) {
             // get random weight
-            let select = child1Brain.selectRandom();
+            let select = child1.myBrain.selectRandom();
             let sLayer = select[0];
             let sType = select[1];
             let sNode = select[2];
@@ -72,19 +73,19 @@ class SingleWeightSwapReproduction extends Reproduction{
             // swap
             // weights
             if(sType === 1) {
-                let temp = child1Brain.myMat[sLayer][sType][sNode][sJ];
-                child1Brain.myMat[sLayer][sType][sNode][sJ] = child2Brain.myMat[sLayer][sType][sNode][sJ];
-                child2Brain.myMat[sLayer][sType][sNode][sJ] = temp;
+                let temp = child1.myBrain.myMat[sLayer][sType][sNode][sJ];
+                child1.myBrain.myMat[sLayer][sType][sNode][sJ] = child2.myBrain.myMat[sLayer][sType][sNode][sJ];
+                child2.myBrain.myMat[sLayer][sType][sNode][sJ] = temp;
             }
             // biases
             else{
-                let temp = child1Brain.myMat[sLayer][sType][sNode];
-                child1Brain.myMat[sLayer][sType][sNode] = child2Brain.myMat[sLayer][sType][sNode];
-                child2Brain = temp;
+                let temp = child1.myBrain.myMat[sLayer][sType][sNode];
+                child1.myBrain.myMat[sLayer][sType][sNode] = child2.myBrain.myMat[sLayer][sType][sNode];
+                child2.myBrain.myMat[sLayer][sType][sNode] = temp;
             }
         }
 
-        return [child1Brain, child2Brain];
+        return [child1, child2];
     }
 }
 
@@ -99,30 +100,30 @@ class NodeSwapReproduction extends Reproduction{
         this.componentDescription = "This swaps all the weights and biases for x nodes.";
     }
     // assumes brains have the same topology
-    produceOffspring(parent1Brain, parent2Brain) {
+    produceOffspring(parent1, parent2) {
         // children
-        let child1Brain = parent1Brain.cloneMe();
-        let child2Brain = parent2Brain.cloneMe();
+        let child1 = parent1.cloneMe();
+        let child2 = parent2.cloneMe();
 
         // swaps
         for (let i = 0; i < this.reproductionParameters[0][1]; i++) {
             // select random node
-            let select = child1Brain.selectRandom();
+            let select = child1.myBrain.selectRandom();
             let sLayer = select[0];
             let sNode = select[2];
 
             // swap
             // weights
-            let temp = JSON.stringify(child1Brain.myMat[sLayer][1][sNode]);
-            child1Brain.myMat[sLayer][1][sNode] = JSON.parse(JSON.stringify(child2Brain.myMat[sLayer][1][sNode]));
-            child2Brain.myMat[sLayer][1][sNode] = JSON.parse(temp);
+            let temp = JSON.stringify(child1.myBrain.myMat[sLayer][1][sNode]);
+            child1.myBrain.myMat[sLayer][1][sNode] = JSON.parse(JSON.stringify(child2.myBrain.myMat[sLayer][1][sNode]));
+            child2.myBrain.myMat[sLayer][1][sNode] = JSON.parse(temp);
             // bias
-            temp = child1Brain.myMat[sLayer][2][sNode];
-            child1Brain.myMat[sLayer][2][sNode] = child2Brain.myMat[sLayer][2][sNode];
-            child2Brain.myMat[sLayer][2][sNode] = temp;
+            temp = child1.myBrain.myMat[sLayer][2][sNode];
+            child1.myBrain.myMat[sLayer][2][sNode] = child2.myBrain.myMat[sLayer][2][sNode];
+            child2.myBrain.myMat[sLayer][2][sNode] = temp;
         }
 
-        return [child1Brain, child2Brain];
+        return [child1, child2];
     }
 }
 
@@ -137,22 +138,22 @@ class LayerSwapReproduction extends Reproduction{
         this.componentDescription = "This swaps all the weights/biases for x layers. Only recommended on networks with many layers";
     }
     // assumes brains have the same topology
-    produceOffspring(parent1Brain, parent2Brain) {
+    produceOffspring(parent1, parent2) {
         // children
-        let child1Brain = parent1Brain.cloneMe();
-        let child2Brain = parent2Brain.cloneMe();
+        let child1 = parent1.cloneMe();
+        let child2 = parent2.cloneMe();
 
         // swaps
         for (let i = 0; i < this.reproductionParameters[0][1]; i++) {
             // pick random layer
-            let sLayer = Math.floor(Math.random() * child1Brain.myMat.length);
+            let sLayer = Math.floor(Math.random() * child1.myBrain.myMat.length);
 
             // swap
-            let temp = JSON.stringify(child1Brain.myMat[sLayer]);
-            child1Brain.myMat[sLayer] = JSON.parse(JSON.stringify(child2Brain.myMat[sLayer]));
-            child2Brain.myMat[sLayer] = JSON.parse(temp);
+            let temp = JSON.stringify(child1.myBrain.myMat[sLayer]);
+            child1.myBrain.myMat[sLayer] = JSON.parse(JSON.stringify(child2.myBrain.myMat[sLayer]));
+            child2.myBrain.myMat[sLayer] = JSON.parse(temp);
         }
 
-        return [child1Brain, child2Brain];
+        return [child1, child2];
     }
 }

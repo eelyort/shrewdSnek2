@@ -56,7 +56,7 @@ class SpeciesRunner{
     }
     // process scores and return ans
     finish(){
-        console.log(`SpeciesRunner finish(), scores: ${this.scores}`);
+        // console.log(`SpeciesRunner finish(), scores: ${this.scores}`);
 
         let ans = -1;
 
@@ -97,7 +97,7 @@ class SpeciesRunner{
         }
 
         // "return"
-        console.log("SpeciesRunner finish() returning: " + ans);
+        // console.log("SpeciesRunner finish() returning: " + ans);
         this.myCallback(this.index, [[this.origSnake, ans]]);
     }
 }

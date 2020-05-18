@@ -1,3 +1,6 @@
+// brains
+const DefaultNetBrain = new NeuralNetBrain(new TanhNormalizer(), 2, 6, .1, .1);
+
 // array of loaded snakes
 let loadedSnakes = [];
 
@@ -34,8 +37,21 @@ loadedSnakes.push(happyMothersDay);
 const protectedSnakes = loadedSnakes.length;
 
 // TODO delete me
+const testBasicNeuralNetSnake = new Snake(
+    // looks 8 way for body, 8 way for apple, 4 way for wall
+    new MultipleInput(new CardinalIntercardinalDirectionalInput([1]), new CardinalIntercardinalDirectionalInput([2]), new CardinalDirectionalInput([])),
+    DefaultNetBrain.cloneMe(),
+    1,
+    3,
+    3,
+    25,
+    "Test Basic Neural Network Snake",
+    "This has a default brain and simple-ish inputs."
+);
+loadedSnakes.push(testBasicNeuralNetSnake);
+
 const testDirectionalSnake = new Snake(
-    new MultipleInput([new PlayerControlledInput(), new InterCardinalDirectionalInput([1])]),
+    new MultipleInput(new PlayerControlledInput(), new InterCardinalDirectionalInput([1])),
     new PlayerControlledBrain(null),
     1,
     10,
@@ -55,4 +71,5 @@ const testSnake = new Snake(
     "Test Snake",
     "Starter Human Controlled Snake. Control with the WASD or arrow keys."
 );
+
 loadedSnakes.push(testSnake);
