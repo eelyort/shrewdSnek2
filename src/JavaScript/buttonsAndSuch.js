@@ -853,6 +853,10 @@ class SelectSnakePopUp extends PopUp{
         // call previous callback
         this.selectCallback(index);
     }
+    updateSnakes(newSnakes){
+        this.optionsArr = newSnakes;
+        this.mySelectCarousel.updateSnakes(newSnakes);
+    }
 }
 
 // warning: first attempt below
@@ -912,6 +916,15 @@ class SelectCarousel extends BaseHTMLElement{
 
         // hover TODO: fixme
         // this.hoverHandler = new HoverHandler(this.myWrapper, this.onHover.bind(this), this.unHover.bind(this));
+    }
+    updateSnakes(newSnakes){
+        this.mySnakes = newSnakes;
+        for (let i = 0; i < this.myMembers.length; i++) {
+            this.myMembers[i].delete();
+        }
+        this.myMembers = [];
+        this.createMembers();
+        this.setFocus(this.currentlySelected);
     }
     onResize(){
         this.leftButton.onResize();
@@ -1126,6 +1139,10 @@ class SelectCarouselMember extends BaseHTMLElement{
     show(){
         this.shown = true;
     }
+    delete(){
+        this.myCard.remove();
+        this.myCenteredTextBox.delete();
+    }
 }
 
 // html text box
@@ -1207,6 +1224,10 @@ class TextBox extends BaseHTMLElement{
         setTimeout(function () {
             this.typewritePRIVATE(i, speed, threadID);
         }.bind(this), speed);
+    }
+    delete(){
+        this.myTextBox.remove();
+        this.myTextWrapper.remove();
     }
 }
 

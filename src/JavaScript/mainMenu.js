@@ -177,7 +177,7 @@ class MainMenu extends InteractableLayer{
 
     // basically the "main" method
     run(){
-        if(this.runningInstance != null && this.isRunning) {
+        if(this.runningInstance && this.isRunning) {
             let fpsInterval = 1000 / this.fps;
 
             // request another frame
@@ -390,29 +390,47 @@ class MainMenu extends InteractableLayer{
             this.TESTGENERATION.runGeneration();
         }
         else{
+            if(loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}` && this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
+                // save old
+                let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
+                snake.setName(`G${this.TESTGENERATION.generationNumber}`);
+                loadedSnakes.push(snake);
+
+                this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
+            }
+
             // console.log("Next Generation");
             this.TESTGENERATION.createNextGeneration();
             // console.log(this.TESTGENERATION.nextGeneration);
             setTimeout(function () {
                 this.TESTGENERATION.runGeneration();
-            }.bind(this), 2000);
+            }.bind(this), 20);
         }
     }
     TESTFUNC2(){
         console.log("Test2:");
 
-        let snake = loadedSnakes[2].cloneMe();
+        if(loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}` && this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
+            // save old
+            let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
+            snake.setName(`G${this.TESTGENERATION.generationNumber}`);
+            loadedSnakes.push(snake);
 
-        let mutate = new PercentMutation();
-
-        for (let i = 0; i < snake.myBrain.myWidth * snake.myBrain.myDepth * 50; i++) {
-            mutate.mutateBrain(snake.myBrain);
+            this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
         }
+
+        // let snake = loadedSnakes[2].cloneMe();
+        //
+        // let mutate = new PercentMutation();
+        //
+        // for (let i = 0; i < snake.myBrain.myWidth * snake.myBrain.myDepth * 50; i++) {
+        //     mutate.mutateBrain(snake.myBrain);
+        // }
 
         // console.log(snake);
 
-        loadedSnakes.push(snake);
-        this.selectedSnake = loadedSnakes.length - 1;
+        // this.selectedSnake = loadedSnakes.length - 1;
+        this.updateSelectedSnake(loadedSnakes.length - 1);
 
         this.startSelectedSnake();
     }

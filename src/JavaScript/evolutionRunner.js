@@ -44,18 +44,18 @@ class Evolution{
         if(arguments.length === 0 && this.parameters == null){
             console.log("Evolution setParams called with no arguments, adding default values");
             this.parameters = [
-                ["Number of Snakes", 500, "The number of snakes in each generation."],
+                ["Number of Snakes", 800, "The number of snakes in each generation."],
                 ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
                 ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
                 ["Likely-hood Mutations", 1, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second."],
                 ["Number of Runs", 5, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path."],
                 ["Mode Normalization", 0, "Related to the above, this is how the actual score is selected from the scores above. 0-median, 1-mean"],
-                ["Ticks per Apple Score", 50, "The amount of ticks a snake must survive to get the same score as they would from eating an apple."],
-                ["Max Time Score", 0.999, "The max score (in apples) a snake can get by surviving and not eating apples."],
-                ["Ticks till Time Out", 100, "The amount of ticks a snake can survive without eating any apples, if it goes past this number it dies."],
-                ["Ticks till Time Out Growth", 10, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple."],
-                ["Percentage Survive", 0.05, "The percentage of each generation that will survive and compete in the next generation unchanged."],
-                ["Percentage Parents", 0.2, "The percentage of each generation that lives long enough to give birth to children."],
+                ["Ticks per Apple Score", 40, "The amount of ticks a snake must survive to get the same score as they would from eating an apple."],
+                ["Max Time Score", 2.999, "The max score (in apples) a snake can get by surviving and not eating apples."],
+                ["Ticks till Time Out", 200, "The amount of ticks a snake can survive without eating any apples, if it goes past this number it dies."],
+                ["Ticks till Time Out Growth", 20, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple."],
+                ["Percentage Survive", 0.02, "The percentage of each generation that will survive and compete in the next generation unchanged."],
+                ["Percentage Parents", 0.25, "The percentage of each generation that lives long enough to give birth to children."],
                 ["Parent Selection Shape", 0.8, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often. It is clamped to (0, 2]"]
             ];
         }
@@ -122,8 +122,8 @@ class Evolution{
         this.parameters[12][1] = Math.min(this.parameters[12][1], 2);
 
         // scoring function
-        this.scoreFunc = function (score, timeSinceLastApple) {
-            return score + Math.min(timeSinceLastApple / this.parameters[6][1], this.parameters[7][1]);
+        this.scoreFunc = function (score, timeSinceLastApple, appleVal) {
+            return score + Math.min(timeSinceLastApple / this.parameters[6][1], this.parameters[7][1]) * appleVal;
         };
 
         // timeout function
@@ -213,7 +213,7 @@ class Evolution{
         let pickRanParent = function () {
             return Math.floor(fI((Math.random() * (max-min)) + min));
         };
-        // console.log(`numParents: ${numParents}`);
+        console.log(`numParents: ${numParents}`);
 
         // pick parents, clone, mutate, make offspring until next generation is filled
         while(idx < numPerGen){
@@ -281,8 +281,8 @@ class Evolution{
     // function called every once in a while, begins new snakes when needed, updates visible parameters
     update(){
         // update progress
-        this.runningProgress = Atomics.load(this.runningVars, 0);
-        console.log(`update, progress: ${this.runningProgress}, numFinished: ${Atomics.load(this.runningVars, 2)}`);
+        this.runningProgress = Atomics.load(this.runningVars, 2);
+        console.log(`update, numFinished: ${this.runningProgress}`);
         
         // finished
         if(Atomics.load(this.runningVars, 2) >= this.parameters[0][1]){
@@ -308,6 +308,8 @@ class Evolution{
             clearInterval(this.myInterval);
         }
 
+        console.log(`running vars: [${Atomics.load(this.runningVars, 0)}, ${Atomics.load(this.runningVars, 1)}, ${Atomics.load(this.runningVars, 2)}]`);
+
         // console.log("finish, before sort, results:");
         // console.log(this.runningResults);
 
@@ -330,6 +332,8 @@ class Evolution{
     startNextPrivate(){
         let idx = Atomics.load(this.runningVars, 0);
 
+        // index (of the next snake to be started), number running, number finished
+
         // end if no more to do
         if(idx >= this.nextGeneration.length){
             return false;
@@ -345,6 +349,7 @@ class Evolution{
                 Atomics.sub(this.runningVars, 0, 1);
             }
             else{
+                Atomics.add(this.runningVars, 1, 1);
                 runner.runNext();
             }
         }
@@ -359,6 +364,7 @@ class Evolution{
                 Atomics.sub(this.runningVars, 0, num);
             }
             else{
+                Atomics.add(this.runningVars, 1, runner.runners.length);
                 runner.start();
             }
         }
@@ -385,7 +391,7 @@ class Evolution{
         // update vars - // index, number running, number finished
         let numFinished = index - origIndex;
         // number running
-        Atomics.sub(this.runningVars, 1, numFinished);
+        Atomics.sub(this.runningVars, 1, 2);
         // number finished
         Atomics.add(this.runningVars, 2, numFinished);
     }

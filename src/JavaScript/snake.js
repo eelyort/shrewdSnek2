@@ -62,26 +62,20 @@ class Snake extends Component{
     updateParentRunner(singleSnakeRunnerIn){
         this.mySingleSnakeRunner = singleSnakeRunnerIn;
         this.mySingleSnakeRunner.grid[this.startHeadPos] = 1;
-        // alert("gridSize snake update to: " + this.gridSize);
     }
+
     // for printing purposes
     getDecision(keyEvent){
-        // if(keyEvent != null){
-        //     alert("Snake getDecision called with keyEvent: " + keyEvent);
-        // }
         return this.myBrain.getDecision(this.myInput.generateInput(keyEvent));
     }
     // updates direction, should be called only on key events
     updateDecision(keyEvent){
         let decision = this.getDecision(keyEvent);
-        // if(keyEvent != null){
-        //     alert("decision: " + decision);
-        // }
 
         // filter out useless information
-        if(decision == 0 || decision == 1 || decision == 2 || decision == 3){
+        if(decision === 0 || decision === 1 || decision === 2 || decision === 3){
             // make it so u cannot instantly kill self by going backwards
-            if(!((decision > 1 && decision-2 == this.previousDir) || (decision < 2 && decision+2 == this.previousDir))) {
+            if(!((decision > 1 && decision-2 === this.previousDir) || (decision < 2 && decision+2 === this.previousDir))) {
                 this.myDirection = decision;
             }
         }
@@ -89,6 +83,8 @@ class Snake extends Component{
     // actually moves the snake on the board
     // returns false if dead, true otherwise
     makeMove(){
+        this.updateDecision(null);
+
         let adjacent = 0;
         switch (this.myDirection) {
             case 0:
@@ -113,8 +109,7 @@ class Snake extends Component{
         let newPos = this.myHeadPos + adjacent;
 
         // running into wall or self
-        if(newPos < 0 || newPos >= grid.length || grid[newPos] == -1 || grid[newPos] == 1){
-            // console.log(`Dead: toErase.len: ${this.bodySegsToErase.size}, toDraw.len: ${this.bodySegsToDraw.size}, bodySegs.len: ${this.myBodySegs.size}`);
+        if(newPos < 0 || newPos >= grid.length || grid[newPos] === -1 || grid[newPos] === 1){
             return false;
         }
 
@@ -130,10 +125,8 @@ class Snake extends Component{
         }
 
         // apple
-        if(grid[newPos] == 2){
-            // console.log("Eating apple, this.appleVal: " + this.appleVal);
+        if(grid[newPos] === 2){
             this.myLength += this.appleVal;
-            // alert("Ate apple");
             this.mySingleSnakeRunner.appleEaten();
         }
 
@@ -147,51 +140,20 @@ class Snake extends Component{
             this.bodySegsToDraw.enqueue(newPos);
         }
 
-        // console.log(`end of snake makeMove(), bodySegsToDraw.size: ${this.bodySegsToDraw.size}, this.bodySegsToErase.size: ${this.bodySegsToErase.size}`);
-
         return true;
-    }
-    // processes one tick, returns the same as makeMove()
-    makeTick(){
-        this.updateDecision(null);
-
-        return this.makeMove();
     }
     // draw
     draw(ctx){
-        let width = ctx.canvas.width;
         // width/height of one grid square
-        let step = width/this.gridSize;
+        let step = ctx.canvas.width/this.gridSize;
+
         // draw snake different color if ded
-        if(this.mySingleSnakeRunner.running) {
+        if(!this.mySingleSnakeRunner.dead) {
             ctx.fillStyle = snakeColor;
-            // console.log("alive");
         }
         else{
             ctx.fillStyle = snakeDedColor;
         }
-
-        // // weird drawing glitches on first draw
-        // if(!this.firstDrawn){
-        //     this.firstDrawn = true;
-        //     ctx.canvas.width = width;
-        //     ctx.canvas.height = width;
-        //
-        //     // draw the starting block
-        //     if(this.mySingleSnakeRunner.grid[this.startHeadPos] === 1){
-        //         let r = Math.floor(this.startHeadPos / (this.gridSize + 2));
-        //         // minus one to account for the padding
-        //         let c = this.startHeadPos % (this.gridSize + 2) - 1;
-        //
-        //         ctx.beginPath();
-        //         ctx.rect(c * step, r * step, step, step);
-        //         ctx.fill();
-        //         ctx.closePath();
-        //     }
-        //     this.drawAllBodySegs(ctx, step);
-        //     console.log("bodySegs: " + this.myBodySegs);
-        //     return;
-        // }
 
         // full draw: assumed canvas is cleared, go through and draw all body segments
         if(!this.focused){
@@ -200,7 +162,7 @@ class Snake extends Component{
         // partial draw, only erase the tail parts and draw the head parts
         else{
             // the very specific case of the snake just dying so only its front few segments are red
-            if(!this.mySingleSnakeRunner.running){
+            if(this.mySingleSnakeRunner.dead){
                 this.drawAllBodySegs(ctx, step);
             }
             else {
@@ -209,14 +171,7 @@ class Snake extends Component{
                     let currVal = this.bodySegsToDraw.poll();
 
                     if(this.mySingleSnakeRunner.grid[currVal] === 1) {
-                        let r = Math.floor(currVal / (this.gridSize + 2));
-                        // minus one to account for the padding
-                        let c = currVal % (this.gridSize + 2) - 1;
-
-                        ctx.beginPath();
-                        ctx.rect(c * step, r * step, step, step);
-                        ctx.fill();
-                        ctx.closePath();
+                        this.drawSquare(ctx, currVal, step);
                     }
                 }
             }
@@ -241,17 +196,23 @@ class Snake extends Component{
 
         while(curr != null){
             let currVal = curr.myVal;
-            let r = Math.floor(currVal / (this.gridSize+2));
-            // minus one to account for the padding
-            let c = currVal % (this.gridSize+2) - 1;
 
-            ctx.beginPath();
-            ctx.rect(c*step, r*step, step, step);
-            ctx.fill();
-            ctx.closePath();
+            this.drawSquare(ctx, currVal, step);
 
             curr = curr.myNext;
         }
+    }
+
+    // draws one segment
+    drawSquare(ctx, val, step){
+        let r = Math.floor(val / (this.gridSize+2));
+        // minus one to account for the padding
+        let c = val % (this.gridSize+2) - 1;
+
+        ctx.beginPath();
+        ctx.rect(c*step, r*step, step, step);
+        ctx.fill();
+        ctx.closePath();
     }
     // returns a copy of this snake
     cloneMe(){

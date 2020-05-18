@@ -1,3 +1,7 @@
+if(-1){
+    console.log("hi");
+}
+
 console.log(-1 % 2 === -1);
 
 if(-1 % 2){

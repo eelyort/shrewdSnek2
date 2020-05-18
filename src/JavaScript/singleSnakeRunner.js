@@ -43,7 +43,6 @@ class SingleSnakeRunner{
         this.intervalID = null;
 
         // still running
-        this.paused = false;
         this.running = true;
         // master kill switch
         this.dead = false;
@@ -61,29 +60,23 @@ class SingleSnakeRunner{
     changeTickRate(newVal){
         this.tickRate = newVal;
 
-        // milliseconds btw ticks
-        let tickInterval = 1000 / this.tickRate;
-
         // clear previous
         if(this.intervalID != null){
             clearInterval(this.intervalID);
         }
 
         // start new
-        this.intervalID = setInterval(this.gameClock.bind(this), tickInterval);
+        this.intervalID = setInterval(this.tick.bind(this), 1000 / this.tickRate);
     }
     // start
     startMe(){
         // start
-        // this.then = Date.now();
-        // this.now = this.then;
         this.changeTickRate(this.tickRate);
     }
     // function which acts as if the menu or something just focused on this and began drawing it every draw call
     focusMe(){
-        // console.log("runner focusMe() called");
         this.focused = true;
-        // this.mySnake.focusMe();
+        this.mySnake.focusMe();
     }
     focusEnd(){
         this.focused = false;
@@ -91,55 +84,29 @@ class SingleSnakeRunner{
         this.mySnake.focusEnd();
     }
 
-    // function which handles the clock
-    gameClock(){
-        // master kill switch
-        if(this.dead){
-            return;
-        }
-
-        // game still running
-        if(this.running && !this.paused) {
-            this.tick();
-        }
-        // game ended
-        else if(!this.running && !this.paused){
-            // console.log("Game finished");
-            this.finish();
-            this.paused = true;
-        }
-    }
-
     // one game tick
     tick(){
-        this.timeTicks++;
+        // game still running
+        if(this.running) {
+            this.timeTicks++;
 
-        this.ticksSinceApple++;
-        // time out
-        if(this.tickTimeOut && this.ticksSinceApple > this.tickTimeOut(this.mySnake.myLength)){
-            this.running = false;
-        }
+            this.ticksSinceApple++;
+            // time out
+            if (this.tickTimeOut && this.ticksSinceApple > this.tickTimeOut(this.mySnake.myLength)) {
+                this.finish();
+                return;
+            }
 
-        // run the snake
-        if(!this.mySnake.makeTick()){
-            this.running = false;
-        }
-        // spawn apple
-        if(!this.appleSpawned){
-            // let r, c, index;
-            // while(!this.appleSpawned) {
-            //     r = Math.floor(Math.random() * this.gridSize);
-            //     c = Math.floor(Math.random() * this.gridSize);
-            //     index = (r * (this.gridSize + 2)) + c + 1;
-            //
-            //     if(this.grid[index] == 0){
-            //         this.appleSpawned = true;
-            //         this.grid[index] = 2;
-            //         this.applePosition = index;
-            //     }
-            // }
-            this.appleSpawn();
-            this.ticksSinceApple = 0;
+            // run the snake
+            if (!this.mySnake.makeMove()) {
+                this.finish();
+                return;
+            }
+            // spawn apple
+            if (!this.appleSpawned) {
+                this.appleSpawn();
+                this.ticksSinceApple = 0;
+            }
         }
     }
 
@@ -158,7 +125,7 @@ class SingleSnakeRunner{
 
     // draw, call from outside
     draw(ctx){
-        if(!this.running){
+        if(this.dead){
             // draw ded snek
             this.mySnake.draw(ctx);
 
@@ -203,25 +170,29 @@ class SingleSnakeRunner{
 
     // pause the game, call from outside
     pause(){
-        this.paused = true;
+        this.running = false;
     }
 
     // unpause the game, call from outside
     unpause(){
-        this.paused = false;
-        // this.gameClock();
+        this.running = true;
     }
 
     // finish and callback
     finish(){
+        this.kill();
         this.callBack();
-        this.dead = true;
-        // this.score = this.mySnake.myLength;
-        // this.draw();
     }
 
     // kills the thread
     kill(){
         this.dead = true;
+
+        this.running = false;
+
+        // clear previous
+        if(this.intervalID != null){
+            clearInterval(this.intervalID);
+        }
     }
 }

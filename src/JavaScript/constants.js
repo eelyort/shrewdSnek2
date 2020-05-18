@@ -7,7 +7,7 @@ const buttonColor = "red";
 const defaultFPS = 30;
 
 // tick rate at which the evolving species are run
-const speciesRunnerTickRate = 6000;
+const speciesRunnerTickRate = 600;
 // default scoring function, just returns score, no time sensitivity
 const defaultScoreFunc = function (score, timeSinceLastApple) {
     return score;
@@ -31,7 +31,7 @@ const subCanvasID = "snakeSubCanvas";
 const snakeNameChars = 12;
 
 // max number of threads allowed
-const maxNumThreads = 500;
+const maxNumThreads = 200;
 
 // number of times per second the display for evolution updates
 const evolutionUpdatePerSec = 2;

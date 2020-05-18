@@ -10,17 +10,22 @@ class SiblingRunner{
         // the runners with the scores
         this.runners = Array.apply(null, {length: snakesIn.length});
         for(let i = 0; i < this.runners.length; i++){
-            this.runners[i] = [new SpeciesRunner(snakesIn[i], numRuns, this.callback.bind(this), scoringFunction, timeoutFunction, modeIn), 0];
+            this.runners[i] = [new SpeciesRunner(snakesIn[i], numRuns, this.callback.bind(this), scoringFunction, timeoutFunction, modeIn, i), 0];
         }
 
         this.currIndex = 0;
+        let shareBuffer = new SharedArrayBuffer(Int16Array.BYTES_PER_ELEMENT);
+        this.numFinished = new Int16Array(shareBuffer);
+        Atomics.store(this.numFinished, 0, 0);
     }
     start(){
         if(this.currIndex === 0) {
-            // single run
-            this.runners[0][0].runNext();
+            // // single run
+            // this.runners[0][0].runNext();
             // multi thread
-
+            for (this.currIndex; this.currIndex < this.runners.length; this.currIndex++) {
+                this.runners[this.currIndex][0].runNext();
+            }
         }
         else{
             console.log("start() called twice on SiblingRunner");
@@ -28,10 +33,16 @@ class SiblingRunner{
     }
     // callback function
     callback(index, snakeScores){
-        this.runners[this.currIndex][1] = snakeScores[0][1];
+        // // single thread
+        // this.runners[this.currIndex][1] = snakeScores[0][1];
+        //
+        // this.currIndex++;
 
-        this.currIndex++;
-        if(this.currIndex === this.runners.length){
+        // multi thread
+        this.runners[index][1] = snakeScores[0][1];
+        Atomics.add(this.numFinished, 0, 1);
+
+        if(Atomics.load(this.numFinished, 0) === this.runners.length){
             // finish
             // sort scores
             this.runners.sort(function (a, b) {
@@ -45,8 +56,8 @@ class SiblingRunner{
             }
             this.myCallback(this.index, ans);
         }
-        else{
-            this.runners[this.currIndex][0].runNext();
-        }
+        // else{
+        //     this.runners[this.currIndex][0].runNext();
+        // }
     }
 }

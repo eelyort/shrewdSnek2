@@ -48,7 +48,7 @@ class SpeciesRunner{
     // callback called whenever an instance finishes
     endOne(){
         // record the score this run got
-        this.scores[this.currIndex] = this.scoreFunc(this.runningInstance.mySnake.myLength, this.runningInstance.ticksSinceApple);
+        this.scores[this.currIndex] = this.scoreFunc(this.runningInstance.mySnake.myLength, this.runningInstance.ticksSinceApple, this.origSnake.appleVal);
 
         // update index and run next one
         this.currIndex++;

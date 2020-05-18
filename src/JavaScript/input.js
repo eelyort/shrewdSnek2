@@ -11,12 +11,25 @@ class Input extends Component{
         this.inputID = -1;
     }
     generateInput(keyEvent){
-        return [];
+        let arr = Array.apply(null, {length: this.inputLength});
+        for(let i = 0; i < arr.length; i++){
+            arr[i] = 0;
+        }
+
+        this.getInput(keyEvent, arr);
+
+        return arr;
+    }
+    // where all the actual code logic should be
+    getInput(keyEvent, array, offset = 0){
+        // do nothing
+        console.log("!!! Empty getInput Called !!!");
+        // return array;
     }
     // returns a copy of this input
     cloneMe(){
         let clone = new Input();
-        clone.generateInput = this.generateInput;
+        clone.getInput = this.getInput;
         clone.inputLength = this.inputLength;
         return clone;
     }
@@ -60,14 +73,9 @@ class MultipleInput extends Input{
         let currNode = this.myInputs.startNode;
         while(currNode){
             // get input from current module
-            let tempIn = currNode.myVal.generateInput(keyEvent);
-            // console.log(`GenerateInput, currNode: ${currNode}, currNode.myVal: ${currNode.myVal.componentName}, tempIn: ${tempIn}, .generateInput: ${currNode.myVal.generateInput}`);
+            currNode.myVal.getInput(keyEvent, ansInput, index);
 
-            // copy the contents
-            for (let i = 0; i < tempIn.length; i++) {
-                ansInput[index] = tempIn[i];
-                index++;
-            }
+            index += currNode.myVal.inputLength;
 
             // go to the next module
             currNode = currNode.myNext;
@@ -76,6 +84,8 @@ class MultipleInput extends Input{
         // return the result
         return ansInput;
     }
+
+
     // returns a copy of this input, object type decays, but all functionality is preserved
     cloneMe(snake){
         let clone = new MultipleInput();
@@ -111,26 +121,27 @@ class PlayerControlledInput extends Input{
         this.componentName = "Player Controlled Input";
         this.componentDescription = "This takes input from the keyboard, namely WASD and the arrow keys"
     }
-    generateInput(keyEvent) {
-        if(keyEvent == null){
-            return [-1, -1, -1, -1];
+    getInput(keyEvent, array, offset = 0) {
+        if(!keyEvent){
+            array[offset] = -1;
+            return;
         }
-        // alert("generateInput with keyEvent.key: " + keyEvent.key);
-        let ansInput = [false, false, false, false];
-        if(keyEvent.key == "Up" || keyEvent.key == "ArrowUp" || keyEvent.key == "W" || keyEvent.key == "w"){
-            ansInput[0] = true;
+        // key pressed
+        if(keyEvent.key === "Up" || keyEvent.key === "ArrowUp" || keyEvent.key === "W" || keyEvent.key === "w"){
+            array[offset] = 1;
         }
-        else if(keyEvent.key == "Right" || keyEvent.key == "ArrowRight" || keyEvent.key == "D" || keyEvent.key == "d"){
-            ansInput[1] = true;
+        else if(keyEvent.key === "Right" || keyEvent.key === "ArrowRight" || keyEvent.key === "D" || keyEvent.key === "d"){
+            array[1 + offset] = 1;
         }
-        else if(keyEvent.key == "Down" || keyEvent.key == "ArrowDown" || keyEvent.key == "S" || keyEvent.key == "s"){
-            ansInput[2] = true;
+        else if(keyEvent.key === "Down" || keyEvent.key === "ArrowDown" || keyEvent.key === "S" || keyEvent.key === "s"){
+            array[2 + offset] = 1;
         }
-        else if(keyEvent.key == "Left" || keyEvent.key == "ArrowLeft" || keyEvent.key == 'A' || keyEvent.key == 'a') {
-            ansInput[3] = true;
+        else if(keyEvent.key === "Left" || keyEvent.key === "ArrowLeft" || keyEvent.key === 'A' || keyEvent.key === 'a') {
+            array[3 + offset] = 1;
         }
-        // alert("ansInput: " + ansInput);
-        return ansInput;
+        else{
+            array[offset] = -1;
+        }
     }
 }
 
@@ -149,26 +160,18 @@ class DirectionalInput extends Input{
         this.componentDescription = "This input effectively looks in every specified direction and returns the minimum distance to the target values.";
     }
     // raycasts in every direction in adjacents, returning the minimum distance to vals or wall
-    generateInput(keyEvent) {
-        // init empty array
-        let ans = Array.apply(null, {length: this.myAdjacents.length});
-        for(let i = 0; i < ans.length; i++){
-            ans[i] = 0;
-        }
-
+    getInput(keyEvent, array, offset = 0) {
         // helper vars
         let head = this.mySnake.myHeadPos;
         let grid = this.mySnake.mySingleSnakeRunner.grid;
-
-        // console.log(`Top of generateInput: adjacents: ${this.myAdjacents}`);
 
         // for each direction in adjacents
         for (let i = 0; i < this.myAdjacents.length; i++) {
             let adj = this.myAdjacents[i];
 
             // ignore adjacent's that would cause an infinite loop
-            if(adj === 0){
-                ans[i] = 0;
+            if(!adj){
+                array[i + offset] = 0;
                 continue;
             }
 
@@ -184,13 +187,8 @@ class DirectionalInput extends Input{
                 dist++;
             }
 
-            ans[i] = dist;
+            array[i + offset] = dist;
         }
-
-        // console.log(ans);
-
-        // return
-        return ans;
     }
     cloneMe(){
         let adj = Array.apply(null, {length: this.myAdjacents.length});
@@ -269,11 +267,11 @@ class SimpleInput extends Input{
         super(2);
     }
     // returns headpos, gridsize
-    generateInput(keyEvent) {
+    getInput(keyEvent, array, offset = 0) {
         if(keyEvent){
-            // console.log("hi");
-            return [-1, -1];
+            array[offset] = -1;
         }
-        return [this.mySnake.myHeadPos, this.mySnake.gridSize];
+        array[offset] = this.mySnake.myHeadPos;
+        array[1 + offset] = this.mySnake.gridSize;
     }
 }
