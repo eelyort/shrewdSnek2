@@ -1,5 +1,5 @@
 // objects (functions really) that are used to normalize a single layer
-class BaseNormalizer extends Component{
+class Normalizer extends Component{
     constructor(id){
         super(id);
     }
@@ -12,7 +12,7 @@ class BaseNormalizer extends Component{
         }
     }
     cloneMe(){
-        return new BaseNormalizer();
+        return new Normalizer();
     }
     static parse(str){
         return super.parse(str, normalizerPrototypes);
@@ -20,7 +20,7 @@ class BaseNormalizer extends Component{
 }
 
 // tanh function - NOTE: default
-class TanhNormalizer extends BaseNormalizer{
+class TanhNormalizer extends Normalizer{
     constructor(){
         super(0);
 
@@ -36,7 +36,7 @@ class TanhNormalizer extends BaseNormalizer{
 }
 
 // Z normalization - to standard normal distribution
-class ZNormalizer extends BaseNormalizer{
+class ZNormalizer extends Normalizer{
     constructor(){
         super(1);
 
@@ -76,7 +76,7 @@ class ZNormalizer extends BaseNormalizer{
 }
 
 // min-max, linear shift to [0,1]
-class MinMaxLinearNormalization extends BaseNormalizer{
+class MinMaxLinearNormalization extends Normalizer{
     constructor(){
         super(2);
 
@@ -120,7 +120,7 @@ class MinMaxLinearNormalization extends BaseNormalizer{
 }
 
 // treats the column as a vector, finds unit vector
-class UnitVectorNormalization extends BaseNormalizer{
+class UnitVectorNormalization extends Normalizer{
     constructor(){
         super(3);
 

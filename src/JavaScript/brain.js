@@ -47,7 +47,19 @@ class Brain extends Component{
         // do nothing
     }
     static parse(str){
-        return super.parse(str, brainPrototypes);
+        let ans = super.parse(str, brainPrototypes);
+        if(ans.componentID === 2){
+            ans.helperParse();
+        }
+
+        return ans;
+    }
+    // made to parse the first evolutions and no more
+    static OLDPARSE(str){
+        console.log("OLDPARSE:");
+        let ans = super.parse(str, brainPrototypes);
+        Object.setPrototypeOf(ans.myNormalizer, TanhNormalizer.prototype);
+        return ans;
     }
 }
 
@@ -519,6 +531,21 @@ class NeuralNetBrain extends Brain{
         this.hasValues = true;
 
         // console.log(`initRandom() success: this.myMat: ${this.myMat}`);
+    }
+    // save/load methods
+    stringify() {
+        // problematic stuff
+        let tempNormalizer = this.myNormalizer;
+        this.myNormalizer = tempNormalizer.stringify();
+
+        let ans = JSON.stringify(this);
+
+        // put it back
+        this.myNormalizer = tempNormalizer;
+    }
+    helperParse(){
+        // get normalizer back
+        this.myNormalizer = Normalizer.parse(this.myNormalizer);
     }
 }
 

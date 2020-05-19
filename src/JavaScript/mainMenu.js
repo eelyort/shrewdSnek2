@@ -39,6 +39,7 @@ class MainMenu extends InteractableLayer{
         this.myInteractables.set("TEST3", new ButtonHTML(.7, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST3", this.TESTFUNC3.bind(this)));
         this.myInteractables.set("TEST4", new ButtonHTML(.6, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST4", this.TESTFUNC4.bind(this)));
         this.myInteractables.set("TEST5", new ButtonHTML(.7, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST5", this.TESTFUNC5.bind(this)));
+        this.myInteractables.set("TEST6", new ButtonHTML(.8, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST6", this.TESTFUNC6.bind(this)));
         // popups
         this.myPopUps = new Map();
         this.myPopUps.set("Draw", new DrawPopUp(.05, .05, 3, this.myGamePanel, this.myDocument, 40));
@@ -477,6 +478,34 @@ class MainMenu extends InteractableLayer{
     }
     TESTFUNC6(){
         console.log("test 6");
+        console.log("Starting speed test for clone methods:");
+        let numRuns = 10000;
+
+        console.log("Original .cloneMe():");
+        let results = [0, 0, 0];
+        let sum = 0;
+        for (let i = 0; i < results.length; i++) {
+            let then = Date.now();
+            for (let j = 0; j < numRuns; j++) {
+                let clone = loadedSnakes[this.selectedSnake].cloneMe();
+            }
+            results[i] = then - Date.now();
+            sum += results[i];
+        }
+        console.log(`Results: ${results}, average: ${sum/results.length}`);
+
+        console.log("\nNew save/load:");
+        results = [0, 0, 0];
+        sum = 0;
+        for (let i = 0; i < results.length; i++) {
+            let then = Date.now();
+            for (let j = 0; j < numRuns; j++) {
+                let clone = Snake.parse(loadedSnakes[this.selectedSnake].stringify());
+            }
+            results[i] = then - Date.now();
+            sum += results[i];
+        }
+        console.log(`Results: ${results}, average: ${sum/results.length}`);
     }
     TESTCALLBACK(a){
         console.log("Test Callback: " + a.toString());
