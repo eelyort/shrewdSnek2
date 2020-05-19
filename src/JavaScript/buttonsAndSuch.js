@@ -69,6 +69,28 @@ class CustomQueue{
         }
         return str;
     }
+    // these two only work for primitive types
+    stringify(){
+        // save the data to an array
+        let temp = Array.apply(null, {length: this.size});
+        let curr = this.startNode;
+        for (let i = 0; i < temp.length; i++) {
+            temp[i] = curr.myVal;
+            curr = curr.myNext;
+        }
+
+        return JSON.stringify(temp);
+    }
+    static parse(str){
+        let ans = new CustomQueue();
+        let arr = JSON.parse(str);
+
+        for (let i = 0; i < arr.length; i++) {
+            ans.enqueue(arr[i]);
+        }
+
+        return ans;
+    }
 }
 
 // default button class to make things easier
@@ -925,6 +947,8 @@ class SelectCarousel extends BaseHTMLElement{
         this.myMembers = [];
         this.createMembers();
         this.setFocus(this.currentlySelected);
+        this.leftButton.myButton.style.zIndex = this.myMembers.length + 2;
+        this.rightButton.myButton.style.zIndex = this.myMembers.length + 2;
     }
     onResize(){
         this.leftButton.onResize();

@@ -1,6 +1,9 @@
 // this class is just a base class for all snake components, stores name and description
 class Component{
-    constructor(name = "", desc = "") {
+    constructor(id, name = "", desc = "") {
+        // class specific id for easier JSON.parse setting prototypes
+        this.componentID = id;
+
         this.componentName = name;
         this.componentDescription = desc;
 
@@ -21,5 +24,21 @@ class Component{
             return this.componentDescription + ".";
         }
         return this.defaultDesc;
+    }
+    // turns this into a json object
+    stringify(){
+        return JSON.stringify(this);
+    }
+    cloneComponents(clone){
+        clone.componentID = this.componentID;
+
+        clone.componentName = this.componentName;
+        clone.componentDescription = this.componentDescription
+    }
+    // override by children
+    static parse(str, arr){
+        let ans = JSON.parse(str);
+        Object.setPrototypeOf(ans, arr[ans.componentID]);
+        return ans;
     }
 }

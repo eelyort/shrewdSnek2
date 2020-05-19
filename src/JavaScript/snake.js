@@ -2,7 +2,7 @@
 //  There should be very little actual code here
 class Snake extends Component{
     constructor(inputIn, brainIn, headPosIn, startLengthIn, appleVal, gridSizeIn, nameIn = "", descriptionIn = "") {
-        super("", descriptionIn);
+        super(0, "", descriptionIn);
         this.setName(nameIn);
         // set variables
         // MOVED TO SINGLESNAKERUNNER CONSTRUCTOR
@@ -224,5 +224,54 @@ class Snake extends Component{
         clone.componentName = this.componentName;
         clone.componentDescription = this.componentDescription;
         return clone;
+    }
+    // stringify a snake for storage
+    stringify() {
+        // temporarily save the problematic objects
+        // queue's
+        let tempDrawQ = this.bodySegsToDraw;
+        let tempEraseQ = this.bodySegsToErase;
+        let bodySegsQ = this.myBodySegs;
+        // objects
+        let tempInput = this.myInput;
+        let tempBrain = this.myBrain;
+
+        // replace the problematic objects with working versions
+        // queue's
+        this.bodySegsToDraw = tempDrawQ.stringify();
+        this.bodySegsToErase = tempEraseQ.stringify();
+        this.myBodySegs = bodySegsQ.stringify();
+        // objects
+        this.myInput = tempInput.stringify();
+        this.myBrain = tempBrain.stringify();
+
+        let ans = JSON.stringify(this);
+
+        // put the problematic objects back
+        // queue's
+        this.bodySegsToDraw = tempDrawQ;
+        this.bodySegsToErase = tempEraseQ;
+        this.myBodySegs = bodySegsQ;
+        // objects
+        this.myInput = tempInput;
+        this.myBrain = tempBrain;
+
+        return ans;
+    }
+    // pull a snake out of storage
+    static parse(str){
+        let ans = JSON.parse(str);
+        Object.setPrototypeOf(ans, Snake.prototype);
+
+        // un stringify the input
+        // queue's
+        ans.bodySegsToDraw = CustomQueue.parse(ans.bodySegsToDraw);
+        ans.bodySegsToErase = CustomQueue.parse(ans.bodySegsToErase);
+        ans.myBodySegs = CustomQueue.parse(ans.myBodySegs);
+        // objects
+        ans.myInput = Input.parse(ans.myInput);
+        ans.myBrain = Brain.parse(ans.myBrain);
+
+        return ans;
     }
 }

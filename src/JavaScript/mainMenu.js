@@ -36,6 +36,9 @@ class MainMenu extends InteractableLayer{
         }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
         this.myInteractables.set("TEST", new ButtonHTML(.6, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
         this.myInteractables.set("TEST2", new ButtonHTML(.8, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST2", this.TESTFUNC2.bind(this)));
+        this.myInteractables.set("TEST3", new ButtonHTML(.7, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST3", this.TESTFUNC3.bind(this)));
+        this.myInteractables.set("TEST4", new ButtonHTML(.6, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST4", this.TESTFUNC4.bind(this)));
+        this.myInteractables.set("TEST5", new ButtonHTML(.7, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST5", this.TESTFUNC5.bind(this)));
         // popups
         this.myPopUps = new Map();
         this.myPopUps.set("Draw", new DrawPopUp(.05, .05, 3, this.myGamePanel, this.myDocument, 40));
@@ -390,21 +393,23 @@ class MainMenu extends InteractableLayer{
             this.TESTGENERATION.runGeneration();
         }
         else{
-            if(loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}` && this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
-                // save old
-                let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
-                snake.setName(`G${this.TESTGENERATION.generationNumber}`);
-                loadedSnakes.push(snake);
+            if(this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
+                if (loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}`) {
+                    // save old
+                    let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
+                    snake.setName(`G${this.TESTGENERATION.generationNumber}`);
+                    loadedSnakes.push(snake);
 
-                this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
+                    this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
+                }
+
+                // console.log("Next Generation");
+                this.TESTGENERATION.createNextGeneration();
+                // console.log(this.TESTGENERATION.nextGeneration);
+                setTimeout(function () {
+                    this.TESTGENERATION.runGeneration();
+                }.bind(this), 20);
             }
-
-            // console.log("Next Generation");
-            this.TESTGENERATION.createNextGeneration();
-            // console.log(this.TESTGENERATION.nextGeneration);
-            setTimeout(function () {
-                this.TESTGENERATION.runGeneration();
-            }.bind(this), 20);
         }
     }
     TESTFUNC2(){
@@ -433,6 +438,45 @@ class MainMenu extends InteractableLayer{
         this.updateSelectedSnake(loadedSnakes.length - 1);
 
         this.startSelectedSnake();
+    }
+    TESTFUNC3(){
+        console.log("test 3");
+        this.testInterval = setInterval(function () {
+            this.TESTFUNC();
+        }.bind(this), 20000);
+    }
+    TESTFUNC4(){
+        console.log("test 4");
+        if(this.testInterval){
+            clearInterval(this.testInterval);
+        }
+    }
+    TESTFUNC5(){
+        console.log("test 5");
+        let snek = loadedSnakes[this.selectedSnake].cloneMe();
+
+        console.log(snek);
+
+        console.log(`brain: ${JSON.stringify(snek.myBrain)}`);
+        console.log(`brain2: ${snek.myBrain.stringify()}`);
+
+        // console.log(`input: ${JSON.stringify(snek.myInput)}`);
+        console.log(`input2: ${snek.myInput.stringify()}`);
+
+        console.log("Input: orig:");
+        console.log(snek.myInput);
+        console.log("saved and unsaved:");
+        console.log(Input.parse(snek.myInput.stringify()));
+
+        console.log("Snakes: ");
+        console.log(`snake2: ${snek.stringify()}`);
+        console.log("orig:");
+        console.log(snek);
+        console.log("saved and unsaved:");
+        console.log(Snake.parse(snek.stringify()));
+    }
+    TESTFUNC6(){
+        console.log("test 6");
     }
     TESTCALLBACK(a){
         console.log("Test Callback: " + a.toString());

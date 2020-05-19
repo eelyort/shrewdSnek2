@@ -26,26 +26,44 @@ else{
 console.log("\n");
 
 class hi{
-    constructor(n){
-        this.n = n;
+    constructor() {
+        this.a = "name";
     }
     hello(){
-        console.log(`Hello from hi: ${this.n}`);
+        console.log("hello");
     }
-    changeN(n){
-        console.log(`hi ${this.n} changing to ${n}`);
-        this.n = n;
+    static staticM(){
+        console.log("Static");
     }
 }
 
-let i = 0;
-for (; i < 5; i++) {
-    console.log(`i: ${i}`);
+class h2 extends hi{
+    constructor(){
+        super();
+    }
+    static staticM(){
+        console.log("Static2");
+    }
 }
 
-console.log();
+h2.staticM();
 
-console.log(1.1 % 1);
+let testHi = new hi();
+testHi.hello();
+
+console.log(`testHi.prototype: ${Object.getPrototypeOf(testHi)}`);
+
+let json = JSON.stringify(testHi);
+
+console.log(json);
+
+let testHi2 = JSON.parse(json);
+
+console.log(`2 proto: ${Object.getPrototypeOf(testHi2)}`);
+
+Object.setPrototypeOf(testHi2, hi.prototype);
+
+console.log(`two prototypes equal?: ${Object.getPrototypeOf(testHi) === Object.getPrototypeOf(testHi2)}`);
 
 // let shapeParam = 0.8;
 // let numParents = 100;
@@ -70,19 +88,6 @@ console.log(1.1 % 1);
 // }
 // console.log(a.substring(0, a.length - 1) + "]");
 
-let orig = new hi("generic name");
-orig.hello();
-orig.changeN("wassup");
-
-console.log("\nNext:");
-
-let next = JSON.parse(JSON.stringify(orig));
-console.log(`next: ${next}, next.n: ${next.n}, next.hello: ${next.hello}`);
-next.hello();
-next.changeN("nextName");
-
-orig.hello();
-next.hello();
 
 //
 // // Parent skeleton brain class

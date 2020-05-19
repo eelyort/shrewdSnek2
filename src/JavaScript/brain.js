@@ -2,10 +2,12 @@
 // Specifications
 //  -Takes in an "input" into method, gets decision (direction) out
 //  -Can mutate with many methods, variable parameters
-class SnakeBrain extends Component{
-    constructor(){
-        super();
+class Brain extends Component{
+    constructor(id){
+        super(id);
         this.brainID = -1;
+
+        this.componentName = "Empty Brain";
     }
     // takes in input(compress into array)
     // outputs a direction:
@@ -19,10 +21,11 @@ class SnakeBrain extends Component{
     }
     // returns a copy of this brain
     cloneMe(){
-        let clone = new SnakeBrain();
+        let clone = new Brain();
         clone.getDecision = this.getDecision;
-        clone.componentName = this.componentName;
-        clone.componentDescription = this.componentDescription;
+
+        this.cloneComponents(clone);
+
         return clone;
     }
     // private, meant to be used by other brains only
@@ -43,10 +46,13 @@ class SnakeBrain extends Component{
     updateWithInput(input){
         // do nothing
     }
+    static parse(str){
+        return super.parse(str, brainPrototypes);
+    }
 }
 
 // Path Brain, snake follows a path infinitely, made for Mother's Day
-class PathBrain extends SnakeBrain{
+class PathBrain extends Brain{
     // path format: array of values
     //  single number: goto that index
     //  array of [r, c]: goto that r, c
@@ -56,7 +62,7 @@ class PathBrain extends SnakeBrain{
     //   -3: south
     //   -4: west
     constructor(path){
-        super();
+        super(0);
 
         this.myRawPath = path;
         this.currIdx = 0;
@@ -211,10 +217,10 @@ class PathBrain extends SnakeBrain{
 }
 
 // Player controlled snake, basically just parses an array to a direction
-class PlayerControlledBrain extends SnakeBrain{
+class PlayerControlledBrain extends Brain{
     constructor(){
         // alert("Player Controlled Brain");
-        super();
+        super(1);
         this.brainID = 0;
 
         this.componentName = "Player Controlled Brain";
@@ -231,9 +237,9 @@ class PlayerControlledBrain extends SnakeBrain{
 }
 
 // Neural network brain - fixed topology and feedforward only
-class NeuralNetBrain extends SnakeBrain{
+class NeuralNetBrain extends Brain{
     constructor(normalizer, depth, width, startWeight, startBias){
-        super();
+        super(2);
 
         this.componentName = "Basic Neural Network";
         this.componentDescription = "This brain is a simple neural network, with a set depth and width. It can be used with most forms of machine learning. It makes all of its decisions via forward propagation.";
@@ -515,3 +521,5 @@ class NeuralNetBrain extends SnakeBrain{
         // console.log(`initRandom() success: this.myMat: ${this.myMat}`);
     }
 }
+
+const brainPrototypes = [PathBrain.prototype, PlayerControlledBrain.prototype, NeuralNetBrain.prototype];

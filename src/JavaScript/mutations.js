@@ -2,8 +2,8 @@
 //  pass it a brain - mutates a random weight/bias/node
 //  IMPORTANT: destructive, doesn't make a clone TODO: make clones in evolutionRunner
 class Mutation extends Component{
-    constructor(mutationParameters){
-        super();
+    constructor(id, mutationParameters){
+        super(id);
 
         // array of the parameters: this.mutationParameters[i] is the i-th parameter
         //  second dimension is: [0]-name, [1]-value, [2]-description
@@ -54,22 +54,24 @@ class Mutation extends Component{
         clone.mutateBrain = this.mutateBrain;
         
         // clone name and description
-        clone.componentName = this.componentName;
-        clone.componentDescription = this.componentDescription;
+        this.cloneComponents(clone);
         
         // clone params
         clone.mutationParameters = JSON.parse(JSON.stringify(this.mutationParameters));
 
         return clone;
     }
+    static parse(str){
+        return super.parse(str, mutationPrototypes);
+    }
 }
 
 // scales the value by a percentage
 class PercentMutation extends Mutation{
     constructor(){
-        super([
-            ["Minimum", 0, "The minimum scalar the weight can be multiplied by."],
-            ["Maximum", 2, "The maximum scalar the weight can be multiplied by."]
+        super(0, [
+            ["Minimum", 0.4, "The minimum scalar the weight can be multiplied by."],
+            ["Maximum", 1.6, "The maximum scalar the weight can be multiplied by."]
         ]);
 
         this.componentName = "Percent Mutation";
@@ -89,7 +91,7 @@ class PercentMutation extends Mutation{
 // replaces the weight with a random value
 class ReplaceMutation extends Mutation{
     constructor(){
-        super([
+        super(1, [
             ["Minimum", -1, "The minimum scalar the weight can be changed to."],
             ["Maximum", 1, "The maximum scalar the weight can be changed to."]
         ]);
@@ -108,9 +110,9 @@ class ReplaceMutation extends Mutation{
 // adds a random number
 class AddMutation extends Mutation{
     constructor(){
-        super([
-            ["Minimum", -1, "The minimum scalar added to the weight."],
-            ["Maximum", 1, "The maximum scalar added to the weight."]
+        super(2, [
+            ["Minimum", -0.5, "The minimum scalar added to the weight."],
+            ["Maximum", 0.5, "The maximum scalar added to the weight."]
         ]);
 
         this.componentName = "Addition/Subtraction Mutation";
@@ -127,7 +129,7 @@ class AddMutation extends Mutation{
 // changes the sign of the weight
 class NegateMutation extends Mutation{
     constructor(){
-        super([]);
+        super(3, []);
 
         this.componentName = "Negation Mutation";
         this.componentDescription = "This changes the sign of the selected weight";
@@ -140,7 +142,7 @@ class NegateMutation extends Mutation{
 // swaps x pairs of the weights on the currently selected node
 class SwapMutation extends Mutation{
     constructor() {
-        super([
+        super(4, [
             ["Number Pairs", 1, "The number of pairs of weight on the selected node to swap"],
             ["Include Biases", false, "Whether to allow bias swapping, this is not recommended because bias and weights are typically different."]
         ]);
@@ -219,3 +221,5 @@ class SwapMutation extends Mutation{
         }
     }
 }
+
+const mutationPrototypes = [PercentMutation.prototype, ReplaceMutation.prototype, AddMutation.prototype, NegateMutation.prototype, SwapMutation.prototype];

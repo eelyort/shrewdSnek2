@@ -44,19 +44,19 @@ class Evolution{
         if(arguments.length === 0 && this.parameters == null){
             console.log("Evolution setParams called with no arguments, adding default values");
             this.parameters = [
-                ["Number of Snakes", 800, "The number of snakes in each generation."],
+                ["Number of Snakes", 1600, "The number of snakes in each generation."],
                 ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
                 ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
-                ["Likely-hood Mutations", 1, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second."],
-                ["Number of Runs", 5, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path."],
+                ["Likely-hood Mutations", 3, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second."],
+                ["Number of Runs", 3, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path."],
                 ["Mode Normalization", 0, "Related to the above, this is how the actual score is selected from the scores above. 0-median, 1-mean"],
-                ["Ticks per Apple Score", 40, "The amount of ticks a snake must survive to get the same score as they would from eating an apple."],
-                ["Max Time Score", 2.999, "The max score (in apples) a snake can get by surviving and not eating apples."],
+                ["Ticks per Apple Score", 50, "The amount of ticks a snake must survive to get the same score as they would from eating an apple."],
+                ["Max Time Score", 0.999, "The max score (in apples) a snake can get by surviving and not eating apples."],
                 ["Ticks till Time Out", 200, "The amount of ticks a snake can survive without eating any apples, if it goes past this number it dies."],
-                ["Ticks till Time Out Growth", 20, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple."],
+                ["Ticks till Time Out Growth", 30, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple."],
                 ["Percentage Survive", 0.02, "The percentage of each generation that will survive and compete in the next generation unchanged."],
-                ["Percentage Parents", 0.25, "The percentage of each generation that lives long enough to give birth to children."],
-                ["Parent Selection Shape", 0.8, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often. It is clamped to (0, 2]"]
+                ["Percentage Parents", 0.2, "The percentage of each generation that lives long enough to give birth to children."],
+                ["Parent Selection Shape", 0.82, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often. It is clamped to (0, 2]"]
             ];
         }
 
@@ -165,9 +165,13 @@ class Evolution{
 
             let numMutations = originator.myBrain.myDepth * originator.myBrain.myWidth * 50;
 
-            // create the next generation with a bunch of mutated versions of the originator snake
             this.nextGeneration = Array.apply(null, {length: numPerGen});
-            for(let i = 0; i < this.nextGeneration.length; i++){
+
+            // have one snake of just the original un-cloned
+            this.nextGeneration[0] = new SpeciesRunner(originator.cloneMe(), this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], 0);
+
+            // create the next generation with a bunch of mutated versions of the originator snake
+            for(let i = 1; i < this.nextGeneration.length; i++){
 
                 let snake = originator.cloneMe();
 
@@ -213,7 +217,6 @@ class Evolution{
         let pickRanParent = function () {
             return Math.floor(fI((Math.random() * (max-min)) + min));
         };
-        console.log(`numParents: ${numParents}`);
 
         // pick parents, clone, mutate, make offspring until next generation is filled
         while(idx < numPerGen){
@@ -319,6 +322,7 @@ class Evolution{
         });
 
         // delete and TODO save? last generation
+        // TODO: callback
         // console.log(`Old generation being deleted at EvolutionRunner finish(), old gen: ${JSON.stringify(this.currentGeneration)}`);
         this.currentGeneration = this.runningResults;
 

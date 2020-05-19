@@ -1,7 +1,7 @@
 // objects (functions really) that are used to normalize a single layer
 class BaseNormalizer extends Component{
-    constructor(){
-        super();
+    constructor(id){
+        super(id);
     }
     normalizeOne(valIn){
         return valIn;
@@ -14,12 +14,15 @@ class BaseNormalizer extends Component{
     cloneMe(){
         return new BaseNormalizer();
     }
+    static parse(str){
+        return super.parse(str, normalizerPrototypes);
+    }
 }
 
 // tanh function - NOTE: default
 class TanhNormalizer extends BaseNormalizer{
     constructor(){
-        super();
+        super(0);
 
         this.componentName = "tanh Function Normalization";
         this.componentDescription = "This normalizes all values to between -1 and 1, is the best single node normalizer";
@@ -35,7 +38,7 @@ class TanhNormalizer extends BaseNormalizer{
 // Z normalization - to standard normal distribution
 class ZNormalizer extends BaseNormalizer{
     constructor(){
-        super();
+        super(1);
 
         this.mean = -999;
         this.stanDev = -999;
@@ -75,7 +78,7 @@ class ZNormalizer extends BaseNormalizer{
 // min-max, linear shift to [0,1]
 class MinMaxLinearNormalization extends BaseNormalizer{
     constructor(){
-        super();
+        super(2);
 
         this.min = 999;
         this.max = -999;
@@ -119,7 +122,7 @@ class MinMaxLinearNormalization extends BaseNormalizer{
 // treats the column as a vector, finds unit vector
 class UnitVectorNormalization extends BaseNormalizer{
     constructor(){
-        super();
+        super(3);
 
         this.mag = -1;
 
@@ -147,3 +150,5 @@ class UnitVectorNormalization extends BaseNormalizer{
         return new UnitVectorNormalization();
     }
 }
+
+const normalizerPrototypes = [TanhNormalizer.prototype, ZNormalizer.prototype, MinMaxLinearNormalization.prototype, UnitVectorNormalization.prototype];

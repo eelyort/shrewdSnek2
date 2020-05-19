@@ -1,8 +1,8 @@
 // similar to mutations.js, this deals with taking two "parents" and produces "offspring"
 //  works off of brains
 class Reproduction extends Component{
-    constructor(reproductionParams){
-        super();
+    constructor(id, reproductionParams){
+        super(id);
 
         // array of the parameters: this.mutationParameters[i] is the i-th parameter
         //  second dimension is: [0]-name, [1]-value, [2]-description
@@ -33,8 +33,7 @@ class Reproduction extends Component{
         clone.produceOffspring = this.produceOffspring;
 
         // clone name and description
-        clone.componentName = this.componentName;
-        clone.componentDescription = this.componentDescription;
+        this.cloneComponents(clone);
 
         // clone params
         // deepcopy array
@@ -42,12 +41,15 @@ class Reproduction extends Component{
 
         return clone;
     }
+    static parse(str){
+        return super.parse(str, reproductionPrototypes);
+    }
 }
 
 // swaps single pairs of weights
 class SingleWeightSwapReproduction extends Reproduction{
     constructor(){
-        super([
+        super(0, [
             ["Number of Pairs", 1, "The number of pairs of weights/biases to swap among the parents."]
         ]);
         
@@ -92,7 +94,7 @@ class SingleWeightSwapReproduction extends Reproduction{
 // swaps all the weights and biases of x nodes
 class NodeSwapReproduction extends Reproduction{
     constructor(){
-        super([
+        super(1, [
             ["Number of Swaps", 1, "Number of nodes to swap the weights/biases of."]
         ]);
         
@@ -130,7 +132,7 @@ class NodeSwapReproduction extends Reproduction{
 // swaps an entire layer of weights/biases
 class LayerSwapReproduction extends Reproduction{
     constructor(){
-        super([
+        super(2, [
             ["Number of Swaps", 1, "Number of layers to swap the weights/biases of."]
         ]);
 
@@ -157,3 +159,5 @@ class LayerSwapReproduction extends Reproduction{
         return [child1, child2];
     }
 }
+
+const reproductionPrototypes = [SingleWeightSwapReproduction.prototype, NodeSwapReproduction.prototype, LayerSwapReproduction.prototype];

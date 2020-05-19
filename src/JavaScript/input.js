@@ -4,8 +4,8 @@
 //  -Creates and returns an array
 //  -Inputlength is the length of the returned array
 class Input extends Component{
-    constructor(inputLength){
-        super();
+    constructor(id, inputLength){
+        super(id);
         this.mySnake = null;
         this.inputLength = inputLength;
         this.inputID = -1;
@@ -31,11 +31,34 @@ class Input extends Component{
         let clone = new Input();
         clone.getInput = this.getInput;
         clone.inputLength = this.inputLength;
+
+        this.cloneComponents(clone);
+
         return clone;
     }
     // called by snake constructor
     updateParentSnake(snake){
         this.mySnake = snake;
+    }
+    // stringify, circular structure disables straight JSON.stringify
+    stringify() {
+        let snek = this.mySnake;
+        this.mySnake = null;
+        let ans = JSON.stringify(this);
+        this.mySnake = snek;
+        return ans;
+    }
+    // parse
+    static parse(str){
+        let ans = super.parse(str, inputPrototypes);
+
+        // special for multiple input
+        if(ans.componentID === 0){
+            ans.helperParse();
+        }
+
+        return ans;
+
     }
 }
 
@@ -44,7 +67,7 @@ class Input extends Component{
 //  -Basically appends input arrays to each other
 class MultipleInput extends Input{
     constructor(){
-        super(0);
+        super(0, 0);
 
         this.myInputs = new CustomQueue();
         this.componentName = "Multiple Input";
@@ -108,6 +131,49 @@ class MultipleInput extends Input{
             curr = curr.myNext;
         }
     }
+    // stringify
+    stringify() {
+        // save the circular stuff into temp variables
+        let snake = this.mySnake;
+        let inputs = Array.apply(null, {length: this.myInputs.size});
+        for(let i = 0; i < inputs.length; i++){
+            inputs[i] = this.myInputs.poll();
+        }
+
+        // save the inputs here
+        this.myInputs = Array.apply(null, {length: inputs.length});
+        for(let i = 0; i < this.myInputs.length; i++){
+            this.myInputs[i] = inputs[i].stringify();
+        }
+
+        // delete the circular stuff
+        this.mySnake = null;
+
+        // generate json
+        let ans = JSON.stringify(this);
+
+        // put the circular stuff back
+        this.myInputs = new CustomQueue();
+        for (let i = 0; i < inputs.length; i++) {
+            this.myInputs.enqueue(inputs[i]);
+        }
+        this.mySnake = snake;
+
+        return ans;
+    }
+
+    // helper parse
+    helperParse(){
+        // console.log("Helper parse, this.strInputs: ");
+        // console.log(this.strInputs);
+
+        let saved = this.myInputs;
+
+        this.myInputs = new CustomQueue();
+        for (let i = 0; i < saved.length; i++) {
+            this.myInputs.enqueue(Input.parse(saved[i]));
+        }
+    }
 }
 
 // User input
@@ -115,7 +181,7 @@ class MultipleInput extends Input{
 class PlayerControlledInput extends Input{
     constructor(){
         // alert("Player Controlled Input");
-        super(4);
+        super(1, 4);
         this.inputID = 0;
 
         this.componentName = "Player Controlled Input";
@@ -148,10 +214,11 @@ class PlayerControlledInput extends Input{
 // searches in a direction for a specific grid value
 class DirectionalInput extends Input{
     constructor(adjacents, vals){
-        super(adjacents.length);
+        super(2, adjacents.length);
 
         // "step" with which to search
-        this.myAdjacents = adjacents;
+        this.originalAdjacents = adjacents;
+        this.myAdjacents = null;
         this.vals = vals;
 
         // console.log(`Directional Input, adjacents: ${this.myAdjacents} | vals: ${this.vals}`);
@@ -189,11 +256,13 @@ class DirectionalInput extends Input{
 
             array[i + offset] = dist;
         }
+
+        // console.log(array);
     }
     cloneMe(){
-        let adj = Array.apply(null, {length: this.myAdjacents.length});
+        let adj = Array.apply(null, {length: this.originalAdjacents.length});
         for(let i = 0; i < adj.length; i++){
-            adj[i] = this.myAdjacents[i];
+            adj[i] = this.originalAdjacents[i];
         }
 
         let valsN = Array.apply(null, {length: this.vals.length});
@@ -201,70 +270,116 @@ class DirectionalInput extends Input{
             valsN[i] = this.vals[i];
         }
 
-        return new DirectionalInput(adj, valsN);
+        let clone = new DirectionalInput(adj, valsN);
+        this.cloneComponents(clone);
+
+        return clone;
     }
     updateParentSnake(snake) {
         super.updateParentSnake(snake);
+
+        let gridSize = this.mySnake.gridSize;
+
+        // parse adjacents
+        this.myAdjacents = Array.apply(null, {length: this.originalAdjacents.length});
+        for(let i = 0; i < this.myAdjacents.length; i++){
+            if(typeof this.originalAdjacents[i] == "number"){
+                this.myAdjacents[i] = this.originalAdjacents[i];
+            }
+            else{
+                let key = this.originalAdjacents[i].toLowerCase();
+                let ans;
+                switch (key) {
+                    case 'n':
+                        ans = -(gridSize + 2);
+                        break;
+                    case 'ne':
+                        ans = -(gridSize + 2) + 1;
+                        break;
+                    case 'e':
+                        ans = 1;
+                        break;
+                    case 'se':
+                        ans = (gridSize + 2) + 1;
+                        break;
+                    case 's':
+                        ans = (gridSize + 2);
+                        break;
+                    case 'sw':
+                        ans = (gridSize + 2) - 1;
+                        break;
+                    case 'w':
+                        ans = -1;
+                        break;
+                    case 'nw':
+                        ans = -(gridSize + 2) - 1;
+                        break;
+                    default:
+                        console.log("UNKNOWN ADJACENT IN UPDATEWITHPARENTSNAKE");
+                }
+                this.myAdjacents[i] = ans;
+            }
+        }
     }
 }
 // raycasts all cardinal directions
 class CardinalDirectionalInput extends DirectionalInput{
     constructor(vals) {
-        super([0, 1, 0, -1], vals);
+        super(["N", "E", "S", "W"], vals);
 
         this.componentName = "Cardinal Direction";
         this.componentDescription = "This input effectively looks in every cardinal direction and returns the minimum distance to the target values.";
     }
-    // grab grid size and use to calculate adjacents
-    updateParentSnake(snake) {
-        super.updateParentSnake(snake);
-
-        let gridSize = this.mySnake.gridSize;
-        // N, E, S, W
-        this.myAdjacents = [-(gridSize+2), 1, (gridSize + 2), -1];
-
-        // console.log(`updateParentSnake, adj: ${this.myAdjacents} | vals: ${this.vals}`);
-    }
+    // // grab grid size and use to calculate adjacents
+    // updateParentSnake(snake) {
+    //     super.updateParentSnake(snake);
+    //
+    //     let gridSize = this.mySnake.gridSize;
+    //     // N, E, S, W
+    //     this.myAdjacents = [-(gridSize+2), 1, (gridSize + 2), -1];
+    //
+    //     // console.log(`updateParentSnake, adj: ${this.myAdjacents} | vals: ${this.vals}`);
+    // }
 }
 // intercardinal directions
 class InterCardinalDirectionalInput extends DirectionalInput{
     constructor(vals) {
-        super([0, 0, 0, 0], vals);
+        super(["NE", "SE", "SW", "NW"], vals);
 
         this.componentName = "Inter-cardinal Direction";
         this.componentDescription = "This input effectively looks in every inter-cardinal direction and returns the minimum distance to the target values.";
     }
-    // grab grid size and use to calculate adjacents
-    updateParentSnake(snake) {
-        super.updateParentSnake(snake);
-
-        let gridSize = this.mySnake.gridSize;
-        // NE, SE, SW, NW
-        this.myAdjacents = [-(gridSize+2) + 1, (gridSize + 2) + 1, (gridSize + 2) - 1, -(gridSize + 2) - 1];
-    }
+    // // grab grid size and use to calculate adjacents
+    // updateParentSnake(snake) {
+    //     super.updateParentSnake(snake);
+    //
+    //     let gridSize = this.mySnake.gridSize;
+    //     // NE, SE, SW, NW
+    //     this.myAdjacents = [-(gridSize+2) + 1, (gridSize + 2) + 1, (gridSize + 2) - 1, -(gridSize + 2) - 1];
+    // }
 }
 // combines cardinal and intercardinal directions
 class CardinalIntercardinalDirectionalInput extends DirectionalInput{
     constructor(vals){
         // N, NE, E, SE, S, SW, W, NW
-        super([0, 0, 1, 0, 0, 0, -1, 0], vals);
+        super(["N", "NE", "E", "SE", "S", "SW", "W", "NW"], vals);
 
         this.componentName = "All Direction";
         this.componentDescription = "This input effectively looks in every inter-cardinal direction and every cardinal direction and returns the minimum distance to the target values.";
     }
-    updateParentSnake(snake) {
-        super.updateParentSnake(snake);
-
-        let gridSize = this.mySnake.gridSize;
-        this.myAdjacents = [-(gridSize+2), -(gridSize+2) + 1, 1, (gridSize + 2) + 1, (gridSize + 2), (gridSize + 2) - 1, -1, -(gridSize + 2) - 1];
-    }
+    // updateParentSnake(snake) {
+    //     super.updateParentSnake(snake);
+    //
+    //     let gridSize = this.mySnake.gridSize;
+    //     this.myAdjacents = [-(gridSize+2), -(gridSize+2) + 1, 1, (gridSize + 2) + 1, (gridSize + 2), (gridSize + 2) - 1, -1, -(gridSize + 2) - 1];
+    // }
 }
 
 // Simple input, made for Mother's Day
 //  works with PathBrain
 class SimpleInput extends Input{
     constructor(){
-        super(2);
+        super(3);
     }
     // returns headpos, gridsize
     getInput(keyEvent, array, offset = 0) {
@@ -275,3 +390,5 @@ class SimpleInput extends Input{
         array[1 + offset] = this.mySnake.gridSize;
     }
 }
+
+const inputPrototypes = [MultipleInput.prototype, PlayerControlledInput.prototype, DirectionalInput.prototype, SimpleInput.prototype];
