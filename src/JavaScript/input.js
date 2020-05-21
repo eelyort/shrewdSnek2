@@ -379,7 +379,7 @@ class CardinalIntercardinalDirectionalInput extends DirectionalInput{
 //  works with PathBrain
 class SimpleInput extends Input{
     constructor(){
-        super(3);
+        super(3, 2);
     }
     // returns headpos, gridsize
     getInput(keyEvent, array, offset = 0) {
@@ -391,4 +391,22 @@ class SimpleInput extends Input{
     }
 }
 
-const inputPrototypes = [MultipleInput.prototype, PlayerControlledInput.prototype, DirectionalInput.prototype, SimpleInput.prototype];
+// simply has the snake's length
+class LengthInput extends Input{
+    constructor(){
+        super(4, 1);
+
+        this.componentName = "Length Input";
+        this.componentDescription = "This simply has the snake's current length as the input.";
+    }
+    // length
+    getInput(keyEvent, array, offset = 0) {
+        if(keyEvent){
+            array[offset] = -1;
+            return;
+        }
+        array[offset] = this.mySnake.myLength;
+    }
+}
+
+const inputPrototypes = [MultipleInput.prototype, PlayerControlledInput.prototype, DirectionalInput.prototype, SimpleInput.prototype, LengthInput.prototype];

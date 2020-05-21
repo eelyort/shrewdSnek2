@@ -63,17 +63,14 @@ let trueGamePanel = trueDocument.getElementById("gamePanel-1");
 startNew("mainMenu");
 
 function terminate(){
-    currentlyRunning.isRunning = false;
     currentlyRunning = null;
 }
 
 function startNew(key){
+    terminate();
     switch (key) {
         case 'mainMenu':
-            // TODO
-            // alert("aboutta go new MainMenu");
             currentlyRunning = new MainMenu(trueDocument, trueGamePanel);
-            // alert("finished new MainMenu");
             break;
         case "evolutionRunner":
             // TODO

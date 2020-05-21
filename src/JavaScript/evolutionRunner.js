@@ -56,7 +56,7 @@ class Evolution{
                 ["Ticks till Time Out Growth", 30, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple."],
                 ["Percentage Survive", 0.02, "The percentage of each generation that will survive and compete in the next generation unchanged."],
                 ["Percentage Parents", 0.2, "The percentage of each generation that lives long enough to give birth to children."],
-                ["Parent Selection Shape", 0.82, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often. It is clamped to (0, 2]"]
+                ["Parent Selection Shape", 0.78, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often. It is clamped to (0, 2]"]
             ];
         }
 
@@ -329,7 +329,7 @@ class Evolution{
         // log
         console.log("evolutionRunner finish(), runningResults:");
         console.log(this.currentGeneration);
-        console.log(`Best: ${JSON.stringify(this.currentGeneration[0][0].myBrain)}`);
+        console.log(`Best: ${this.currentGeneration[0][0].stringify()}`);
     }
 
     // starts the next one

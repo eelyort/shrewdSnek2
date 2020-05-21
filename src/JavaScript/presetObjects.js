@@ -78,7 +78,7 @@ loadedSnakes.push(secondEvolutionSnake);
 // TODO delete me
 const testBasicNeuralNetSnake = new Snake(
     // looks 8 way for body, 8 way for apple, 4 way for wall
-    new MultipleInput(new CardinalIntercardinalDirectionalInput([1]), new CardinalIntercardinalDirectionalInput([2]), new CardinalDirectionalInput([])),
+    new MultipleInput(new CardinalIntercardinalDirectionalInput([1]), new CardinalIntercardinalDirectionalInput([2]), new CardinalDirectionalInput([]), new LengthInput()),
     DefaultNetBrain.cloneMe(),
     1,
     3,

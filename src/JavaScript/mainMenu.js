@@ -28,10 +28,10 @@ class MainMenu extends InteractableLayer{
             this.myPopUps.get("Draw").showPopUp();
         }.bind(this)));
         // TODO: change icons
-        this.myInteractables.set("TickUp", new PressHoldImgButton(.32, .86, .1, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/play-button-200x200.png", function () {
+        this.myInteractables.set("TickUp", new PressHoldImgButton(.32, .86, .12, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/fast-forward-button-360x360.png", function () {
             this.changeTickRate(1);
         }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
-        this.myInteractables.set("TickDown", new PressHoldImgButton(.18, .86, .1, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/play-button-200x200.png", function () {
+        this.myInteractables.set("TickDown", new PressHoldImgButton(.16, .86, .12, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/rewind-button-360x360.png", function () {
             this.changeTickRate(-1);
         }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
         this.myInteractables.set("TEST", new ButtonHTML(.6, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
