@@ -18,9 +18,11 @@ class Evolution{
     //   max time score - a percentage of how many apple's scores a snake can potentially gain for time
     //  timeouttime - the number of ticks a snake can go without eating an apple before being killed
     //   timeoutgrowth - amount of ticks added to timeouttime per length
-    constructor(snakes){
+    constructor(snakes, callback = null){
         this.parameters = null;
         this.setParams();
+
+        this.myCallback2 = callback;
 
         this.generationNumber = 0;
 
@@ -285,7 +287,6 @@ class Evolution{
     update(){
         // update progress
         this.runningProgress = Atomics.load(this.runningVars, 2);
-        console.log(`update, numFinished: ${this.runningProgress}`);
         
         // finished
         if(Atomics.load(this.runningVars, 2) >= this.parameters[0][1]){
@@ -322,7 +323,6 @@ class Evolution{
         });
 
         // delete and TODO save? last generation
-        // TODO: callback
         // console.log(`Old generation being deleted at EvolutionRunner finish(), old gen: ${JSON.stringify(this.currentGeneration)}`);
         this.currentGeneration = this.runningResults;
 
@@ -330,6 +330,10 @@ class Evolution{
         console.log("evolutionRunner finish(), runningResults:");
         console.log(this.currentGeneration);
         console.log(`Best: ${this.currentGeneration[0][0].stringify()}`);
+
+        if(this.myCallback2){
+            this.myCallback2(this.currentGeneration[0][0]);
+        }
     }
 
     // starts the next one

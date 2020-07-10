@@ -4,11 +4,40 @@
     <meta charset="utf-8" />
     <title>ShrewdSnek2</title>
     <link rel="stylesheet" href="src/CSS/styleSheet.css">
+
+    <!-- Load React: Compressed Version -->
+    <script src="https://unpkg.com/react@16/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.production.min.js" crossorigin></script>
+
+    <!--  cd "C:\Troy\Coding\JavaScript\ShrewdSnek2\"    -->
+
+    <!--    ADDING JSX:                                                                                             -->
+    <!--    Step 1: Run npm init -y (if it fails, here’s a fix)                                                     -->
+    <!--    Step 2: Run npm install babel-cli@6 babel-preset-react-app@3                                            -->
+    <!--    Step 3: Create a folder called "src"                                                                    -->
+    <!--    Step 4: npx babel --watch raw_src --out-dir . --presets react-app/prod              -->
+
+    <!-- Load JQuery from Google CDN -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
 
-<div id="gamePanel-1" class="gamePanelContainer">
-</div>
+<h1>ShrewdSnek2</h1>
+<h2>Evolution Runner (REACT)</h2>
+<p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Fusce ut placerat orci nulla pellentesque dignissim enim. In dictum non consectetur a. In vitae turpis massa sed elementum tempus egestas sed sed. Id porta nibh venenatis cras sed felis eget. Tellus cras adipiscing enim eu. Fermentum odio eu feugiat pretium nibh ipsum consequat nisl. In est ante in nibh mauris. Mauris in aliquam sem fringilla ut morbi. Vivamus at augue eget arcu dictum varius. Tellus pellentesque eu tincidunt tortor aliquam nulla facilisi cras. Lorem ipsum dolor sit amet consectetur adipiscing elit duis tristique. Sit amet venenatis urna cursus eget nunc scelerisque viverra mauris.
+
+    Etiam non quam lacus suspendisse. Ligula ullamcorper malesuada proin libero nunc consequat. Auctor neque vitae tempus quam pellentesque nec nam aliquam. Placerat vestibulum lectus mauris ultrices eros. Eros donec ac odio tempor orci dapibus. Ut pharetra sit amet aliquam id diam maecenas ultricies mi. Lectus mauris ultrices eros in cursus. Condimentum vitae sapien pellentesque habitant morbi. Enim eu turpis egestas pretium. Imperdiet proin fermentum leo vel orci porta. Non curabitur gravida arcu ac tortor. Consequat semper viverra nam libero justo laoreet sit amet cursus. Lectus proin nibh nisl condimentum id venenatis a. Iaculis eu non diam phasellus vestibulum lorem sed. Arcu cursus vitae congue mauris rhoncus aenean vel elit scelerisque. Adipiscing elit duis tristique sollicitudin nibh sit amet commodo. Tortor dignissim convallis aenean et tortor at risus viverra adipiscing. Nunc scelerisque viverra mauris in. Semper risus in hendrerit gravida.
+
+    Vulputate eu scelerisque felis imperdiet proin fermentum. Cras pulvinar mattis nunc sed blandit libero volutpat. Et odio pellentesque diam volutpat commodo sed egestas. Elit duis tristique sollicitudin nibh sit amet commodo nulla. Aliquam faucibus purus in massa tempor nec feugiat. Eleifend mi in nulla posuere sollicitudin aliquam ultrices. Id diam vel quam elementum pulvinar etiam non quam. Vel facilisis volutpat est velit egestas. Cursus risus at ultrices mi tempus imperdiet. Cras semper auctor neque vitae tempus quam pellentesque nec nam. Egestas maecenas pharetra convallis posuere morbi leo urna. Convallis a cras semper auctor neque vitae. Congue quisque egestas diam <in class=""></in>
+</p>
+<!--<div id="gamePanel-1" class="gamePanelContainer"></div>-->
+<div id="app_container"></div>
+<p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. At consectetur lorem donec massa sapien faucibus et molestie ac. Pretium vulputate sapien nec sagittis. Arcu risus quis varius quam quisque id. Tincidunt lobortis feugiat vivamus at augue. Scelerisque eu ultrices vitae auctor eu augue ut. Enim nunc faucibus a pellentesque sit. Mauris vitae ultricies leo integer malesuada nunc vel risus. Maecenas accumsan lacus vel facilisis volutpat est velit egestas. Eget mauris pharetra et ultrices neque. Fermentum posuere urna nec tincidunt praesent semper feugiat nibh. Faucibus ornare suspendisse sed nisi lacus sed viverra tellus. Neque vitae tempus quam pellentesque nec. Et molestie ac feugiat sed lectus vestibulum. Tristique nulla aliquet enim tortor at. Morbi tristique senectus et netus et malesuada. Et magnis dis parturient montes nascetur ridiculus mus.
+
+    Imperdiet dui accumsan sit amet nulla facilisi morbi tempus. Vulputate odio ut enim blandit volutpat maecenas. A condimentum vitae sapien pellentesque. Elementum curabitur vitae nunc sed. Proin sed libero enim sed faucibus. Faucibus a pellentesque sit amet porttitor eget dolor morbi non. Maecenas volutpat blandit aliquam etiam erat velit scelerisque in dictum. Sed nisi lacus sed viverra tellus in. Nunc consequat interdum varius sit amet mattis vulputate. Velit sed ullamcorper morbi tincidunt ornare massa eget egestas. Aliquam malesuada bibendum arcu vitae elementum curabitur vitae. Risus nullam eget felis eget nunc lobortis. Non arcu risus quis varius. Purus semper eget duis at tellus at urna.
+</p>
 
 <!--Needed script for dot products and whatnot-->
 <script src="./src/JavaScript/libraries/math.min.js"></script>
@@ -18,6 +47,7 @@
 
 <!--Need the buttons and whatnot-->
 <script src="src/JavaScript/buttonsAndSuch.js"></script>
+<script src="src/JavaScript/utilities_react.js"></script>
 
 <!--First include the snakes-->
 <script src="src/JavaScript/componentClass.js"></script>
@@ -41,13 +71,17 @@
 
 <!--Then wrappers-->
 <script src="src/JavaScript/evolutionRunner.js"></script>
+<script src="src/JavaScript/evolutionLoadScreen.js"></script>
+<script src="src/JavaScript/evolutionShell.js"></script>
 <script src="src/JavaScript/mainMenu.js"></script>
+<script src="src/JavaScript/evolutionMenu.js"></script>
 
 <!--File reading-->
 <script src="src/JavaScript/fileReader.js"></script>
 
 <!--Runner code-->
-<script src="src/JavaScript/shrewdSnek2.js"></script>
+<!--<script src="src/JavaScript/shrewdSnek2.js"></script>-->
+<script src="src/JavaScript/shrewdSnek2_react.js"></script>
 
 </body>
 </html>

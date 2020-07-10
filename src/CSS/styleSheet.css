@@ -1,11 +1,6 @@
 /*#0B0C10*/
 /*https://visme.co/blog/website-color-schemes/ 12*/
 
-body {
-    padding: 0;
-    margin: 0;
-}
-
 .absolute {
     position: absolute;
 }
@@ -14,6 +9,7 @@ body {
 .flexboxBasic {
     position: relative;
     min-width: 0;
+    margin: 2px;
 }
 .flexParent{
     display: flex;
@@ -91,8 +87,6 @@ body {
 
 .gamePanelContainer {
     position: relative;
-    width: 100vw;
-    height: 50vw;
     padding: 0;
 
     display: block;
@@ -101,14 +95,14 @@ body {
 }
 
 #gamePanel-1 {
-    /*width: 100%;*/
-    /*height: 100%;*/
+    width: 100%;
+    height: 100%;
 }
 
 .gameCanvas {
     width: 100%;
     display: block;
-    /*height: 100%;*/
+    /*height: 5%;*/
 }
 
 .textBoxWrapper *{
@@ -162,7 +156,7 @@ body {
 }
 /*text buttons*/
 .button.gameButton {
-    font-size: 240%;
+    font-size: 180%;
     color: #303944;
 }
 .button:active {
@@ -231,4 +225,50 @@ body {
     box-shadow: 0 0 0.3vw #C5C6C7;
     background-color: rgba(0, 0, 0, 0.05);
     opacity: 100%;
+}
+
+/* --------------------------------------------- REACT stuff Below ------------------------------------------- */
+
+#app_container{
+    width: 90vw;
+    height: 90vh;
+    margin: auto;
+
+    background-color: inherit;
+
+    /*TODO: delete testing borders*/
+    border-color: magenta;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.square_fill > .subGameCanvas.background{
+    margin: calc(1% - 4px);
+    width: 98%;
+    height: 98%;
+}
+
+/*General Purpose react classes BELOW*/
+.react_wrapper{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+    position: relative;
+}
+
+.square_fill{
+    margin: 0;
+    padding: 0;
+    /*center both vertically and horizontally*/
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    /*TODO: delete testing borders (and margin which is set to border width)*/
+    border-color: red;
+    border-style: solid;
+    border-width: 1px;
 }

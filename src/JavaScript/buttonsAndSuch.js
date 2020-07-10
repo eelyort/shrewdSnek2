@@ -154,8 +154,7 @@ class BaseHTMLElement{
         this.myMainObject = null;
     }
     // set the dimensions according to left, top, width, height
-    //  option to add flexbox - removes style info and adds flexGrow
-    setDimensions(object, flexBox = false, flexGrow = 0){
+    setDimensions(object){
         this.myMainObject = object;
 
         this.myMainObject.style.zIndex = (this.myZIndex).toString();
@@ -188,7 +187,7 @@ class BaseHTMLElement{
 // button which is made using HTML
 class ButtonHTML extends BaseHTMLElement{
     // creates a button, from initialization to HTML creation
-    constructor(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonText, buttonFunc){
+    constructor(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonText, buttonFunc, flexbox = false){
         super(left, top, widthButton, heightButton, zIndex, parentElement, documentButton);
         // initialize variables
         this.buttonText = buttonText;
@@ -218,21 +217,12 @@ class ButtonHTML extends BaseHTMLElement{
         this.myButton.style.zIndex = (parseInt(this.myParent.style.zIndex) + 1).toString();
 
         // position
-        // given percentage coords (0-1)
-        // if(this.isPercentage) {
-        // this.myButton.style.left = (this.myLeft * 100.0).toString() + "%";
-        // this.myButton.style.top = (this.myTop * 100.0).toString() + "%";
-        // this.myButton.style.width = (this.myWidth * 100.0).toString() + "%";
-        // this.myButton.style.height = (this.myHeight * 100.0).toString() + "%";
         this.setDimensions(this.myButton);
-        // }
-        // // given absolute coords
-        // else{
-        //     this.myButton.style.left = (this.xTopLeft).toString() + "px";
-        //     this.myButton.style.top = (this.yTopLeft).toString() + "px";
-        //     this.myButton.style.width = (this.widthButton).toString() + "px";
-        //     this.myButton.style.height = (this.heightButton).toString() + "px";
-        // }
+
+        // flexbox optional
+        if(flexbox){
+            this.addFlex(flexbox);
+        }
     }
     eventButtonClicked(){
         // alert("Parent");
@@ -253,8 +243,8 @@ class ButtonHTML extends BaseHTMLElement{
 
 // button that toggles between functions
 class ButtonHTMLToggle extends ButtonHTML{
-    constructor(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonTexts, buttonFuncs){
-        super(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonTexts[0], null);
+    constructor(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonTexts, buttonFuncs, flexbox = false){
+        super(left, top, widthButton, heightButton, zIndex, parentElement, documentButton, buttonTexts[0], null, flexbox);
         // what function the toggle is currently on
         this.funcIndex = 0;
         this.myButtonFunctions = buttonFuncs;
@@ -543,7 +533,7 @@ class DrawPopUp extends PopUp{
 
         this.ctx = this.canvas.getContext("2d");
 
-        this.path = mothersDayWrite;
+        this.path = [];
         // for redo
         this.changes = [];
 

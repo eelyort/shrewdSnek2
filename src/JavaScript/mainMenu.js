@@ -1,7 +1,10 @@
 class MainMenu extends InteractableLayer{
-    constructor(documentIn, gamePanelIn){
+    constructor(documentIn, gamePanelIn, change){
         // alert("Beginning of MainMenu constructor");
         super(documentIn, gamePanelIn);
+
+        this.masterChangeFunc = change;
+
         // this.myGamePanel.style.backgroundColor = mainMenuBackColor;
         this.myGamePanel.classList.add("background");
         this.runningInstance = null;
@@ -18,28 +21,45 @@ class MainMenu extends InteractableLayer{
         this.tickBottomLimit = 1;
         this.tickUpperLimit = 99999;
 
+        // evolution shell
+        this.evolutionShell = new EvolutionShell(this);
+
         // stuff
         // buttons and whatnot
+        this.buttonWidth = .225;
+        this.buttonHeight = .2;
+        this.buttonZIndex = 1;
         this.myInteractables = new Map();
-        this.myInteractables.set("Play", new ButtonHTML(.6, .15, .3, .2, 1, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].getComponentName(), (this.playButton).bind(this)));
-        this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.25, .86, .1, .1, 1, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
-        this.myInteractables.set("SelectSnake", new ButtonHTML(.6, .4, .3, .2, 1, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
-        this.myInteractables.set("Draw", new ButtonHTML(.6, .65, .3, .2, 1, this.myGamePanel, this.myDocument, "Draw", function () {
-            this.myPopUps.get("Draw").showPopUp();
+        this.myInteractables.set("Play", new ButtonHTML(.5, .1, this.buttonWidth, this.buttonHeight, this.buttonZIndex, this.myGamePanel, this.myDocument, "Play: " + loadedSnakes[this.selectedSnake].getComponentName(), (this.playButton).bind(this)));;
+        this.myInteractables.set("SelectSnake", new ButtonHTML(.75, .1, this.buttonWidth, this.buttonHeight, this.buttonZIndex, this.myGamePanel, this.myDocument, "Load Snake(s)", (this.selectButton).bind(this)));
+        // this.myInteractables.set("Draw", new ButtonHTML(.5, .65, this.buttonWidth, this.buttonHeight, this.buttonZIndex, this.myGamePanel, this.myDocument, "Draw", function () {
+        //     this.myPopUps.get("Draw").showPopUp();
+        // }.bind(this)));
+        this.myInteractables.set("RunGeneration", new ButtonHTML(.5, .35, this.buttonWidth, this.buttonHeight, this.buttonZIndex, this.myGamePanel, this.myDocument, "Run Generation", function () {
+            this.evolutionShell.runGen();
         }.bind(this)));
-        // TODO: change icons
-        this.myInteractables.set("TickUp", new PressHoldImgButton(.32, .86, .12, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/fast-forward-button-360x360.png", function () {
+        this.myInteractables.set("SelectGen", new ButtonHTML(.75, .35, this.buttonWidth, this.buttonHeight, this.buttonZIndex, this.myGamePanel, this.myDocument, "Select Generation", function () {
+            // TODO
+        }.bind(this)));
+        this.myInteractables.set("ToggleInfinite", new ButtonHTML(.5, .6, this.buttonWidth, this.buttonHeight, this.buttonZIndex, this.myGamePanel, this.myDocument, "Toggle Infinite", function () {
+            this.evolutionShell.infiniteRun = !this.evolutionShell.infiniteRun;
+        }.bind(this)));
+        this.myInteractables.set("Switch", new ButtonHTML(.75, .6, this.buttonWidth, this.buttonHeight, this.buttonZIndex, this.myGamePanel, this.myDocument, "Switch", function () {
+            this.masterChangeFunc(2);
+        }.bind(this)));
+        this.myInteractables.set("TickUp", new PressHoldImgButton(.27, .86, .12, .1, this.buttonZIndex, this.myGamePanel, this.myDocument, "./src/Images/fast-forward-button-360x360.png", function () {
             this.changeTickRate(1);
         }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
-        this.myInteractables.set("TickDown", new PressHoldImgButton(.16, .86, .12, .1, 1, this.myGamePanel, this.myDocument, "./src/Images/rewind-button-360x360.png", function () {
+        this.myInteractables.set("PausePlay", new ImgButtonHTMLToggle(.2, .86, .1, .1, this.buttonZIndex, this.myGamePanel, this.myDocument, ["./src/Images/pause-button-200x200.png", "./src/Images/play-button-200x200.png"], [(this.pauseButton).bind(this), (this.unpauseButton).bind(this)]));
+        this.myInteractables.set("TickDown", new PressHoldImgButton(.11, .86, .12, .1, this.buttonZIndex, this.myGamePanel, this.myDocument, "./src/Images/rewind-button-360x360.png", function () {
             this.changeTickRate(-1);
         }.bind(this), this.tickHoldDelay, function () {this.releaseTickRate();}.bind(this)));
-        this.myInteractables.set("TEST", new ButtonHTML(.6, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
-        this.myInteractables.set("TEST2", new ButtonHTML(.8, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST2", this.TESTFUNC2.bind(this)));
-        this.myInteractables.set("TEST3", new ButtonHTML(.7, .9, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST3", this.TESTFUNC3.bind(this)));
-        this.myInteractables.set("TEST4", new ButtonHTML(.6, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST4", this.TESTFUNC4.bind(this)));
-        this.myInteractables.set("TEST5", new ButtonHTML(.7, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST5", this.TESTFUNC5.bind(this)));
-        this.myInteractables.set("TEST6", new ButtonHTML(.8, 1, .1, .06, 1, this.myGamePanel, this.myDocument, "TEST6", this.TESTFUNC6.bind(this)));
+        // this.myInteractables.set("TEST", new ButtonHTML(.6, .9, .1, .06, this.buttonZIndex, this.myGamePanel, this.myDocument, "TEST", this.TESTFUNC.bind(this)));
+        // this.myInteractables.set("TEST2", new ButtonHTML(.8, .9, .1, .06, this.buttonZIndex, this.myGamePanel, this.myDocument, "TEST2", this.TESTFUNC2.bind(this)));
+        // this.myInteractables.set("TEST3", new ButtonHTML(.7, .9, .1, .06, this.buttonZIndex, this.myGamePanel, this.myDocument, "TEST3", this.TESTFUNC3.bind(this)));
+        // this.myInteractables.set("TEST4", new ButtonHTML(.6, 1, .1, .06, this.buttonZIndex, this.myGamePanel, this.myDocument, "TEST4", this.TESTFUNC4.bind(this)));
+        // this.myInteractables.set("TEST5", new ButtonHTML(.7, 1, .1, .06, this.buttonZIndex, this.myGamePanel, this.myDocument, "TEST5", this.TESTFUNC5.bind(this)));
+        // this.myInteractables.set("TEST6", new ButtonHTML(.8, 1, .1, .06, this.buttonZIndex, this.myGamePanel, this.myDocument, "TEST6", this.TESTFUNC6.bind(this)));
         // popups
         this.myPopUps = new Map();
         this.myPopUps.set("Draw", new DrawPopUp(.05, .05, 3, this.myGamePanel, this.myDocument, 40));
@@ -74,7 +94,7 @@ class MainMenu extends InteractableLayer{
         this.subCanvas.height = this.subCanvasInnerSize;
         this.subCanvasMaxWidth = 0.45;
         this.subCanvasMaxHeight = 0.70;
-        this.subCanvasLeft = 0.075;
+        this.subCanvasLeft = 0.025;
         this.subCanvasTop = 0.12;
         this.formatSubCanvas();
         this.subCanvas.classList.add("background");
@@ -91,6 +111,17 @@ class MainMenu extends InteractableLayer{
         // set of keys down to prevent double presses for holding down, stores the keyEvent.key's
         this.keysDown = new Set();
         this.myDocument.addEventListener("keyup", this.keyEventInUp.bind(this), false);
+    }
+
+    KILLME(){
+        if(this.runningInstance != null){
+            // kill current
+            this.runningInstance.kill();
+
+            // canvas has seperate coordinate system
+            this.subCanvas.width = this.subCanvasInnerSize;
+            this.subCanvas.height = this.subCanvasInnerSize;
+        }
     }
 
     // tick rate changer: positive makes it faster, negative slower
@@ -222,6 +253,8 @@ class MainMenu extends InteractableLayer{
     updateSelectedSnake(index){
         // console.log("updateSelectedSnake(" + index + "), this: " + this);
         this.selectedSnake = index;
+        this.myPopUps.get("SelectSnake").mySelectCarousel.changeSelected(index, false);
+        this.myPopUps.get("SelectSnake").mySelectCarousel.setFocus(index);
         this.myInteractables.get("Play").changeText("Play: " + loadedSnakes[this.selectedSnake].getComponentName());
     }
 
@@ -230,18 +263,9 @@ class MainMenu extends InteractableLayer{
         this.isRunning = false;
         this.updateScore();
         this.runningInstance.draw(this.subCanvasCTX);
-    }
-
-    // draws ONLY the menu items
-    displayMenu(){
-        // TODO: myCTX.draw...
-        // uh looks like because I switched to using html elements this is useless now :/
-    }
-
-    // begins running a singleSnakeRunner using an AI brain
-    // can choose whether to have apples set or random
-    loadAndPlay(){
-        // TODO
+        setTimeout(function (){
+            this.evolutionShell.runQueue()
+        }.bind(this), 15);
     }
 
     testDrawRect(){
@@ -252,15 +276,10 @@ class MainMenu extends InteractableLayer{
         this.subCanvasCTX.closePath();
     }
 
-    // loads an evolution from memory then switches it to evolutionRunner
-    loadEvolution(signature){
-        // TODO
-    }
-
     // creates a new evolution species then loads it
     createEvolution(){
         // TODO
-        this.loadEvolution(/* TODO */);
+        this.evolutionShell.createEvolution(loadedSnakes[this.selectedSnake]);
     }
 
     pauseButton(){
@@ -285,7 +304,6 @@ class MainMenu extends InteractableLayer{
 
     playButton(){
         this.startSelectedSnake();
-        this.updateSelectedName();
         this.myInteractables.get("PausePlay").gotoIndex(0);
     }
 
@@ -350,6 +368,9 @@ class MainMenu extends InteractableLayer{
     // starts the selected snake
     startSelectedSnake(){
         let snake = loadedSnakes[this.selectedSnake].cloneMe();
+        this.startSnake(snake);
+    }
+    startSnake(snake){
         let runner;
         // special for mother's day
         if(snake.uuid && snake.uuid === "Mother's Day!!!"){
@@ -359,6 +380,9 @@ class MainMenu extends InteractableLayer{
         else {
             runner = new SingleSnakeRunner(snake, this.tickRate, this.callbackEndCurrent.bind(this));
         }
+        this.startRunner(runner);
+    }
+    startRunner(runner){
         // clear canvas
         if(this.runningInstance != null){
             // kill current
@@ -373,141 +397,142 @@ class MainMenu extends InteractableLayer{
         this.updateScore();
         this.runningInstance.focusMe();
         this.startRun();
+        this.updateSelectedName();
     }
 
     // TODO: delete
-    TESTFUNC(){
-        console.log("Test:");
-        // let siblingRunner = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 8, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
-        // let other = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
-        // siblingRunner.start();
-        // other.start();
-        // let speciesRunner = new SpeciesRunner(loadedSnakes[this.selectedSnake].cloneMe(), 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, 0);
-        // speciesRunner.runNext();
-
-        if(!this.TESTGENERATION) {
-            let snake = testBasicNeuralNetSnake.cloneMe();
-
-            this.TESTGENERATION = new Evolution(snake);
-            // gen.parameters[4][1] = 1;
-            this.TESTGENERATION.createNextGeneration();
-            this.TESTGENERATION.runGeneration();
-        }
-        else{
-            if(this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
-                if (loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}`) {
-                    // save old
-                    let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
-                    snake.setName(`G${this.TESTGENERATION.generationNumber}`);
-                    loadedSnakes.push(snake);
-
-                    this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
-                }
-
-                // console.log("Next Generation");
-                this.TESTGENERATION.createNextGeneration();
-                // console.log(this.TESTGENERATION.nextGeneration);
-                setTimeout(function () {
-                    this.TESTGENERATION.runGeneration();
-                }.bind(this), 20);
-            }
-        }
-    }
-    TESTFUNC2(){
-        console.log("Test2:");
-
-        if(loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}` && this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
-            // save old
-            let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
-            snake.setName(`G${this.TESTGENERATION.generationNumber}`);
-            loadedSnakes.push(snake);
-
-            this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
-        }
-
-        // let snake = loadedSnakes[2].cloneMe();
-        //
-        // let mutate = new PercentMutation();
-        //
-        // for (let i = 0; i < snake.myBrain.myWidth * snake.myBrain.myDepth * 50; i++) {
-        //     mutate.mutateBrain(snake.myBrain);
-        // }
-
-        // console.log(snake);
-
-        // this.selectedSnake = loadedSnakes.length - 1;
-        this.updateSelectedSnake(loadedSnakes.length - 1);
-
-        this.startSelectedSnake();
-    }
-    TESTFUNC3(){
-        console.log("test 3");
-        this.testInterval = setInterval(function () {
-            this.TESTFUNC();
-        }.bind(this), 20000);
-    }
-    TESTFUNC4(){
-        console.log("test 4");
-        if(this.testInterval){
-            clearInterval(this.testInterval);
-        }
-    }
-    TESTFUNC5(){
-        console.log("test 5");
-        let snek = loadedSnakes[this.selectedSnake].cloneMe();
-
-        console.log(snek);
-
-        console.log(`brain: ${JSON.stringify(snek.myBrain)}`);
-        console.log(`brain2: ${snek.myBrain.stringify()}`);
-
-        // console.log(`input: ${JSON.stringify(snek.myInput)}`);
-        console.log(`input2: ${snek.myInput.stringify()}`);
-
-        console.log("Input: orig:");
-        console.log(snek.myInput);
-        console.log("saved and unsaved:");
-        console.log(Input.parse(snek.myInput.stringify()));
-
-        console.log("Snakes: ");
-        console.log(`snake2: ${snek.stringify()}`);
-        console.log("orig:");
-        console.log(snek);
-        console.log("saved and unsaved:");
-        console.log(Snake.parse(snek.stringify()));
-    }
-    TESTFUNC6(){
-        console.log("test 6");
-        console.log("Starting speed test for clone methods:");
-        let numRuns = 10000;
-
-        console.log("Original .cloneMe():");
-        let results = [0, 0, 0];
-        let sum = 0;
-        for (let i = 0; i < results.length; i++) {
-            let then = Date.now();
-            for (let j = 0; j < numRuns; j++) {
-                let clone = loadedSnakes[this.selectedSnake].cloneMe();
-            }
-            results[i] = then - Date.now();
-            sum += results[i];
-        }
-        console.log(`Results: ${results}, average: ${sum/results.length}`);
-
-        console.log("\nNew save/load:");
-        results = [0, 0, 0];
-        sum = 0;
-        for (let i = 0; i < results.length; i++) {
-            let then = Date.now();
-            for (let j = 0; j < numRuns; j++) {
-                let clone = Snake.parse(loadedSnakes[this.selectedSnake].stringify());
-            }
-            results[i] = then - Date.now();
-            sum += results[i];
-        }
-        console.log(`Results: ${results}, average: ${sum/results.length}`);
-    }
-    TESTCALLBACK(a){
-        console.log("Test Callback: " + a.toString());
-    }
+    // TESTFUNC(){
+    //     console.log("Test:");
+    //     // let siblingRunner = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 8, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
+    //     // let other = new SiblingRunner([loadedSnakes[this.selectedSnake].cloneMe(), loadedSnakes[this.selectedSnake].cloneMe()], 1, 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, null, 1);
+    //     // siblingRunner.start();
+    //     // other.start();
+    //     // let speciesRunner = new SpeciesRunner(loadedSnakes[this.selectedSnake].cloneMe(), 6, this.TESTCALLBACK.bind(this), defaultScoreFunc, 0);
+    //     // speciesRunner.runNext();
+    //
+    //     if(!this.TESTGENERATION) {
+    //         let snake = testBasicNeuralNetSnake.cloneMe();
+    //
+    //         this.TESTGENERATION = new Evolution(snake);
+    //         // gen.parameters[4][1] = 1;
+    //         this.TESTGENERATION.createNextGeneration();
+    //         this.TESTGENERATION.runGeneration();
+    //     }
+    //     else{
+    //         if(this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
+    //             if (loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}`) {
+    //                 // save old
+    //                 let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
+    //                 snake.setName(`G${this.TESTGENERATION.generationNumber}`);
+    //                 loadedSnakes.push(snake);
+    //
+    //                 this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
+    //             }
+    //
+    //             // console.log("Next Generation");
+    //             this.TESTGENERATION.createNextGeneration();
+    //             // console.log(this.TESTGENERATION.nextGeneration);
+    //             setTimeout(function () {
+    //                 this.TESTGENERATION.runGeneration();
+    //             }.bind(this), 20);
+    //         }
+    //     }
+    // }
+    // TESTFUNC2(){
+    //     console.log("Test2:");
+    //
+    //     if(loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.TESTGENERATION.generationNumber}` && this.TESTGENERATION.runningProgress === this.TESTGENERATION.parameters[0][1]) {
+    //         // save old
+    //         let snake = this.TESTGENERATION.currentGeneration[0][0].cloneMe();
+    //         snake.setName(`G${this.TESTGENERATION.generationNumber}`);
+    //         loadedSnakes.push(snake);
+    //
+    //         this.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
+    //     }
+    //
+    //     // let snake = loadedSnakes[2].cloneMe();
+    //     //
+    //     // let mutate = new PercentMutation();
+    //     //
+    //     // for (let i = 0; i < snake.myBrain.myWidth * snake.myBrain.myDepth * 50; i++) {
+    //     //     mutate.mutateBrain(snake.myBrain);
+    //     // }
+    //
+    //     // console.log(snake);
+    //
+    //     // this.selectedSnake = loadedSnakes.length - 1;
+    //     this.updateSelectedSnake(loadedSnakes.length - 1);
+    //
+    //     this.startSelectedSnake();
+    // }
+    // TESTFUNC3(){
+    //     console.log("test 3");
+    //     this.testInterval = setInterval(function () {
+    //         this.TESTFUNC();
+    //     }.bind(this), 20000);
+    // }
+    // TESTFUNC4(){
+    //     console.log("test 4");
+    //     if(this.testInterval){
+    //         clearInterval(this.testInterval);
+    //     }
+    // }
+    // TESTFUNC5(){
+    //     console.log("test 5");
+    //     let snek = loadedSnakes[this.selectedSnake].cloneMe();
+    //
+    //     console.log(snek);
+    //
+    //     console.log(`brain: ${JSON.stringify(snek.myBrain)}`);
+    //     console.log(`brain2: ${snek.myBrain.stringify()}`);
+    //
+    //     // console.log(`input: ${JSON.stringify(snek.myInput)}`);
+    //     console.log(`input2: ${snek.myInput.stringify()}`);
+    //
+    //     console.log("Input: orig:");
+    //     console.log(snek.myInput);
+    //     console.log("saved and unsaved:");
+    //     console.log(Input.parse(snek.myInput.stringify()));
+    //
+    //     console.log("Snakes: ");
+    //     console.log(`snake2: ${snek.stringify()}`);
+    //     console.log("orig:");
+    //     console.log(snek);
+    //     console.log("saved and unsaved:");
+    //     console.log(Snake.parse(snek.stringify()));
+    // }
+    // TESTFUNC6(){
+    //     console.log("test 6");
+    //     console.log("Starting speed test for clone methods:");
+    //     let numRuns = 10000;
+    //
+    //     console.log("Original .cloneMe():");
+    //     let results = [0, 0, 0];
+    //     let sum = 0;
+    //     for (let i = 0; i < results.length; i++) {
+    //         let then = Date.now();
+    //         for (let j = 0; j < numRuns; j++) {
+    //             let clone = loadedSnakes[this.selectedSnake].cloneMe();
+    //         }
+    //         results[i] = then - Date.now();
+    //         sum += results[i];
+    //     }
+    //     console.log(`Results: ${results}, average: ${sum/results.length}`);
+    //
+    //     console.log("\nNew save/load:");
+    //     results = [0, 0, 0];
+    //     sum = 0;
+    //     for (let i = 0; i < results.length; i++) {
+    //         let then = Date.now();
+    //         for (let j = 0; j < numRuns; j++) {
+    //             let clone = Snake.parse(loadedSnakes[this.selectedSnake].stringify());
+    //         }
+    //         results[i] = then - Date.now();
+    //         sum += results[i];
+    //     }
+    //     console.log(`Results: ${results}, average: ${sum/results.length}`);
+    // }
+    // TESTCALLBACK(a){
+    //     console.log("Test Callback: " + a.toString());
+    // }
 }

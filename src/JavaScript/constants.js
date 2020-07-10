@@ -34,6 +34,6 @@ const snakeNameChars = 12;
 const maxNumThreads = 500;
 
 // number of times per second the display for evolution updates
-const evolutionUpdatePerSec = 0.5;
+const evolutionUpdatePerSec = 1;
 
 // alert("Constants Instantiated");
