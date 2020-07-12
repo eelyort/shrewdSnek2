@@ -242,10 +242,56 @@
     border-width: 1px;
 }
 
+.menu{
+    float: left;
+}
+
+.ui_layer *{
+    margin: 5px;
+}
+
+.ui_layer{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: calc(100% - 26px);
+    height: calc(100% - 26px);
+
+    padding: 13px;
+
+    /*TODO: delete testing borders (and margin which is set to border width)*/
+    border-color: greenyellow;
+    border-style: solid;
+    border-width: 1px;
+}
+
+.inline_block_parent > *{
+    display: inline-block;
+}
+
 .square_fill > .subGameCanvas.background{
+    /*(100% - width)/2 - border_width*/
     margin: calc(1% - 4px);
     width: 98%;
     height: 98%;
+}
+
+/*.square_fill > p, .square_fill > h1, .square_fill > h2, .square_fill > h3, .square_fill > h4, .square_fill > h5, .square_fill > h6{*/
+.square_fill p, .square_fill h1, .square_fill h2, .square_fill h3, .square_fill h4, .square_fill h5, .square_fill h6{
+    color: rgba(255, 255, 255, 0.77);
+}
+
+.score_text{
+    float: right;
+}
+
+.playing_text{
+    float: left;
+}
+
+body{
+    background-color: #1F2833;
+    color: #cfd0d1;
 }
 
 /*General Purpose react classes BELOW*/
@@ -258,9 +304,52 @@
     position: relative;
 }
 
-.square_fill{
+.wrapper_div{
     margin: 0;
     padding: 0;
+}
+
+.icon{
+    min-width: 40px;
+    min-height: 40px;
+    width: 7vw;
+    height: 7vw;
+
+    position: relative;
+
+    background-color: #67fff4;
+    box-shadow: 0 0 0.4rem #b0fffc;
+    border-radius: 30%;
+}
+.icon:hover{
+    z-index: 500;
+}
+.icon.small1{
+    min-width: 20px;
+    min-height: 20px;
+    width: 4vw;
+    height: 4vw;
+}
+.icon.small2{
+    min-width: 17px;
+    min-height: 17px;
+    width: 3vw;
+    height: 3vw;
+}
+.icon.small3{
+    min-width: 14px;
+    min-height: 14px;
+    width: 2vw;
+    height: 2vw;
+}
+.icon > img{
+    width: 100%;
+    height: auto;
+}
+
+.square_fill{
+    /*margin: 0;*/
+    /*padding: 0;*/
     /*center both vertically and horizontally*/
     position: absolute;
     top: 50%;

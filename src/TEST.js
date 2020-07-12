@@ -1,69 +1,71 @@
-if(-1){
-    console.log("hi");
-}
+console.log()
 
-console.log(-1 % 2 === -1);
-
-if(-1 % 2){
-    console.log("hi");
-}
-
-function testMultipleArgs(hi){
-    for (let i = 0; i < arguments.length; i++) {
-        console.log(arguments[i]);
-    }
-}
-
-testMultipleArgs(1, 2, "hi");
-
-if(1){
-    console.log("hi3");
-}
-else{
-    console.log("hi2")
-}
-
-console.log("\n");
-
-class hi{
-    constructor() {
-        this.a = "name";
-    }
-    hello(){
-        console.log("hello");
-    }
-    static staticM(){
-        console.log("Static");
-    }
-}
-
-class h2 extends hi{
-    constructor(){
-        super();
-    }
-    static staticM(){
-        console.log("Static2");
-    }
-}
-
-h2.staticM();
-
-let testHi = new hi();
-testHi.hello();
-
-console.log(`testHi.prototype: ${Object.getPrototypeOf(testHi)}`);
-
-let json = JSON.stringify(testHi);
-
-console.log(json);
-
-let testHi2 = JSON.parse(json);
-
-console.log(`2 proto: ${Object.getPrototypeOf(testHi2)}`);
-
-Object.setPrototypeOf(testHi2, hi.prototype);
-
-console.log(`two prototypes equal?: ${Object.getPrototypeOf(testHi) === Object.getPrototypeOf(testHi2)}`);
+// if(-1){
+//     console.log("hi");
+// }
+//
+// console.log(-1 % 2 === -1);
+//
+// if(-1 % 2){
+//     console.log("hi");
+// }
+//
+// function testMultipleArgs(hi){
+//     for (let i = 0; i < arguments.length; i++) {
+//         console.log(arguments[i]);
+//     }
+// }
+//
+// testMultipleArgs(1, 2, "hi");
+//
+// if(1){
+//     console.log("hi3");
+// }
+// else{
+//     console.log("hi2")
+// }
+//
+// console.log("\n");
+//
+// class hi{
+//     constructor() {
+//         this.a = "name";
+//     }
+//     hello(){
+//         console.log("hello");
+//     }
+//     static staticM(){
+//         console.log("Static");
+//     }
+// }
+//
+// class h2 extends hi{
+//     constructor(){
+//         super();
+//     }
+//     static staticM(){
+//         console.log("Static2");
+//     }
+// }
+//
+// h2.staticM();
+//
+// let testHi = new hi();
+// testHi.hello();
+//
+// console.log(`testHi.prototype: ${Object.getPrototypeOf(testHi)}`);
+//
+// let json = JSON.stringify(testHi);
+//
+// console.log(json);
+//
+// let testHi2 = JSON.parse(json);
+//
+// console.log(`2 proto: ${Object.getPrototypeOf(testHi2)}`);
+//
+// Object.setPrototypeOf(testHi2, hi.prototype);
+//
+// console.log(`two prototypes equal?: ${Object.getPrototypeOf(testHi) === Object.getPrototypeOf(testHi2)}`);
 
 // let shapeParam = 0.8;
 // let numParents = 100;

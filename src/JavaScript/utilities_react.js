@@ -81,7 +81,7 @@ var SquareFill = function (_WindowSizes) {
 
             return React.createElement(
                 'div',
-                { style: style, className: "square_fill" + (this.props.className ? " " + this.props.className : "") },
+                { style: style, className: "square_fill wrapper_div" + (this.props.className ? " " + this.props.className : "") },
                 this.props.children
             );
         }
@@ -90,73 +90,118 @@ var SquareFill = function (_WindowSizes) {
     return SquareFill;
 }(WindowSizes);
 
-// div which slowly fades away
-//   prop 'sec' for seconds to fade, allows 2 decimal places
+// div which can fade in/out using css transitions
+//  default is fade-out, to get opposite use props.reverse
 
 
-var FadeAwayDiv = function (_React$Component2) {
-    _inherits(FadeAwayDiv, _React$Component2);
+var FadeDiv = function (_React$Component2) {
+    _inherits(FadeDiv, _React$Component2);
 
-    function FadeAwayDiv(props) {
-        _classCallCheck(this, FadeAwayDiv);
+    function FadeDiv(props) {
+        _classCallCheck(this, FadeDiv);
 
-        var _this3 = _possibleConstructorReturn(this, (FadeAwayDiv.__proto__ || Object.getPrototypeOf(FadeAwayDiv)).call(this, props));
+        var _this3 = _possibleConstructorReturn(this, (FadeDiv.__proto__ || Object.getPrototypeOf(FadeDiv)).call(this, props));
 
-        _this3.myInterval = null;
-
-        // milliseconds to disappear, default is 2 sec, round to the tens place
-        _this3.msToFade = _this3.props.sec ? Math.round(_this3.props.sec * 100) * 10 : 2000;
-
-        _this3.state = { msLeft: _this3.msToFade };
-
-        _this3.update = _this3.update.bind(_this3);
-        _this3.finish = _this3.finish.bind(_this3);
+        _this3.state = {
+            isVisible: !_this3.props.reverse
+        };
         return _this3;
     }
 
-    _createClass(FadeAwayDiv, [{
-        key: 'componentDidMount',
-        value: function componentDidMount() {
-            var _this4 = this;
-
-            this.myInterval = setInterval(function () {
-                return _this4.update;
-            }, 10);
-        }
-    }, {
+    _createClass(FadeDiv, [{
         key: 'render',
         value: function render() {
+            var isVisible = this.state.isVisible;
+            var _props = this.props,
+                reverse = _props.reverse,
+                speed = _props.speed;
+
+            // change
+
+            if (isVisible !== reverse) {
+                this.setState(function () {
+                    return { isVisible: reverse };
+                });
+            }
+
             var style = {
-                opacity: this.state.msLeft / this.msToFade
+                transition: 'opacity ' + Math.round(2400 / (speed ? speed : 1)) + 'ms ease',
+                opacity: (isVisible ? 100 : 0) + '%'
             };
 
             return React.createElement(
                 'div',
-                { style: style, className: this.props.className },
+                { style: style, className: "wrapper_div" + (this.props.className ? " " + this.props.className : "") },
                 this.props.children
             );
+        }
+    }]);
+
+    return FadeDiv;
+}(React.Component);
+
+// text which is a typewriter
+//   renders a single child text tag (h1, p, etc)
+
+
+var TypewriterText = function (_React$Component3) {
+    _inherits(TypewriterText, _React$Component3);
+
+    function TypewriterText(props) {
+        _classCallCheck(this, TypewriterText);
+
+        // bigger number is faster, 1 is normal speed, 2 is 2 times as fast, etc
+        var _this4 = _possibleConstructorReturn(this, (TypewriterText.__proto__ || Object.getPrototypeOf(TypewriterText)).call(this, props));
+
+        _this4.speed = _this4.props.speed ? _this4.props.speed : 1;
+        // pull text
+        _this4.text = React.Children.only(_this4.props.children).props.children;
+
+        _this4.state = {
+            current: ""
+        };
+
+        _this4.interval = null;
+
+        _this4.update = _this4.update.bind(_this4);
+        _this4.finish = _this4.finish.bind(_this4);
+        return _this4;
+    }
+
+    _createClass(TypewriterText, [{
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            var _this5 = this;
+
+            this.interval = setInterval(function () {
+                return _this5.update();
+            }, 32 / this.speed);
         }
     }, {
         key: 'update',
         value: function update() {
-            if (this.state.msLeft <= 0) {
+            var _this6 = this;
+
+            if (this.state.current.length >= this.text.length) {
                 this.finish();
                 return null;
             }
 
             this.setState(function (state) {
-                return { msLeft: state.msLeft - 10 };
+                return { current: state.current + _this6.text.charAt(_this6.state.current.length) };
             });
         }
     }, {
         key: 'finish',
         value: function finish() {
-            if (this.myInterval) {
-                clearInterval(this.myInterval);
+            var _this7 = this;
+
+            if (this.interval) {
+                clearInterval(this.interval);
             }
 
-            this.setState(function () {
-                return { msLeft: 0 };
+            this.setState(function (state) {
+                return { current: _this7.text };
             });
         }
     }, {
@@ -164,7 +209,74 @@ var FadeAwayDiv = function (_React$Component2) {
         value: function componentWillUnmount() {
             this.finish();
         }
+    }, {
+        key: 'render',
+        value: function render() {
+            // smoosh together the classnames of both classes
+            var classNames = "";
+            if (this.props.className) {
+                classNames = this.props.className;
+            }
+            var childClass = React.Children.only(this.props.children).props.className;
+            if (childClass) {
+                classNames += (this.props.className ? " " : "") + childClass;
+            }
+
+            return React.cloneElement(this.props.children, {
+                children: this.state.current,
+                className: classNames
+            });
+        }
     }]);
 
-    return FadeAwayDiv;
+    return TypewriterText;
+}(React.Component);
+
+// image icon
+
+
+var ImgIcon = function (_React$Component4) {
+    _inherits(ImgIcon, _React$Component4);
+
+    function ImgIcon() {
+        _classCallCheck(this, ImgIcon);
+
+        return _possibleConstructorReturn(this, (ImgIcon.__proto__ || Object.getPrototypeOf(ImgIcon)).apply(this, arguments));
+    }
+
+    _createClass(ImgIcon, [{
+        key: 'render',
+        value: function render() {
+            return React.createElement(
+                'div',
+                { className: "icon" + (this.props.small ? " small" + (this.props.small + 0) : "") + (this.props.className ? " " + this.props.className : "") },
+                React.createElement('img', { className: "wrapper_div", src: this.props.src }),
+                this.props.children
+            );
+        }
+    }]);
+
+    return ImgIcon;
+}(React.Component);
+
+// hamburger drop down menu
+
+
+var Menu = function (_React$Component5) {
+    _inherits(Menu, _React$Component5);
+
+    function Menu() {
+        _classCallCheck(this, Menu);
+
+        return _possibleConstructorReturn(this, (Menu.__proto__ || Object.getPrototypeOf(Menu)).apply(this, arguments));
+    }
+
+    _createClass(Menu, [{
+        key: 'render',
+        value: function render() {
+            return React.createElement(ImgIcon, { className: "menu", small: 2, src: "src/Images/hamburger-icon-550x550.png" });
+        }
+    }]);
+
+    return Menu;
 }(React.Component);

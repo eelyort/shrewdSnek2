@@ -36,6 +36,11 @@ var EvolutionMenu = function (_React$Component2) {
         var _this2 = _possibleConstructorReturn(this, (EvolutionMenu.__proto__ || Object.getPrototypeOf(EvolutionMenu)).call(this, props));
 
         _this2.subCanvasRef = React.createRef();
+
+        // TODO:
+        _this2.state = {
+            score: 0
+        };
         return _this2;
     }
 
@@ -47,9 +52,31 @@ var EvolutionMenu = function (_React$Component2) {
                 { parentRef: this.props.parentRef },
                 React.createElement(SubCanvas, { ref: this.subCanvasRef }),
                 React.createElement(
-                    "h1",
-                    null,
-                    "hi"
+                    "div",
+                    { className: "ui_layer" },
+                    React.createElement(
+                        "div",
+                        { className: "inline_block_parent wrapper_div" },
+                        React.createElement(Menu, null),
+                        React.createElement(
+                            TypewriterText,
+                            { className: "playing_text" },
+                            React.createElement(
+                                "h2",
+                                null,
+                                "Playing: ???"
+                            )
+                        ),
+                        React.createElement(
+                            FadeDiv,
+                            { className: "score_text", reverse: true },
+                            React.createElement(
+                                "h2",
+                                null,
+                                "Score: " + ("\xA0\xA0\xA0\xA0\xA0\xA0\xA0\xA0" + this.state.score).slice(-8)
+                            )
+                        )
+                    )
                 )
             );
         }
