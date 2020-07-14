@@ -119,7 +119,8 @@ var Button = function (_React$Component2) {
         value: function render() {
             return React.createElement(
                 "button",
-                { className: "button" + (this.props.className ? " " + this.props.className : ""), onClick: this.props.onClick },
+                { className: "button" + (this.props.className ? " " + this.props.className : ""), onClick: this.props.onClick,
+                    onMouseDown: this.props.onMouseDown, onMouseUp: this.props.onMouseUp, onDragLeave: this.props.onMouseUp },
                 this.props.children
             );
         }
@@ -177,6 +178,79 @@ var ToggleButton = function (_React$Component3) {
 
     return ToggleButton;
 }(React.Component);
+// button (div) which calls its function for as long as it is held down - with increasing speed
+//   prop "speed" (default 1), higher number makes it call the function faster
+//   prop "growth" (default 1), higher number makes the rate at which hits the function accelerate (1 is flat)
+//   "onClick": "(multi) => {...}" ; recommended for anything where (maxRate < 1000)
+
+
+var HoldButton = function (_React$Component4) {
+    _inherits(HoldButton, _React$Component4);
+
+    function HoldButton(props) {
+        _classCallCheck(this, HoldButton);
+
+        var _this5 = _possibleConstructorReturn(this, (HoldButton.__proto__ || Object.getPrototypeOf(HoldButton)).call(this, props));
+
+        _this5.interval = null;
+        _this5.ticksHeld = 0;
+
+        _this5.update = _this5.update.bind(_this5);
+        _this5.startHold = _this5.startHold.bind(_this5);
+        _this5.releaseHold = _this5.releaseHold.bind(_this5);
+        return _this5;
+    }
+
+    _createClass(HoldButton, [{
+        key: "update",
+        value: function update() {
+            var _props = this.props,
+                onClick = _props.onClick,
+                speed = _props.speed,
+                growth = _props.growth,
+                maxRate = _props.maxRate;
+
+
+            this.ticksHeld++;
+
+            var currCalls = Math.ceil(Math.pow(Math.max(growth, 1), Math.floor(this.ticksHeld / 5)));
+            if (currCalls > maxRate) {
+                currCalls = maxRate;
+            }
+
+            // if the function passed in allows multipliers
+            if (onClick.length >= 1) {
+                onClick(currCalls);
+            } else {
+                for (var i = 0; i < currCalls; i++) {
+                    onClick();
+                }
+            }
+        }
+    }, {
+        key: "render",
+        value: function render() {
+            return React.createElement(
+                Button,
+                { className: this.props.className, onMouseDown: this.startHold, onMouseUp: this.releaseHold },
+                this.props.children
+            );
+        }
+    }, {
+        key: "startHold",
+        value: function startHold() {
+            this.ticksHeld = 0;
+            this.interval = setInterval(this.update, 80 / (this.props.speed ? this.props.speed : 1));
+        }
+    }, {
+        key: "releaseHold",
+        value: function releaseHold() {
+            clearInterval(this.interval);
+        }
+    }]);
+
+    return HoldButton;
+}(React.Component);
 
 // a div which fills as much of the parent div (parentRef) as possible while remaining a perfect square
 //   Note: parent must be relatively/absolutely positioned
@@ -230,64 +304,37 @@ var SquareFill = function (_WindowSizes) {
 //  prop: "shouldReset" makes it return to default visibility on prop change - slows performance
 
 
-var FadeDiv = function (_React$Component4) {
-    _inherits(FadeDiv, _React$Component4);
+var FadeDiv = function (_React$Component5) {
+    _inherits(FadeDiv, _React$Component5);
 
     function FadeDiv(props) {
         _classCallCheck(this, FadeDiv);
 
-        var _this6 = _possibleConstructorReturn(this, (FadeDiv.__proto__ || Object.getPrototypeOf(FadeDiv)).call(this, props));
+        var _this7 = _possibleConstructorReturn(this, (FadeDiv.__proto__ || Object.getPrototypeOf(FadeDiv)).call(this, props));
 
-        _this6.state = {
-            isVisible: !_this6.props.reverse,
-            oldChildren: _this6.props.children
+        _this7.state = {
+            isVisible: !_this7.props.reverse
         };
-        return _this6;
+        return _this7;
     }
 
     _createClass(FadeDiv, [{
         key: "render",
         value: function render() {
             var isVisible = this.state.isVisible;
-            var _props = this.props,
-                reverse = _props.reverse,
-                speed = _props.speed,
-                shouldReset = _props.shouldReset;
+            var _props2 = this.props,
+                reverse = _props2.reverse,
+                speed = _props2.speed,
+                shouldReset = _props2.shouldReset;
 
-            // reset on content changes if "shouldReset" is toggled
-
-            if (shouldReset) {
-                var curr = this.props.children;
-                if (!deepCompare(curr, this.state.oldChildren)) {
-                    this.setState(function () {
-                        return {
-                            isVisible: !reverse,
-                            oldChildren: curr
-                        };
-                    });
-
-                    var _style = {
-                        opacity: (!reverse ? 100 : 0) + "%"
-                    };
-
-                    return React.createElement(
-                        "div",
-                        { style: _style, className: "wrapper_div" + (this.props.className ? " " + this.props.className : "") },
-                        this.props.children
-                    );
-                }
-            }
 
             var style = {
-                transition: "opacity " + Math.round(1600 / (speed ? speed : 1)) + "ms ease-in",
                 opacity: (isVisible ? 100 : 0) + "%"
             };
 
-            // change
-            if (isVisible !== reverse) {
-                this.setState(function () {
-                    return { isVisible: reverse };
-                });
+            // the component should immediately (no transition) go back to its original opacity if it is being reset
+            if (isVisible === reverse) {
+                style["transition"] = "opacity " + Math.round(1600 / (speed ? speed : 1)) + "ms ease-in";
             }
 
             return React.createElement(
@@ -295,6 +342,34 @@ var FadeDiv = function (_React$Component4) {
                 { style: style, className: "wrapper_div" + (this.props.className ? " " + this.props.className : "") },
                 this.props.children
             );
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate(prevProps, prevState, snapshot) {
+            var _this8 = this;
+
+            if (this.props.shouldReset && !deepCompare(this.props.children, prevProps.children)) {
+                requestAnimationFrame(function () {
+                    _this8.setState(function () {
+                        return {
+                            isVisible: !_this8.props.reverse
+                        };
+                    });
+                });
+            }
+            // change
+            else if (this.state.isVisible !== this.props.reverse) {
+                    requestAnimationFrame(function () {
+                        _this8.setState(function () {
+                            return { isVisible: _this8.props.reverse };
+                        });
+                    });
+                }
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            this.forceUpdate();
         }
     }]);
 
@@ -305,38 +380,38 @@ var FadeDiv = function (_React$Component4) {
 //   renders a single child text tag (h1, p, etc)
 
 
-var TypewriterText = function (_React$Component5) {
-    _inherits(TypewriterText, _React$Component5);
+var TypewriterText = function (_React$Component6) {
+    _inherits(TypewriterText, _React$Component6);
 
     function TypewriterText(props) {
         _classCallCheck(this, TypewriterText);
 
         // bigger number is faster, 1 is normal speed, 2 is 2 times as fast, etc
-        var _this7 = _possibleConstructorReturn(this, (TypewriterText.__proto__ || Object.getPrototypeOf(TypewriterText)).call(this, props));
+        var _this9 = _possibleConstructorReturn(this, (TypewriterText.__proto__ || Object.getPrototypeOf(TypewriterText)).call(this, props));
 
-        _this7.speed = _this7.props.speed ? _this7.props.speed : 1;
+        _this9.speed = _this9.props.speed ? _this9.props.speed : 1;
         // pull text
-        _this7.text = React.Children.only(_this7.props.children).props.children;
-        if (Array.isArray(_this7.text)) {
-            _this7.text = _this7.text.join("");
+        _this9.text = React.Children.only(_this9.props.children).props.children;
+        if (Array.isArray(_this9.text)) {
+            _this9.text = _this9.text.join("");
         }
 
-        _this7.state = {
+        _this9.state = {
             current: "",
             intervalReady: true
         };
 
-        _this7.interval = null;
+        _this9.interval = null;
 
-        _this7.update = _this7.update.bind(_this7);
-        _this7.finish = _this7.finish.bind(_this7);
-        return _this7;
+        _this9.update = _this9.update.bind(_this9);
+        _this9.finish = _this9.finish.bind(_this9);
+        return _this9;
     }
 
     _createClass(TypewriterText, [{
         key: "update",
         value: function update() {
-            var _this8 = this;
+            var _this10 = this;
 
             if (this.state.current.length >= this.text.length) {
                 this.finish();
@@ -344,13 +419,13 @@ var TypewriterText = function (_React$Component5) {
             }
 
             this.setState(function (state) {
-                return { current: state.current + _this8.text.charAt(_this8.state.current.length) };
+                return { current: state.current + _this10.text.charAt(_this10.state.current.length) };
             });
         }
     }, {
         key: "finish",
         value: function finish() {
-            var _this9 = this;
+            var _this11 = this;
 
             if (this.interval) {
                 clearInterval(this.interval);
@@ -358,7 +433,7 @@ var TypewriterText = function (_React$Component5) {
             }
 
             this.setState(function (state) {
-                return { current: _this9.text };
+                return { current: _this11.text };
             });
         }
     }, {
@@ -369,7 +444,7 @@ var TypewriterText = function (_React$Component5) {
     }, {
         key: "render",
         value: function render() {
-            var _this10 = this;
+            var _this12 = this;
 
             // start typewriting when the interval is ready
             if (this.state.intervalReady) {
@@ -377,7 +452,7 @@ var TypewriterText = function (_React$Component5) {
                     return { intervalReady: false };
                 });
                 this.interval = setInterval(function () {
-                    return _this10.update();
+                    return _this12.update();
                 }, 32 / this.speed);
             }
             // restart typewrite if the content changes
@@ -414,8 +489,8 @@ var TypewriterText = function (_React$Component5) {
 // image icon
 
 
-var ImgIcon = function (_React$Component6) {
-    _inherits(ImgIcon, _React$Component6);
+var ImgIcon = function (_React$Component7) {
+    _inherits(ImgIcon, _React$Component7);
 
     function ImgIcon() {
         _classCallCheck(this, ImgIcon);
@@ -441,8 +516,8 @@ var ImgIcon = function (_React$Component6) {
 // hamburger drop down menu
 
 
-var Menu = function (_React$Component7) {
-    _inherits(Menu, _React$Component7);
+var Menu = function (_React$Component8) {
+    _inherits(Menu, _React$Component8);
 
     function Menu() {
         _classCallCheck(this, Menu);
@@ -470,19 +545,19 @@ var Menu = function (_React$Component7) {
 // hamburger drop down menu - fades away when far
 
 
-var FadeMenu = function (_React$Component8) {
-    _inherits(FadeMenu, _React$Component8);
+var FadeMenu = function (_React$Component9) {
+    _inherits(FadeMenu, _React$Component9);
 
     function FadeMenu(props) {
         _classCallCheck(this, FadeMenu);
 
-        var _this13 = _possibleConstructorReturn(this, (FadeMenu.__proto__ || Object.getPrototypeOf(FadeMenu)).call(this, props));
+        var _this15 = _possibleConstructorReturn(this, (FadeMenu.__proto__ || Object.getPrototypeOf(FadeMenu)).call(this, props));
 
-        _this13.state = { iconHidden: true };
+        _this15.state = { iconHidden: true };
 
-        _this13.mouseEnter = _this13.mouseEnter.bind(_this13);
-        _this13.mouseLeave = _this13.mouseLeave.bind(_this13);
-        return _this13;
+        _this15.mouseEnter = _this15.mouseEnter.bind(_this15);
+        _this15.mouseLeave = _this15.mouseLeave.bind(_this15);
+        return _this15;
     }
 
     _createClass(FadeMenu, [{
@@ -540,20 +615,20 @@ var FadeMenu = function (_React$Component8) {
 // hamburger drop down menu insides - NEVER use this directly
 
 
-var MenuInsides = function (_React$Component9) {
-    _inherits(MenuInsides, _React$Component9);
+var MenuInsides = function (_React$Component10) {
+    _inherits(MenuInsides, _React$Component10);
 
     function MenuInsides(props) {
         _classCallCheck(this, MenuInsides);
 
-        var _this14 = _possibleConstructorReturn(this, (MenuInsides.__proto__ || Object.getPrototypeOf(MenuInsides)).call(this, props));
+        var _this16 = _possibleConstructorReturn(this, (MenuInsides.__proto__ || Object.getPrototypeOf(MenuInsides)).call(this, props));
 
-        _this14.state = { hidden: true };
+        _this16.state = { hidden: true };
 
-        _this14.click = _this14.click.bind(_this14);
-        _this14.open = _this14.open.bind(_this14);
-        _this14.close = _this14.close.bind(_this14);
-        return _this14;
+        _this16.click = _this16.click.bind(_this16);
+        _this16.open = _this16.open.bind(_this16);
+        _this16.close = _this16.close.bind(_this16);
+        return _this16;
     }
 
     _createClass(MenuInsides, [{
@@ -605,21 +680,21 @@ var MenuInsides = function (_React$Component9) {
 // hover/unhover handler
 
 
-var MouseEnterExitDiv = function (_React$Component10) {
-    _inherits(MouseEnterExitDiv, _React$Component10);
+var MouseEnterExitDiv = function (_React$Component11) {
+    _inherits(MouseEnterExitDiv, _React$Component11);
 
     function MouseEnterExitDiv(props) {
         _classCallCheck(this, MouseEnterExitDiv);
 
-        var _this15 = _possibleConstructorReturn(this, (MouseEnterExitDiv.__proto__ || Object.getPrototypeOf(MouseEnterExitDiv)).call(this, props));
+        var _this17 = _possibleConstructorReturn(this, (MouseEnterExitDiv.__proto__ || Object.getPrototypeOf(MouseEnterExitDiv)).call(this, props));
 
-        var _this15$props = _this15.props,
-            mouseEnter = _this15$props.mouseEnter,
-            mouseLeave = _this15$props.mouseLeave;
+        var _this17$props = _this17.props,
+            mouseEnter = _this17$props.mouseEnter,
+            mouseLeave = _this17$props.mouseLeave;
 
-        _this15.mouseEnter = mouseEnter;
-        _this15.mouseLeave = mouseLeave;
-        return _this15;
+        _this17.mouseEnter = mouseEnter;
+        _this17.mouseLeave = mouseLeave;
+        return _this17;
     }
 
     _createClass(MouseEnterExitDiv, [{

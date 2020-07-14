@@ -84,7 +84,8 @@ class WindowSizes extends React.Component{
 class Button extends React.Component{
     render() {
         return(
-            <button className={"button" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={this.props.onClick}>
+            <button className={"button" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={this.props.onClick}
+                    onMouseDown={this.props.onMouseDown} onMouseUp={this.props.onMouseUp} onDragLeave={this.props.onMouseUp}>
                 {this.props.children}
             </button>
         );
@@ -119,6 +120,56 @@ class ToggleButton extends React.Component{
         this.funcs[this.state.index]();
 
         this.setState((state) => ({index: ((state.index >= this.funcs.length - 1) ? (0) : (state.index + 1))}));
+    }
+}
+// button (div) which calls its function for as long as it is held down - with increasing speed
+//   prop "speed" (default 1), higher number makes it call the function faster
+//   prop "growth" (default 1), higher number makes the rate at which hits the function accelerate (1 is flat)
+//   "onClick": "(multi) => {...}" ; recommended for anything where (maxRate < 1000)
+class HoldButton extends React.Component{
+    constructor(props) {
+        super(props);
+
+        this.interval = null;
+        this.ticksHeld = 0;
+
+        this.update = this.update.bind(this);
+        this.startHold = this.startHold.bind(this);
+        this.releaseHold = this.releaseHold.bind(this);
+    }
+    update(){
+        const {onClick: onClick, speed: speed, growth: growth, maxRate: maxRate} = this.props;
+
+        this.ticksHeld++;
+
+        let currCalls = Math.ceil(Math.pow(Math.max(growth, 1), Math.floor(this.ticksHeld/5)));
+        if(currCalls > maxRate){
+            currCalls = maxRate;
+        }
+
+        // if the function passed in allows multipliers
+        if(onClick.length >= 1){
+            onClick(currCalls);
+        }
+        else {
+            for (let i = 0; i < currCalls; i++) {
+                onClick();
+            }
+        }
+    }
+    render() {
+        return(
+            <Button className={this.props.className} onMouseDown={this.startHold} onMouseUp={this.releaseHold}>
+                {this.props.children}
+            </Button>
+        );
+    }
+    startHold(){
+        this.ticksHeld = 0;
+        this.interval = setInterval(this.update, 80/((this.props.speed) ? (this.props.speed) : (1)));
+    }
+    releaseHold(){
+        clearInterval(this.interval);
     }
 }
 
@@ -156,43 +207,20 @@ class FadeDiv extends React.Component{
         super(props);
 
         this.state = {
-            isVisible: (!this.props.reverse),
-            oldChildren: this.props.children
+            isVisible: (!this.props.reverse)
         };
     }
     render(){
         const {isVisible: isVisible} = this.state;
         const {reverse: reverse, speed: speed, shouldReset: shouldReset} = this.props;
 
-        // reset on content changes if "shouldReset" is toggled
-        if(shouldReset){
-            let curr = this.props.children;
-            if(!deepCompare(curr, this.state.oldChildren)) {
-                this.setState(() => ({
-                    isVisible: !reverse,
-                    oldChildren: curr
-                }));
-
-                let style = {
-                    opacity: `${((!reverse) ? (100) : (0))}%`
-                };
-
-                return(
-                    <div style={style} className={"wrapper_div" + ((this.props.className) ? (" " + this.props.className) : (""))}>
-                        {this.props.children}
-                    </div>
-                );
-            }
-        }
-
         let style = {
-            transition: `opacity ${Math.round(1600/((speed) ? (speed) : (1)))}ms ease-in`,
             opacity: `${((isVisible) ? (100) : (0))}%`
         };
 
-        // change
-        if(isVisible !== reverse){
-            this.setState(() => ({isVisible: reverse}));
+        // the component should immediately (no transition) go back to its original opacity if it is being reset
+        if(isVisible === reverse){
+            style["transition"] = `opacity ${Math.round(1600/((speed) ? (speed) : (1)))}ms ease-in`;
         }
 
         return(
@@ -200,6 +228,24 @@ class FadeDiv extends React.Component{
                 {this.props.children}
             </div>
         );
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(this.props.shouldReset && !deepCompare(this.props.children, prevProps.children)){
+            requestAnimationFrame(() => {
+                this.setState(() => ({
+                    isVisible: !this.props.reverse
+                }));
+            });
+        }
+        // change
+        else if(this.state.isVisible !== this.props.reverse){
+            requestAnimationFrame(() => {
+                this.setState(() => ({isVisible: this.props.reverse}));
+            });
+        }
+    }
+    componentDidMount() {
+        this.forceUpdate();
     }
 }
 

@@ -22,6 +22,7 @@ class GameMenu extends React.Component{
         };
 
         // bind functions
+        this.changeTickRate = this.changeTickRate.bind(this);
         this.startSnakeButton = this.startSnakeButton.bind(this);
         this.keyEventInUp = this.keyEventInUp.bind(this);
         this.keyEventInDown = this.keyEventInDown.bind(this);
@@ -82,22 +83,31 @@ class GameMenu extends React.Component{
                     </div>
                     <div className={"bottom_ui"}>
                         <FadeDiv shouldReset={true}>
-                            <h3>Tick Rate: {this.state.tickRate}</h3>
+                            <h3>Tick Rate: {JSON.stringify(this.state.tickRate)}</h3>
                         </FadeDiv>
                         <div className={"inline_block_parent"}>
+                            <HoldButton speed={1.8} growth={1.6} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(-1 * multi)}}>
+                                <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/rewind-button-360x360.png"}/>
+                            </HoldButton>
                             <ToggleButton>
                                 <Button onClick={this.pauseButton}>
-                                    <ImgIcon small={2} src={"src/Images/pause-button-200x200.png"}/>
+                                    <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/pause-button-200x200.png"}/>
                                 </Button>
                                 <Button onClick={this.unpauseButton}>
-                                    <ImgIcon small={2} src={"src/Images/play-button-200x200.png"}/>
+                                    <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/play-button-200x200.png"}/>
                                 </Button>
                             </ToggleButton>
+                            <HoldButton speed={1.8} growth={1.6} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(1 * multi)}}>
+                                <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/fast-forward-button-360x360.png"}/>
+                            </HoldButton>
                         </div>
                     </div>
                 </div>
             </SquareFill>
         );
+    }
+    changeTickRate(val){
+        this.setState((state) => ({tickRate: Math.max(this.tickRateLowerBound, Math.min(this.tickRateUpperBound, state.tickRate + val))}));
     }
     startSnakeButton(){
         console.log("start snake button");
@@ -111,7 +121,7 @@ class GameMenu extends React.Component{
     unpauseButton(){
         // console.log("unpause button");
         // console.log(this.state);
-        this.setState((state) => ({paused: false}));
+        this.setState((state) => ({paused: false, tickRate: state.tickRate+1}));
     }
 
     // called on keyEvent press

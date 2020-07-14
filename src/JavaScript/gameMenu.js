@@ -45,6 +45,7 @@ var GameMenu = function (_React$Component2) {
         };
 
         // bind functions
+        _this2.changeTickRate = _this2.changeTickRate.bind(_this2);
         _this2.startSnakeButton = _this2.startSnakeButton.bind(_this2);
         _this2.keyEventInUp = _this2.keyEventInUp.bind(_this2);
         _this2.keyEventInDown = _this2.keyEventInDown.bind(_this2);
@@ -84,6 +85,8 @@ var GameMenu = function (_React$Component2) {
     _createClass(GameMenu, [{
         key: "render",
         value: function render() {
+            var _this3 = this;
+
             return React.createElement(
                 SquareFill,
                 { parentRef: this.props.parentRef },
@@ -143,30 +146,53 @@ var GameMenu = function (_React$Component2) {
                                 "h3",
                                 null,
                                 "Tick Rate: ",
-                                this.state.tickRate
+                                JSON.stringify(this.state.tickRate)
                             )
                         ),
                         React.createElement(
                             "div",
                             { className: "inline_block_parent" },
                             React.createElement(
+                                HoldButton,
+                                { speed: 1.8, growth: 1.6, maxRate: this.tickRateUpperBound - this.tickRateLowerBound, onClick: function onClick(multi) {
+                                        _this3.changeTickRate(-1 * multi);
+                                    } },
+                                React.createElement(ImgIcon, { className: "wrapper_div", small: 2, src: "src/Images/rewind-button-360x360.png" })
+                            ),
+                            React.createElement(
                                 ToggleButton,
                                 null,
                                 React.createElement(
                                     Button,
                                     { onClick: this.pauseButton },
-                                    React.createElement(ImgIcon, { small: 2, src: "src/Images/pause-button-200x200.png" })
+                                    React.createElement(ImgIcon, { className: "wrapper_div", small: 2, src: "src/Images/pause-button-200x200.png" })
                                 ),
                                 React.createElement(
                                     Button,
                                     { onClick: this.unpauseButton },
-                                    React.createElement(ImgIcon, { small: 2, src: "src/Images/play-button-200x200.png" })
+                                    React.createElement(ImgIcon, { className: "wrapper_div", small: 2, src: "src/Images/play-button-200x200.png" })
                                 )
+                            ),
+                            React.createElement(
+                                HoldButton,
+                                { speed: 1.8, growth: 1.6, maxRate: this.tickRateUpperBound - this.tickRateLowerBound, onClick: function onClick(multi) {
+                                        _this3.changeTickRate(1 * multi);
+                                    } },
+                                React.createElement(ImgIcon, { className: "wrapper_div", small: 2, src: "src/Images/fast-forward-button-360x360.png" })
                             )
                         )
                     )
                 )
             );
+        }
+    }, {
+        key: "changeTickRate",
+        value: function changeTickRate(val) {
+            var _this4 = this;
+
+            this.setState(function (state) {
+                return { tickRate: Math.max(_this4.tickRateLowerBound, Math.min(_this4.tickRateUpperBound, state.tickRate + val)) };
+            });
         }
     }, {
         key: "startSnakeButton",
@@ -189,7 +215,7 @@ var GameMenu = function (_React$Component2) {
             // console.log("unpause button");
             // console.log(this.state);
             this.setState(function (state) {
-                return { paused: false };
+                return { paused: false, tickRate: state.tickRate + 1 };
             });
         }
 
