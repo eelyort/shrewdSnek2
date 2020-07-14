@@ -94,7 +94,7 @@ var ShrewdSnek2Shell = function (_React$Component2) {
                     return React.createElement(
                         "div",
                         { ref: this.wrapperRef, className: "react_wrapper" },
-                        React.createElement(EvolutionMenu, { parentRef: this.wrapperRef, change: this.change })
+                        React.createElement(GameMenu, { parentRef: this.wrapperRef, change: this.change })
                     );
                 }
             // default

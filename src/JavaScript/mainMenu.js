@@ -114,13 +114,12 @@ class MainMenu extends InteractableLayer{
     }
 
     KILLME(){
+        this.myDocument.removeEventListener("keydown", this.keyEventInDown.bind(this), false);
+        this.myDocument.removeEventListener("keyup", this.keyEventInUp.bind(this), false);
+
         if(this.runningInstance != null){
             // kill current
             this.runningInstance.kill();
-
-            // canvas has seperate coordinate system
-            this.subCanvas.width = this.subCanvasInnerSize;
-            this.subCanvas.height = this.subCanvasInnerSize;
         }
     }
 

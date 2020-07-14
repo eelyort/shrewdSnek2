@@ -1,4 +1,8 @@
-console.log()
+function f() {
+    console.log(arguments);
+}
+
+f(1, 2, 4, 'HI');
 
 // if(-1){
 //     console.log("hi");

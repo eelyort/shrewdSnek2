@@ -1,5 +1,63 @@
 // REACT general purpose utilities
 
+// takes multiple classnames and smooshes them together into a working format
+function smooshClassNames() {
+    let ans = "";
+    for (let i = 0; i < arguments.length; i++) {
+        if(arguments[i]){
+            ans += ((ans) ? (" " + arguments[i]) : (arguments[i]));
+        }
+    }
+    return ans;
+}
+// deep compares 2 components, returning true if they are completely equal
+//   does not compare functions/non-react objects - otherwise does everything
+function deepCompare(a, b) {
+    let count = React.Children.count(a);
+
+    if(count !== React.Children.count(b)){
+        return false;
+    }
+
+    // check if single item
+    if(count === 1){
+        // if react element, continue recursion
+        if(a.props && b.props){
+            // tag type and keys
+            if((a.type === b.type) && (a.key === b.key)){
+                let usedSet = new Set();
+                for(let key in a.props){
+                    if(!(key in b.props) || !deepCompare(a.props[key], b.props[key])){
+                        return false;
+                    }
+                    usedSet.add(key);
+                }
+                for(let key in b.props){
+                    if(!(usedSet.has(key))){
+                        if(!(key in a.props) || !deepCompare(a.props[key], b.props[key])){
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+        // primitive data type
+        else if(!a.props && !b.props) {
+            return a === b;
+        }
+        return false;
+    }
+    // if multiple, compare all
+    for (let i = 0; i < count; i++) {
+        if(!deepCompare(a[i], b[i])){
+            return false;
+        }
+    }
+    return true;
+}
+
 // parent class that has the window's width/height and updates on resize
 class WindowSizes extends React.Component{
     constructor(props){
@@ -19,6 +77,48 @@ class WindowSizes extends React.Component{
 
     updateWindowDimensions() {
         this.setState({ windowWidth: window.innerWidth, windowHeight: window.innerHeight });
+    }
+}
+
+// button (div)
+class Button extends React.Component{
+    render() {
+        return(
+            <button className={"button" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={this.props.onClick}>
+                {this.props.children}
+            </button>
+        );
+    }
+}
+// button (div) which toggles between multiple buttons
+//   put in multiple "Button" components into children to use (Button is the one above ^^^)
+class ToggleButton extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {
+            index: 0
+        };
+
+        // pull out all the functions and buttons
+        this.funcs = React.Children.map(this.props.children, ((child, index) => {return child.props.onClick}));
+        this.buttons = React.Children.toArray(this.props.children);
+
+        this.clicked = this.clicked.bind(this);
+    }
+    render() {
+        const curr = this.buttons[this.state.index];
+        return(
+            React.cloneElement(curr, {
+                className: smooshClassNames(this.props.className, curr.props.className),
+                onClick: this.clicked
+            })
+        );
+    }
+    clicked(){
+        this.funcs[this.state.index]();
+
+        this.setState((state) => ({index: ((state.index >= this.funcs.length - 1) ? (0) : (state.index + 1))}));
     }
 }
 
@@ -50,27 +150,50 @@ class SquareFill extends WindowSizes{
 
 // div which can fade in/out using css transitions
 //  default is fade-out, to get opposite use props.reverse
+//  prop: "shouldReset" makes it return to default visibility on prop change - slows performance
 class FadeDiv extends React.Component{
     constructor(props){
         super(props);
 
         this.state = {
-            isVisible: (!this.props.reverse)
-        }
+            isVisible: (!this.props.reverse),
+            oldChildren: this.props.children
+        };
     }
     render(){
         const {isVisible: isVisible} = this.state;
-        const {reverse: reverse, speed: speed} = this.props;
+        const {reverse: reverse, speed: speed, shouldReset: shouldReset} = this.props;
+
+        // reset on content changes if "shouldReset" is toggled
+        if(shouldReset){
+            let curr = this.props.children;
+            if(!deepCompare(curr, this.state.oldChildren)) {
+                this.setState(() => ({
+                    isVisible: !reverse,
+                    oldChildren: curr
+                }));
+
+                let style = {
+                    opacity: `${((!reverse) ? (100) : (0))}%`
+                };
+
+                return(
+                    <div style={style} className={"wrapper_div" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                        {this.props.children}
+                    </div>
+                );
+            }
+        }
+
+        let style = {
+            transition: `opacity ${Math.round(1600/((speed) ? (speed) : (1)))}ms ease-in`,
+            opacity: `${((isVisible) ? (100) : (0))}%`
+        };
 
         // change
         if(isVisible !== reverse){
             this.setState(() => ({isVisible: reverse}));
         }
-
-        let style = {
-            transition: `opacity ${Math.round(2400/((speed) ? (speed) : (1)))}ms ease`,
-            opacity: `${((isVisible) ? (100) : (0))}%`
-        };
 
         return(
             <div style={style} className={"wrapper_div" + ((this.props.className) ? (" " + this.props.className) : (""))}>
@@ -90,9 +213,13 @@ class TypewriterText extends React.Component{
         this.speed = ((this.props.speed) ? (this.props.speed) : (1));
         // pull text
         this.text = (React.Children.only(this.props.children)).props.children;
+        if(Array.isArray(this.text)){
+            this.text = this.text.join("");
+        }
 
         this.state = {
-            current: ""
+            current: "",
+            intervalReady: true
         };
 
         this.interval = null;
@@ -100,14 +227,10 @@ class TypewriterText extends React.Component{
         this.update = this.update.bind(this);
         this.finish = this.finish.bind(this);
     }
-    componentDidMount() {
-        this.interval = setInterval(() => this.update(), 32/this.speed);
-    }
-
     update() {
         if(this.state.current.length >= this.text.length){
             this.finish();
-            return null;
+            return;
         }
 
         this.setState((state) => ({current: state.current + this.text.charAt(this.state.current.length)}));
@@ -115,6 +238,7 @@ class TypewriterText extends React.Component{
     finish() {
         if(this.interval){
             clearInterval(this.interval);
+            this.interval = null;
         }
 
         this.setState((state) => ({current: this.text}));
@@ -124,15 +248,29 @@ class TypewriterText extends React.Component{
     }
 
     render() {
+        // start typewriting when the interval is ready
+        if(this.state.intervalReady){
+            this.setState(() => ({intervalReady: false}));
+            this.interval = setInterval(() => this.update(), 32/this.speed);
+        }
+        // restart typewrite if the content changes
+        if(!this.interval){
+            let currContent = (React.Children.only(this.props.children)).props.children;
+            if(Array.isArray(currContent)){
+                currContent = currContent.join("");
+            }
+
+            if(currContent !== this.text) {
+                this.text = currContent;
+                this.setState(() => ({
+                    current: "",
+                    intervalReady: true
+                }))
+            }
+        }
+
         // smoosh together the classnames of both classes
-        let classNames = "";
-        if(this.props.className){
-            classNames = this.props.className;
-        }
-        const childClass = (React.Children.only(this.props.children)).props.className;
-        if(childClass) {
-            classNames += ((this.props.className) ? (" ") : ("")) + childClass;
-        }
+        let classNames = smooshClassNames(this.props.className, (React.Children.only(this.props.children)).props.className);
 
         return (
             React.cloneElement(this.props.children, {
@@ -158,9 +296,123 @@ class ImgIcon extends React.Component{
 // hamburger drop down menu
 class Menu extends React.Component{
     render() {
+        return(
+            <div className={"menu_position" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                <MenuInsides>
+                    {this.props.children}
+                </MenuInsides>
+            </div>
+        );
+    }
+}
+// hamburger drop down menu - fades away when far
+class FadeMenu extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {iconHidden: true};
+
+        this.mouseEnter = this.mouseEnter.bind(this);
+        this.mouseLeave = this.mouseLeave.bind(this);
+    }
+    render() {
+        // return (
+        //     <div className={"menu_position" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+        //         <FadeDiv className={"menu"} reverse={!this.state.iconHidden} speed={4}>
+        //             <MouseEnterExitDiv padding={1.6} mouseEnter={this.mouseEnter} mouseLeave={this.mouseLeave}>
+        //             <div onClick={() => {console.log("leave")}} className={"wrapper_div"}>
+        //                 <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/hamburger-icon-550x550.png"}>
+        //                 </ImgIcon>
+        //             </div>
+        //             </MouseEnterExitDiv>
+        //         </FadeDiv>
+        //     </div>
+        // );
+
         return (
-            <ImgIcon className={"menu"} small={2} src={"src/Images/hamburger-icon-550x550.png"}>
-            </ImgIcon>
+            <div className={"menu_position" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                <MouseEnterExitDiv padding={2.1} mouseEnter={this.mouseEnter} mouseLeave={this.mouseLeave}>
+                    <FadeDiv reverse={!this.state.iconHidden} speed={4}>
+                            <MenuInsides>
+                                {this.props.children}
+                            </MenuInsides>
+                    </FadeDiv>
+                </MouseEnterExitDiv>
+            </div>
+        );
+    }
+    mouseEnter(e){
+        this.setState(() => ({iconHidden: false}))
+    }
+    mouseLeave(e){
+        this.setState(() => ({iconHidden: true}))
+    }
+}
+// hamburger drop down menu insides - NEVER use this directly
+class MenuInsides extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {hidden: true};
+
+        this.click = this.click.bind(this);
+        this.open = this.open.bind(this);
+        this.close = this.close.bind(this);
+    }
+    render() {
+        return (
+            <div onMouseLeave={this.close} onDragLeave={this.close} className={"wrapper_div" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                <div className={"wrapper_div"} onClick={this.click}>
+                    <ImgIcon className={"wrapper_div menu"} small={2} src={"src/Images/hamburger-icon-550x550.png"}>
+                    </ImgIcon>
+                </div>
+                {((!this.state.hidden) ? (
+                    <div className={"menu_insides"}>
+                        {this.props.children}
+                    </div>
+                ) : (""))}
+            </div>
+        );
+    }
+    click(e){
+        if(this.state.hidden){
+            this.open();
+        }
+        else{
+            this.close();
+        }
+    }
+    open(){
+        this.setState(() => ({hidden: false}));
+    }
+    close(){
+        this.setState(() => ({hidden: true}));
+    }
+}
+
+// hover/unhover handler
+class MouseEnterExitDiv extends React.Component{
+    constructor(props){
+        super(props);
+
+        const {mouseEnter: mouseEnter, mouseLeave: mouseLeave} = this.props;
+        this.mouseEnter = mouseEnter;
+        this.mouseLeave = mouseLeave;
+    }
+    render(){
+        // padding in percentage (0-1)
+        const {padding: padding} = this.props;
+
+        let style = {
+            position: "relative",
+            margin: ((padding) ? (`-${padding * 100}%`) : ("0")),
+            padding: ((padding) ? (`${padding * 100}%`) : ("0"))
+        };
+
+        return(
+            <div className={"mouse_div" + ((this.props.className) ? (" " + this.props.className) : (""))} style={style} onMouseEnter={this.mouseEnter} onDragEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} onDragLeave={this.mouseLeave}>
+                {this.props.children}
+            </div>
         );
     }
 }

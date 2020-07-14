@@ -58,7 +58,7 @@ class ShrewdSnek2Shell extends React.Component{
         else if(this.state.currentlyRunning === 2){
             return (
                 <div ref={this.wrapperRef} className={"react_wrapper"}>
-                    <EvolutionMenu parentRef={this.wrapperRef} change={this.change} />
+                    <GameMenu parentRef={this.wrapperRef} change={this.change} />
                 </div>
             );
         }
