@@ -144,7 +144,7 @@ var GameMenu = function (_React$Component2) {
                         ),
                         React.createElement(
                             "div",
-                            { className: "score_text", reverse: true },
+                            { className: "score_text" },
                             React.createElement(
                                 "h2",
                                 null,
@@ -170,7 +170,7 @@ var GameMenu = function (_React$Component2) {
                             { className: "inline_block_parent" },
                             React.createElement(
                                 HoldButton,
-                                { speed: 1.8, growth: 1.6, maxRate: this.tickRateUpperBound - this.tickRateLowerBound, onClick: function onClick(multi) {
+                                { speed: 1, growth: 2, maxRate: this.tickRateUpperBound - this.tickRateLowerBound, onClick: function onClick(multi) {
                                         _this3.changeTickRate(-1 * multi);
                                     } },
                                 React.createElement(ImgIcon, { className: "wrapper_div", small: 2, src: "src/Images/rewind-button-360x360.png" })
@@ -191,7 +191,7 @@ var GameMenu = function (_React$Component2) {
                             ),
                             React.createElement(
                                 HoldButton,
-                                { speed: 1.8, growth: 1.6, maxRate: this.tickRateUpperBound - this.tickRateLowerBound, onClick: function onClick(multi) {
+                                { speed: 1, growth: 2, maxRate: this.tickRateUpperBound - this.tickRateLowerBound, onClick: function onClick(multi) {
                                         _this3.changeTickRate(1 * multi);
                                     } },
                                 React.createElement(ImgIcon, { className: "wrapper_div", small: 2, src: "src/Images/fast-forward-button-360x360.png" })
@@ -263,7 +263,11 @@ var GameMenu = function (_React$Component2) {
 
                 // pause/unpause on space
                 if (keyEvent.key == " " || keyEvent.key == "p" || keyEvent.key == "P") {
-                    this.pausePlayButtonRef.current.clicked();
+                    if (this.runningInstance) {
+                        this.pausePlayButtonRef.current.clicked();
+                    } else {
+                        this.startSnakeButton();
+                    }
                 }
                 this.keysDown.add(keyEvent.key);
             }

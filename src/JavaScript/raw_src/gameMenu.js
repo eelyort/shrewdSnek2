@@ -88,7 +88,7 @@ class GameMenu extends React.Component{
                                 Playing: {this.state.playing}
                             </h2>
                         </TypewriterText>
-                        <div className={"score_text"} reverse={true}>
+                        <div className={"score_text"}>
                             <h2>
                                 {"Score: " + (`\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0${this.state.score}`).slice(-8)}
                             </h2>
@@ -99,7 +99,7 @@ class GameMenu extends React.Component{
                             <h3>Tick Rate: {JSON.stringify(this.state.tickRate)}</h3>
                         </FadeDiv>
                         <div className={"inline_block_parent"}>
-                            <HoldButton speed={1.8} growth={1.6} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(-1 * multi)}}>
+                            <HoldButton speed={1} growth={2} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(-1 * multi)}}>
                                 <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/rewind-button-360x360.png"}/>
                             </HoldButton>
                             <ToggleButton ref={this.pausePlayButtonRef}>
@@ -110,7 +110,7 @@ class GameMenu extends React.Component{
                                     <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/play-button-200x200.png"}/>
                                 </Button>
                             </ToggleButton>
-                            <HoldButton speed={1.8} growth={1.6} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(1 * multi)}}>
+                            <HoldButton speed={1} growth={2} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(1 * multi)}}>
                                 <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/fast-forward-button-360x360.png"}/>
                             </HoldButton>
                         </div>
@@ -159,7 +159,12 @@ class GameMenu extends React.Component{
 
             // pause/unpause on space
             if(keyEvent.key == " " || keyEvent.key == "p" || keyEvent.key == "P"){
-                this.pausePlayButtonRef.current.clicked();
+                if(this.runningInstance) {
+                    this.pausePlayButtonRef.current.clicked();
+                }
+                else{
+                    this.startSnakeButton();
+                }
             }
             this.keysDown.add(keyEvent.key);
         }

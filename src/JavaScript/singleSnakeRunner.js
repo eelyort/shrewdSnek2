@@ -58,15 +58,17 @@ class SingleSnakeRunner{
     }
     // sets the interval to call
     changeTickRate(newVal){
-        this.tickRate = newVal;
+        if(newVal !== this.tickRate || !this.intervalID) {
+            this.tickRate = newVal;
 
-        // clear previous
-        if(this.intervalID != null){
-            clearInterval(this.intervalID);
+            // clear previous
+            if (this.intervalID) {
+                clearInterval(this.intervalID);
+            }
+
+            // start new
+            this.intervalID = setInterval(this.tick.bind(this), 1000 / this.tickRate);
         }
-
-        // start new
-        this.intervalID = setInterval(this.tick.bind(this), 1000 / this.tickRate);
     }
     // start
     startMe(){
