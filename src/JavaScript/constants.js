@@ -5,6 +5,7 @@ const buttonColor = "red";
 
 // default fps
 const defaultFPS = 30;
+const subCanvasInnerSize = 2400;
 
 // tick rate at which the evolving species are run
 const speciesRunnerTickRate = 600;
@@ -36,4 +37,4 @@ const maxNumThreads = 500;
 // number of times per second the display for evolution updates
 const evolutionUpdatePerSec = 1;
 
-// alert("Constants Instantiated");
+
