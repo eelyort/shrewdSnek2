@@ -58,6 +58,12 @@ function deepCompare(a, b) {
     return true;
 }
 
+// so you can return multiple elements
+class Fragment extends React.Component{
+    render() {
+        return this.props.children;
+    }
+}
 // parent class that has the window's width/height and updates on resize
 class WindowSizes extends React.Component{
     constructor(props){
@@ -142,7 +148,7 @@ class HoldButton extends React.Component{
 
         this.ticksHeld++;
 
-        let currCalls = Math.ceil(Math.pow(Math.max(growth, 1), Math.floor(this.ticksHeld/5)));
+        let currCalls = Math.ceil(Math.pow(Math.max(((growth) ? (growth) : (1)), 1), Math.floor(this.ticksHeld/5)));
         if(currCalls > maxRate){
             currCalls = maxRate;
         }
@@ -172,17 +178,52 @@ class HoldButton extends React.Component{
         clearInterval(this.interval);
     }
 }
+// select object | onSelect(value) = called function | name = name | initVal = init val (optional)
+class Select extends React.Component{
+    constructor(props){
+        super(props);
+
+        const {onSelect: onSelect, name: name, initVal: initVal} = this.props;
+
+        // no initVal, get the value of the first component
+        this.state = {value: ((initVal) ? (initVal) : (React.Children.toArray(this.props.children)[0].value))};
+
+        this.handleChange = this.handleChange.bind(this);
+    }
+    render() {
+        return(
+            <select value={this.state.value} onChange={this.handleChange} className={this.props.className} name={this.props.name}>
+                {this.props.children}
+            </select>
+        );
+    }
+    handleChange(event){
+        let ans = event.target.value;
+        if(ans !== this.state.value){
+            this.setState((state) => ({
+                value: ans
+            }),
+                () => this.props.onSelect(ans));
+        }
+    }
+}
 
 // a div which fills as much of the parent div (parentRef) as possible while remaining a perfect square
 //   Note: parent must be relatively/absolutely positioned
-class SquareFill extends WindowSizes{
+class SquareFill extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {
+            parentWidth: 0,
+            parentHeight: 0
+        }
+    }
     render() {
-        const {windowWidth: windowWidth, windowHeight: windowHeight} = this.state;
+        const {parentWidth: parentWidth, parentHeight: parentHeight} = this.state;
         const {parentRef: parentRef} = this.props;
 
-        const boundingRect = parentRef.current.getBoundingClientRect();
-
-        const [width, height] = [boundingRect.width, boundingRect.height];
+        const [width, height] = [parentWidth, parentHeight];
 
         let side = Math.min(width, height);
 
@@ -191,11 +232,25 @@ class SquareFill extends WindowSizes{
             height: `${side}px`
         };
 
-        return(
-            <div style={style} className={"square_fill wrapper_div" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+        return (
+            <div style={style}
+                 className={"square_fill wrapper_div" + ((this.props.className) ? (" " + this.props.className) : (""))}>
                 {this.props.children}
             </div>
         );
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        let rect = this.props.parentRef.current.getBoundingClientRect();
+        const [width, height] = [rect.width, rect.height];
+        if(width !== this.state.parentWidth || height !== this.state.parentHeight){
+            this.setState((state) => ({
+                parentWidth: width,
+                parentHeight: height
+            }))
+        }
+    }
+    componentDidMount() {
+        this.forceUpdate();
     }
 }
 
@@ -219,7 +274,7 @@ class FadeDiv extends React.Component{
         };
 
         // the component should immediately (no transition) go back to its original opacity if it is being reset
-        if(isVisible === reverse){
+        if(isVisible === reverse || !shouldReset){
             style["transition"] = `opacity ${Math.round(1600/((speed) ? (speed) : (1)))}ms ease-in`;
         }
 
@@ -353,45 +408,16 @@ class Menu extends React.Component{
 }
 // hamburger drop down menu - fades away when far
 class FadeMenu extends React.Component{
-    constructor(props){
-        super(props);
-
-        this.state = {iconHidden: true};
-
-        this.mouseEnter = this.mouseEnter.bind(this);
-        this.mouseLeave = this.mouseLeave.bind(this);
-    }
     render() {
-        // return (
-        //     <div className={"menu_position" + ((this.props.className) ? (" " + this.props.className) : (""))}>
-        //         <FadeDiv className={"menu"} reverse={!this.state.iconHidden} speed={4}>
-        //             <MouseEnterExitDiv padding={1.6} mouseEnter={this.mouseEnter} mouseLeave={this.mouseLeave}>
-        //             <div onClick={() => {console.log("leave")}} className={"wrapper_div"}>
-        //                 <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/hamburger-icon-550x550.png"}>
-        //                 </ImgIcon>
-        //             </div>
-        //             </MouseEnterExitDiv>
-        //         </FadeDiv>
-        //     </div>
-        // );
-
         return (
             <div className={"menu_position" + ((this.props.className) ? (" " + this.props.className) : (""))}>
-                <MouseEnterExitDiv padding={2.1} mouseEnter={this.mouseEnter} mouseLeave={this.mouseLeave}>
-                    <FadeDiv reverse={!this.state.iconHidden} speed={4}>
-                            <MenuInsides>
-                                {this.props.children}
-                            </MenuInsides>
-                    </FadeDiv>
-                </MouseEnterExitDiv>
+                <MouseFadeDiv padding={2.6} speed={4}>
+                    <MenuInsides>
+                        {this.props.children}
+                    </MenuInsides>
+                </MouseFadeDiv>
             </div>
         );
-    }
-    mouseEnter(e){
-        this.setState(() => ({iconHidden: false}))
-    }
-    mouseLeave(e){
-        this.setState(() => ({iconHidden: true}))
     }
 }
 // hamburger drop down menu insides - NEVER use this directly
@@ -456,9 +482,151 @@ class MouseEnterExitDiv extends React.Component{
         };
 
         return(
-            <div className={"mouse_div" + ((this.props.className) ? (" " + this.props.className) : (""))} style={style} onMouseEnter={this.mouseEnter} onDragEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} onDragLeave={this.mouseLeave}>
+            <div className={"mouse_div" + ((this.props.className) ? (" " + this.props.className) : (""))} style={style} onClick={this.props.onClick} onMouseEnter={this.mouseEnter} onDragEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} onDragLeave={this.mouseLeave}>
                 {this.props.children}
             </div>
         );
+    }
+}
+// a div which fades away when mouse is far/vice-versa
+class MouseFadeDiv extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {hidden: true};
+
+        this.mouseEnter = this.mouseEnter.bind(this);
+        this.mouseLeave = this.mouseLeave.bind(this);
+    }
+    render() {
+        return (
+            <div className={"relative wrapper_div" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                <MouseEnterExitDiv onClick={this.mouseEnter} padding={this.props.padding} mouseEnter={this.mouseEnter} mouseLeave={this.mouseLeave}>
+                    <FadeDiv reverse={!this.state.hidden} speed={this.props.speed}>
+                        {this.props.children}
+                    </FadeDiv>
+                </MouseEnterExitDiv>
+            </div>
+        );
+    }
+    mouseEnter(e){
+        this.setState(() => ({hidden: false}))
+    }
+    mouseLeave(e){
+        // console.log("leave");
+        this.setState(() => ({hidden: true}))
+    }
+}
+
+// popup shell - props: "closePopUp" function that closes the popup
+class PopUp extends React.Component{
+    render() {
+        return(
+            <div className={"popUp-card" + ((this.props.className) ? (" " + this.props.className) : (""))} onDragLeave={this.props.closePopUp} onMouseLeave={this.props.closePopUp}>
+                {this.props.children}
+            </div>
+        );
+    }
+}
+
+// vertically oriented carousel
+class VerticalCarousel extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {
+            scroll: 0
+        };
+
+        this.focusedRef = React.createRef();
+        this.wrapperRef = React.createRef();
+        this.buttonRef = React.createRef();
+        this.lastObjectRef = React.createRef();
+
+        this.click = this.click.bind(this);
+        this.scroll = this.scroll.bind(this);
+        this.scrollToFocus = this.scrollToFocus.bind(this);
+    }
+    render() {
+        const {selected: selected, select: select} = this.props;
+
+        const numChildren = React.Children.count(this.props.children);
+        let contents = React.Children.map(this.props.children, (child, i) => {
+            // scroll
+            let style = null;
+            // first component is the one that scrolls
+            if(i === 0){
+                style = {
+                    marginTop: `${-this.state.scroll}px`
+                };
+            }
+
+            // focused
+            if(i === selected){
+                return(
+                    <div className={"vertCarouselItem focused"} style={style} ref={this.focusedRef} onClick={() => this.click(i)}>
+                        {child}
+                    </div>
+                );
+            }
+            else if(i === numChildren - 1){
+                return (
+                    <div className={"vertCarouselItem"} style={style} ref={this.lastObjectRef} onClick={() => this.click(i)}>
+                        {child}
+                    </div>
+                );
+            }
+            else{
+                return (
+                    <div className={"vertCarouselItem"} style={style} onClick={() => this.click(i)}>
+                        {child}
+                    </div>
+                );
+            }
+        });
+
+        return(
+            <div ref={this.wrapperRef} className={"carousel_wrapper" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                <div className={"wrapper_div"} ref={this.buttonRef}>
+                    <MouseFadeDiv className={"scroll_button top"} padding={0.1} speed={5}>
+                        <Button onClick={() => {this.scroll(-(this.wrapperRef.current.getBoundingClientRect().height - (2 * this.buttonRef.current.getBoundingClientRect().height)))}}>
+                            <ImgIcon className={"wrapper_div"} small={0} src={"src/Images/up-arrow-800x800.png"}/>
+                        </Button>
+                    </MouseFadeDiv>
+                </div>
+                <div className={"carousel_wrapper_2"}>
+                    {contents}
+                </div>
+                <MouseFadeDiv className={"scroll_button bottom"} padding={0.1} speed={5}>
+                    <Button onClick={() => {this.scroll(this.wrapperRef.current.getBoundingClientRect().height - (2 * this.buttonRef.current.getBoundingClientRect().height))}}>
+                        <ImgIcon className={"wrapper_div"} small={0} src={"src/Images/down-arrow-800x800.png"}/>
+                    </Button>
+                </MouseFadeDiv>
+            </div>
+        );
+    }
+    click(i){
+        console.log(`click(${i})`);
+        if(i !== this.props.selected){
+            this.props.select(i);
+        }
+        else{
+            this.scrollToFocus();
+        }
+    }
+    scroll(amount){
+        console.log(`scroll(${amount})`);
+        const minScroll = 0;
+        const maxScroll = this.state.scroll + ((this.lastObjectRef.current) ? (this.lastObjectRef.current.offsetTop) : (this.focusedRef.current.offsetTop));
+        if(amount !== 0) {
+            this.setState((state) => ({scroll: Math.min(Math.max(state.scroll + amount, minScroll), maxScroll)}));
+        }
+    }
+    scrollToFocus(){
+        console.log(`scroll: ${this.state.scroll}, this.focusedRef.current.offsetTop: ${this.focusedRef.current.offsetTop}`);
+        this.scroll((this.focusedRef.current.offsetTop));
+    }
+    componentDidMount() {
+        this.scrollToFocus();
     }
 }

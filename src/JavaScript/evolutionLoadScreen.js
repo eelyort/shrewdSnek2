@@ -1,8 +1,7 @@
 class EvolutionLoadScreen extends SingleSnakeRunner{
-    constructor(evolution, mainMenu){
+    constructor(evolution){
         super(loadingSignSnake.cloneMe(), 8, function () {/*Do nothing*/}, null, pathAppleSpawn);
         this.myEvolution = evolution;
-        this.myMainMenu = mainMenu;
 
         // loading bar
         this.loadLeft = .1;

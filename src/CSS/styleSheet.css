@@ -39,7 +39,7 @@
     /*borders*/
     border-color: #C5C6C7;
     border-width: 2px;
-    border-radius: 5vw;
+    border-radius: 2vw;
     border-style: solid;
 
     opacity: 99.5%;
@@ -142,7 +142,7 @@
     background-color: #66FCF1;
     border-style: none;
     border-radius: calc(32px + 3%);
-    box-shadow: 0 0 0.9vw #64f5ea;
+    box-shadow: 0 0 0.7vw #64f5ea;
 
     transform: scale(1);
 
@@ -150,7 +150,7 @@
     transition: background 150ms ease-in-out, transform 250ms ease, box-shadow 200ms ease;
 }
 .button:hover {
-    box-shadow: 0 0 1.4vw #60cdbb;
+    box-shadow: 0 0 1.8vw #60cdbb;
     background-color: #67fff4;
     transform: scale(1.01);
 }
@@ -184,12 +184,6 @@
     background-color: inherit;
     padding: 0;
     margin: 0;
-
-    /*testing stuff TODO: remove*/
-    /*background-color: magenta;*/
-    /*border-style: solid;*/
-    /*border-color: blueviolet;*/
-    /*border-width: 5px;*/
 }
 .popUp-card .selectCarouselMember {
     /*border*/
@@ -345,12 +339,162 @@
     margin: auto;
 }
 
+.popUp-card{
+    position: absolute;
+    margin: 4%;
+
+    width: 92%;
+    height: 92%;
+
+    z-index: 11;
+}
+.selectSnake > div{
+    padding: 0;
+    margin: 3%;
+
+    width: 94%;
+    height: 94%;
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    /*TODO: delete testing borders (and margin which is set to border width)*/
+    border-color: yellow;
+    border-style: solid;
+    border-width: 1px;
+}
+.selectSnake .text_card{
+    border-radius: 0 15px 15px 0;
+
+    padding: 2%;
+
+    overflow-y: scroll;
+
+    height: calc(96% - 4px);
+    width: calc(71% - 4px);
+}
+.selectSnake .carousel_parent{
+    position: relative;
+
+    height: 100%;
+    width: 25%;
+}
+.selectSnake .generation_label{
+    margin-left: 10%;
+    margin-right: 8px;
+}
+.selectSnake select{
+    border-radius: 10px;
+
+    border-color: #979899;
+    border-style: solid;
+    border-width: 1px;
+}
+.vertCarouselItem{
+    border-radius: 20px 0 0 20px;
+
+    color: black;
+
+    background-color: #59efe6;
+
+    border-color: #979899;
+    border-style: solid;
+    border-width: 1px;
+
+    box-shadow: 0 0 0.4vw #979899;
+}
+.vertCarouselItem.focused{
+    transform: translateX(18%);
+
+    background-color: #d6d7d8;
+    box-shadow: 0 0 1.2vw #979899;
+}
+.vertCarouselItem:hover{
+    transform: translateX(8%);
+}
+.vertCarouselItem > *{
+    margin: 0;
+    padding: 4% 2% 4% 4%;
+    max-width: 74%;
+}
+.snake_details{
+    padding: 2%;
+    width: 96%;
+    min-height: 10px;
+
+    /*see through background*/
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 1vw;
+    border-style: dashed;
+    /*set one*/
+    /*TODO: change color*/
+    border-color: #2d5a56;
+    border-width: 2px;
+}
+.snake_details .category_text_title{
+    font-size: 120%;
+    text-decoration: underline;
+
+    margin-top: 1em;
+    margin-bottom: 0.2em;
+}
+.snake_details .category_text_title:first-of-type{
+    margin-top: inherit;
+}
+.snake_details .category_text_title.small{
+    margin-top: 0.5em;
+    font-size: 100%;
+}
+.snake_details .category_text_title::after{
+    content: ":";
+}
+.snake_details .category_text{
+    margin-top: inherit;
+    margin-bottom: inherit;
+}
+
 body{
     background-color: #1F2833;
     color: #cfd0d1;
 }
 
+p{
+    white-space: pre-wrap;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    opacity: 0;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.30);
+
+    border-radius: 500px;
+}
+.popUp-card ::-webkit-scrollbar-thumb{
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.40);
+}
+.popUp-card ::-webkit-scrollbar-thumb:hover{
+    background: rgba(0, 0, 0, 0.30);
+}
+
 /*General Purpose react classes BELOW*/
+.relative{
+    position: relative;
+}
 .react_wrapper{
     width: 100%;
     height: 100%;
@@ -363,6 +507,44 @@ body{
 .wrapper_div{
     margin: 0;
     padding: 0;
+}
+
+.carousel_wrapper{
+    padding: 0;
+    margin: 0;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+
+    overflow: hidden;
+}
+.carousel_wrapper_2{
+    z-index: 1;
+    position: relative;
+}
+.carousel_wrapper .scroll_button{
+    width: 100%;
+    text-align: center;
+
+    z-index: 2;
+}
+.carousel_wrapper .scroll_button .button{
+    background-color: rgba(255, 255, 255, 0);
+
+    box-shadow: none;
+
+    opacity: 70%;
+}
+.vertCarouselItem{
+    transition: all 200ms ease-in-out;
+    transform: translateX(20%);
+
+    width: 100%;
+
+    margin-top: 2%;
 }
 
 .mouse_div{
@@ -388,18 +570,24 @@ body{
     min-height: 20px;
     width: 4vw;
     height: 4vw;
+    max-width: 40px;
+    max-height: 40px;
 }
 .icon.small2{
     min-width: 17px;
     min-height: 17px;
     width: 3vw;
     height: 3vw;
+    max-width: 37px;
+    max-height: 37px;
 }
 .icon.small3{
     min-width: 14px;
     min-height: 14px;
     width: 2vw;
     height: 2vw;
+    max-width: 34px;
+    max-height: 34px;
 }
 .icon > img{
     width: 100%;

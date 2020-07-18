@@ -62,7 +62,8 @@ var ShrewdSnek2Shell = function (_React$Component2) {
 
         // 0 - nothing
         // 1 - main menu TODO: become REACT
-        // 2 - evolution
+        // 2 - game menu
+        // 3 - empty wrapper
         var _this3 = _possibleConstructorReturn(this, (ShrewdSnek2Shell.__proto__ || Object.getPrototypeOf(ShrewdSnek2Shell)).call(this, props));
 
         _this3.state = { currentlyRunning: 0 };
@@ -76,12 +77,12 @@ var ShrewdSnek2Shell = function (_React$Component2) {
     _createClass(ShrewdSnek2Shell, [{
         key: "componentDidMount",
         value: function componentDidMount() {
-            this.change(1);
+            this.change(3);
         }
     }, {
         key: "render",
         value: function render() {
-            // main menu
+            // main menu - OLD
             if (this.state.currentlyRunning === 1) {
                 return React.createElement(
                     "div",
@@ -89,7 +90,7 @@ var ShrewdSnek2Shell = function (_React$Component2) {
                     React.createElement(MainMenuShell, { change: this.change })
                 );
             }
-            // evolution
+            // Game Menu
             else if (this.state.currentlyRunning === 2) {
                     return React.createElement(
                         "div",
@@ -97,6 +98,10 @@ var ShrewdSnek2Shell = function (_React$Component2) {
                         React.createElement(GameMenu, { parentRef: this.wrapperRef, change: this.change })
                     );
                 }
+                // empty wrapper
+                else if (this.state.currentlyRunning === 3) {
+                        return React.createElement("div", { ref: this.wrapperRef, className: "react_wrapper" });
+                    }
             // default
             return React.createElement(
                 "h1",
@@ -110,6 +115,17 @@ var ShrewdSnek2Shell = function (_React$Component2) {
             this.setState(function (state) {
                 return { currentlyRunning: target };
             });
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate(prevProps, prevState, snapshot) {
+            var _this4 = this;
+
+            if (this.state.currentlyRunning !== 2) {
+                requestAnimationFrame(function () {
+                    return _this4.change(2);
+                });
+            }
         }
     }]);
 

@@ -37,4 +37,11 @@ const maxNumThreads = 500;
 // number of times per second the display for evolution updates
 const evolutionUpdatePerSec = 1;
 
-
+const decodeTargetVal = function (val) {
+    switch (val) {
+        case 1:
+            return "Body";
+        case 2:
+            return "Apple";
+    }
+};

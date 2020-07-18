@@ -69,6 +69,18 @@ class CustomQueue{
         }
         return str;
     }
+    map(func){
+        let index = 0;
+        let curr = this.startNode;
+        let ans = [];
+        while(curr){
+            ans.push(func(curr.myVal, index));
+
+            curr = curr.myNext;
+            index++;
+        }
+        return ans;
+    }
     // these two only work for primitive types
     stringify(){
         // save the data to an array
@@ -429,7 +441,7 @@ class HoverHandler{
 
 // class which creates a pop up which is constantly loaded and hidden from view
 // assuming coords in percentage (0-1) and the popUp fills the screen and is centered
-class PopUp extends BaseHTMLElement{
+class PopUpOLD extends BaseHTMLElement{
     constructor(left, top, zIndex, gamePanel, documentPopUp){
         super(left, top, 1 - (2 * left), 1 - (2 * top), zIndex, gamePanel, documentPopUp);
         // this.myLeft = left;
@@ -511,7 +523,7 @@ class PopUp extends BaseHTMLElement{
 }
 
 // drawing popup
-class DrawPopUp extends PopUp{
+class DrawPopUp extends PopUpOLD{
     constructor(left, top, zIndex, gamePanel, documentPopUp, size){
         super(left, top, zIndex, gamePanel, documentPopUp);
         this.size = size;
@@ -733,7 +745,7 @@ class DrawPopUp extends PopUp{
 }
 
 // popup to select which snake to run
-class SelectSnakePopUp extends PopUp{
+class SelectSnakePopUp extends PopUpOLD{
     constructor(left, top, zIndex, gamePanel, documentPopUp, optionsArr, selectCallback){
         super(left, top, zIndex, gamePanel, documentPopUp);
 

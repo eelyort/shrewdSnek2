@@ -42,6 +42,8 @@ class Snake extends Component{
         this.myInput.updateParentSnake(this);
         this.myBrain = brainIn;
         this.myBrain.updateWithInput(this.myInput);
+
+        this.generationNumber = 0;
     }
     focusMe(){
         this.focused = true;
@@ -273,5 +275,39 @@ class Snake extends Component{
         ans.myBrain = Brain.parse(ans.myBrain);
 
         return ans;
+    }
+}
+
+class SnakeSpecies{
+    constructor(snakes){
+        if(Array.isArray(snakes)){
+            this.snakes = snakes;
+        }
+        else{
+            this.snakes = [snakes];
+        }
+    }
+    getComponentName(){
+        return this.snakes[0].getComponentName();
+    }
+    getComponentDescription(){
+        return this.snakes[0].getComponentName();
+    }
+    stringify(){
+        let a = this.snakes.map((value, index) => {return value.stringify()});
+        return JSON.stringify(a);
+    }
+    cloneMe(generation = (this.snakes.length - 1)){
+        return this.snakes[generation].cloneMe();
+    }
+    push(snake){
+        this.snakes.push(snake);
+    }
+    getLength(){
+        return this.snakes.length;
+    }
+    static parse(json){
+        let a = JSON.parse(json);
+        return new SnakeSpecies(a.map((val) => {return Snake.parse(val)}));
     }
 }

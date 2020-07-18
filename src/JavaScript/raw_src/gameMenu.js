@@ -17,22 +17,32 @@ class GameMenu extends React.Component{
             tickRate: 20,
             paused: false,
             playing: "???",
-            selectedSnake: 0
+            selectedSnake: 0,
+            selectedSnakeGen: 0,
+            popupActive: 0
         };
 
         // bind functions
         this.startSnakeButton = this.startSnakeButton.bind(this);
-        this.loadSnakeButton = this.loadSnakeButton.bind(this);
         this.changeTickRate = this.changeTickRate.bind(this);
         this.pauseButton = this.pauseButton.bind(this);
         this.unpauseButton = this.unpauseButton.bind(this);
+
+        this.openPopUp = this.openPopUp.bind(this);
+        this.closePopUp = this.closePopUp.bind(this);
+
         this.keyEventInDown = this.keyEventInDown.bind(this);
         this.keyEventInUp = this.keyEventInUp.bind(this);
+
         this.startDraw = this.startDraw.bind(this);
         this.draw = this.draw.bind(this);
+
         this.callbackEndCurrent = this.callbackEndCurrent.bind(this);
-        this.startSelectedSnake = this.startSelectedSnake.bind(this);
+        this.getSelectedSnake = this.getSelectedSnake.bind(this);
+        this.startSnake = this.startSnake.bind(this);
         this.startRunner = this.startRunner.bind(this);
+
+        this.evolutionReady = this.evolutionReady.bind(this);
 
         // needed refs
         this.pausePlayButtonRef = React.createRef();
@@ -40,7 +50,7 @@ class GameMenu extends React.Component{
 
         // evolution
         // shell
-        this.evolutionShell = new EvolutionShell(); // TODO: it takes MainMenu as input atm for some reason
+        this.evolutionShell = new EvolutionShell(this.evolutionReady); // TODO: it takes MainMenu as input atm for some reason
 
         // runner variables
         // the instance of singleSnakeRunner which is running
@@ -54,8 +64,7 @@ class GameMenu extends React.Component{
         this.now = 0;
         this.fps = defaultFPS;
 
-        // TODO: popups
-
+        // popups: 0 - none, 1 - select snake, TODO:
 
         // keyEvents: note that it is using keyDown instead of keyPress because keyPress doesn't register arrowKeys, shift, etc
         document.addEventListener("keydown", this.keyEventInDown, false);
@@ -64,8 +73,29 @@ class GameMenu extends React.Component{
         document.addEventListener("keyup", this.keyEventInUp, false);
     }
     render() {
+        // console.log("GameMenu Render()");
+
+        // popUps
+        let popUp = null;
+        if(this.state.popupActive) {
+            // bundle of functions for the popup to interact with the main menu
+            //  close(newPopUp = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes)
+            const popUpFuncs = {
+                close: this.closePopUp,
+                changeSelected: (i) => this.setState(() => ({selectedSnake: i})),
+                changeSelectedGen: (i) => this.setState(() => ({selectedSnakeGen: i})),
+                changeLoaded: this.changeLoadedSnakes
+            };
+            if (this.state.popupActive === 1) {
+                popUp = (
+                    <SelectSnakePopUpREACT selectedSnake={this.state.selectedSnake} selectedSnakeGen={this.state.selectedSnakeGen} popUpFuncs={popUpFuncs} loadedSnakesIn={loadedSnakes} />
+                );
+            }
+        }
+
         return(
             <SquareFill parentRef={this.props.parentRef}>
+                {popUp}
                 <SubCanvas refIn={this.subCanvasRef} />
                 <div className={"ui_layer"}>
                     <div className={"inline_block_parent wrapper_div"}>
@@ -76,7 +106,7 @@ class GameMenu extends React.Component{
                             <Button className={"gameButton"} onClick={this.startSnakeButton}>
                                 Play
                             </Button>
-                            <Button className={"gameButton"} onClick={this.loadSnakeButton}>
+                            <Button className={"gameButton"} onClick={() => this.openPopUp(1)}>
                                 Load
                             </Button>
                             <Button className={"gameButton"} onClick={this.startSnakeButton}>
@@ -99,20 +129,22 @@ class GameMenu extends React.Component{
                             <h3>Tick Rate: {JSON.stringify(this.state.tickRate)}</h3>
                         </FadeDiv>
                         <div className={"inline_block_parent"}>
-                            <HoldButton speed={1} growth={2} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(-1 * multi)}}>
-                                <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/rewind-button-360x360.png"}/>
-                            </HoldButton>
-                            <ToggleButton ref={this.pausePlayButtonRef}>
-                                <Button onClick={this.pauseButton}>
-                                    <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/pause-button-200x200.png"}/>
-                                </Button>
-                                <Button onClick={this.unpauseButton}>
-                                    <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/play-button-200x200.png"}/>
-                                </Button>
-                            </ToggleButton>
-                            <HoldButton speed={1} growth={2} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(1 * multi)}}>
-                                <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/fast-forward-button-360x360.png"}/>
-                            </HoldButton>
+                            <MouseFadeDiv padding={.3} speed={3.6}>
+                                <HoldButton speed={1} growth={2} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(-1 * multi)}}>
+                                    <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/rewind-button-360x360.png"}/>
+                                </HoldButton>
+                                <ToggleButton ref={this.pausePlayButtonRef}>
+                                    <Button onClick={this.pauseButton}>
+                                        <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/pause-button-200x200.png"}/>
+                                    </Button>
+                                    <Button onClick={this.unpauseButton}>
+                                        <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/play-button-200x200.png"}/>
+                                    </Button>
+                                </ToggleButton>
+                                <HoldButton speed={1} growth={2} maxRate={this.tickRateUpperBound - this.tickRateLowerBound} onClick={(multi) => {this.changeTickRate(1 * multi)}}>
+                                    <ImgIcon className={"wrapper_div"} small={2} src={"src/Images/fast-forward-button-360x360.png"}/>
+                                </HoldButton>
+                            </MouseFadeDiv>
                         </div>
                     </div>
                 </div>
@@ -123,10 +155,12 @@ class GameMenu extends React.Component{
     // button functions
     startSnakeButton(){
         console.log("start snake button");
-        this.startSelectedSnake();
-    }
-    loadSnakeButton(){
-        console.log("TODO: loadSnakeButton()");
+        if(this.state.paused) {
+            this.pausePlayButtonRef.current.clicked();
+        }
+        else {
+            this.startSnake(this.getSelectedSnake());
+        }
     }
     changeTickRate(val){
         this.setState((state) => ({tickRate: Math.max(this.tickRateLowerBound, Math.min(this.tickRateUpperBound, state.tickRate + val))}), () => {
@@ -136,16 +170,41 @@ class GameMenu extends React.Component{
         });
     }
     pauseButton(){
+        // console.log("pause");
         if(this.runningInstance){
             this.runningInstance.pause();
         }
         this.setState((state) => ({paused: true}));
     }
     unpauseButton(){
+        // console.log("unpause");
         if(this.runningInstance){
             this.runningInstance.unpause();
         }
-        this.setState((state) => ({paused: false}));
+        else{
+            this.startSnake(this.getSelectedSnake());
+        }
+        this.setState((state) => ({paused: false}), () => {
+            this.startDraw();
+        });
+    }
+
+    // popup stuff
+    // opens a popup
+    openPopUp(i){
+        console.log(`openPopup(${i});`);
+        this.setState(() => ({popupActive: i}));
+        if(!this.state.paused){
+            this.pausePlayButtonRef.current.clicked();
+        }
+    }
+    // pass as function to popups, optional parameter closes the current popup and immediately opens another
+    closePopUp(toOpen = 0){
+        console.log("TODO: closePopUp");
+        // this.setState(() => ({popupActive: toOpen}));
+    }
+    changeLoadedSnakes(newVer){
+        loadedSnakes = newVer;
     }
 
     // called on keyEvent press
@@ -158,13 +217,8 @@ class GameMenu extends React.Component{
             }
 
             // pause/unpause on space
-            if(keyEvent.key == " " || keyEvent.key == "p" || keyEvent.key == "P"){
-                if(this.runningInstance) {
-                    this.pausePlayButtonRef.current.clicked();
-                }
-                else{
-                    this.startSnakeButton();
-                }
+            if(keyEvent.key === " " || keyEvent.key === "p" || keyEvent.key === "P"){
+                this.pausePlayButtonRef.current.clicked();
             }
             this.keysDown.add(keyEvent.key);
         }
@@ -184,6 +238,14 @@ class GameMenu extends React.Component{
     // draw loop
     draw(){
         if(this.runningInstance){
+            // when paused stop draw loop, draw one last time
+            if(this.state.paused){
+                this.runningInstance.draw(this.subCanvasCTX);
+                this.setState((state) => ({score: this.runningInstance.mySnake.myLength}));
+                return;
+            }
+
+            // regular draw
             let fpsInterval = 1000 / this.fps;
 
             // request another frame
@@ -207,18 +269,28 @@ class GameMenu extends React.Component{
 
     // runner interaction methods
     callbackEndCurrent(){
+        // console.log("callback");
+
         // last draw call + score update
         this.runningInstance.draw(this.subCanvasCTX);
         this.setState((state) => ({score: this.runningInstance.mySnake.myLength}));
+        if(!this.state.paused){
+            this.pausePlayButtonRef.current.clicked();
+        }
         this.runningInstanceOld = this.runningInstance;
         this.runningInstance = null;
 
-        // setTimeout(function (){                  TODO
-        //     this.evolutionShell.runQueue()
-        // }.bind(this), 15);
+        // if the evolution has things it wants to show let it do so
+        if(this.evolutionShell) {
+            setTimeout(() => {
+                this.evolutionShell.runQueue(this.startSnake, this.startRunner);
+            }, 15);
+        }
     }
-    startSelectedSnake(){
-        let snake = loadedSnakes[this.state.selectedSnake].cloneMe();
+    getSelectedSnake(){
+        return loadedSnakes[this.state.selectedSnake].cloneMe();
+    }
+    startSnake(snake){
         let runner;
         // special runners for special cases
         if(snake.uuid && snake.uuid === "Mother's Day!!!"){
@@ -232,6 +304,8 @@ class GameMenu extends React.Component{
     startRunner(runner){
         // clear canvas
         if(this.runningInstance){
+            console.log("new runner called at startRunner() while old one still ongoing");
+
             this.runningInstance.kill();
             this.runningInstanceOld = this.runningInstance;
 
@@ -239,10 +313,6 @@ class GameMenu extends React.Component{
             this.subCanvasRef.current.height = subCanvasInnerSize;
         }
         this.runningInstance = runner;
-        // unpause
-        if(this.state.paused){
-            this.pausePlayButtonRef.current.clicked();
-        }
         // reset display
         this.setState((state) => ({
             score: this.runningInstance.mySnake.myLength,
@@ -253,10 +323,20 @@ class GameMenu extends React.Component{
         this.runningInstance.startMe();
     }
 
+    // evolution shell interaction methods
+    // called by the shell when it has something new to show
+    evolutionReady(){
+        if(!this.runningInstance || (this.runningInstance instanceof EvolutionLoadScreen)){
+            this.evolutionShell.runQueue(this.startSnake, this.startRunner);
+        }
+    }
+
     // REACT lifecycle
     componentDidMount() {
         // console.log(this.subCanvasRef.current);
         this.subCanvasCTX = this.subCanvasRef.current.getContext("2d");
+
+        this.startSnakeButton();
     }
     componentWillUnmount() {
         document.removeEventListener("keydown", () => this.keyEventInDown, false);

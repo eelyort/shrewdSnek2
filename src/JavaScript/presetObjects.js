@@ -124,3 +124,5 @@ const testSnake = new Snake(
 );
 
 loadedSnakes.push(testSnake);
+
+loadedSnakes = loadedSnakes.map((val) => {return new SnakeSpecies(val)});

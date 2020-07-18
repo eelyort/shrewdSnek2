@@ -34,7 +34,8 @@ class ShrewdSnek2Shell extends React.Component{
         super(props);
         // 0 - nothing
         // 1 - main menu TODO: become REACT
-        // 2 - evolution
+        // 2 - game menu
+        // 3 - empty wrapper
         this.state = {currentlyRunning: 0};
 
         this.wrapperRef = React.createRef();
@@ -42,11 +43,11 @@ class ShrewdSnek2Shell extends React.Component{
         this.change = this.change.bind(this);
     }
     componentDidMount() {
-        this.change(1);
+        this.change(3);
     }
 
     render() {
-        // main menu
+        // main menu - OLD
         if(this.state.currentlyRunning === 1) {
             return (
                 <div ref={this.wrapperRef} className={"react_wrapper"}>
@@ -54,11 +55,18 @@ class ShrewdSnek2Shell extends React.Component{
                 </div>
             );
         }
-        // evolution
+        // Game Menu
         else if(this.state.currentlyRunning === 2){
             return (
                 <div ref={this.wrapperRef} className={"react_wrapper"}>
                     <GameMenu parentRef={this.wrapperRef} change={this.change} />
+                </div>
+            );
+        }
+        // empty wrapper
+        else if(this.state.currentlyRunning === 3){
+            return (
+                <div ref={this.wrapperRef} className={"react_wrapper"}>
                 </div>
             );
         }
@@ -69,6 +77,11 @@ class ShrewdSnek2Shell extends React.Component{
     }
     change(target){
         this.setState((state) => ({currentlyRunning: target}));
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(this.state.currentlyRunning !== 2) {
+            requestAnimationFrame(() => this.change(2));
+        }
     }
 }
 
