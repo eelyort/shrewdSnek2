@@ -1,8 +1,12 @@
-function f() {
-    console.log(arguments);
-}
+let [TEST, TEST2, TEST3] = [0, 0, 0];
+// [TEST, TEST2, TEST3] += [1, 0, -1];
+let curr = [1, 0, -1];
 
-f(1, 2, 4, 'HI');
+[TEST, TEST2, TEST3] = [TEST + curr[0], TEST2 + curr[1], TEST3 + curr[2]];
+
+console.log(`1: ${TEST}, 2: ${TEST2}, 3: ${TEST3}`);
+
+console.log(1 + (1 === 1));
 
 // if(-1){
 //     console.log("hi");

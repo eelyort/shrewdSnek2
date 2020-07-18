@@ -34,7 +34,6 @@ class SelectSnakePopUpREACT extends React.Component{
                                         <option value={index}>{index}</option>
                                     );
                                 })}
-                                <option value={2}>2</option>
                             </Select>
                         </div>
                         <SnakeDetails snake={loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen]} />

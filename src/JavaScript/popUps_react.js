@@ -77,12 +77,7 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                                         { value: index },
                                         index
                                     );
-                                }),
-                                React.createElement(
-                                    "option",
-                                    { value: 2 },
-                                    "2"
-                                )
+                                })
                             )
                         ),
                         React.createElement(SnakeDetails, { snake: loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen] })
