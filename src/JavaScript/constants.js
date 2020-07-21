@@ -37,6 +37,8 @@ const maxNumThreads = 500;
 // number of times per second the display for evolution updates
 const evolutionUpdatePerSec = 1;
 
+// details
+// grid val to string
 const decodeTargetVal = function (val) {
     switch (val) {
         case 1:
@@ -45,3 +47,11 @@ const decodeTargetVal = function (val) {
             return "Apple";
     }
 };
+// outline min width for drawing the net -- to small and some parts r invisible
+const minOutlineWidth = 12;
+// outline width if it is bigger than above, percentage of square size
+const outlinePercent = 0.13;
+// weight lines
+const weightLineWidth = 10;
+// big number: darker, small: lighter
+const weightLineOpacityMultiplier = 1.5;

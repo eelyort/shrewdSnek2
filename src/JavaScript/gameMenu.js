@@ -463,8 +463,13 @@ var GameMenu = function (_React$Component2) {
                 this.runningInstance.kill();
                 this.runningInstanceOld = this.runningInstance;
 
-                this.subCanvasRef.current.width = subCanvasInnerSize;
-                this.subCanvasRef.current.height = subCanvasInnerSize;
+                // clear canvas
+                if (this.subCanvasCTX) {
+                    this.subCanvasCTX.clearRect(0, 0, subCanvasInnerSize, subCanvasInnerSize);
+                } else {
+                    this.subCanvasRef.current.width = subCanvasInnerSize;
+                    this.subCanvasRef.current.height = subCanvasInnerSize;
+                }
             }
             this.runningInstance = runner;
             // reset display
