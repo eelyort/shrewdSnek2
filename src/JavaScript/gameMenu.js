@@ -375,9 +375,11 @@ var GameMenu = function (_React$Component2) {
                 // when paused stop draw loop, draw one last time
                 if (this.state.paused) {
                     this.runningInstance.draw(this.subCanvasCTX);
-                    this.setState(function (state) {
-                        return { score: _this6.runningInstance.mySnake.myLength };
-                    });
+                    if (this.runningInstance.mySnake.myLength !== this.state.score) {
+                        this.setState(function (state) {
+                            return { score: _this6.runningInstance.mySnake.myLength };
+                        });
+                    }
                     return;
                 }
 
@@ -400,9 +402,11 @@ var GameMenu = function (_React$Component2) {
                     this.then = this.now - elapsed % fpsInterval;
 
                     this.runningInstance.draw(this.subCanvasCTX);
-                    this.setState(function (state) {
-                        return { score: _this6.runningInstance.mySnake.myLength };
-                    });
+                    if (this.runningInstance.mySnake.myLength !== this.state.score) {
+                        this.setState(function (state) {
+                            return { score: _this6.runningInstance.mySnake.myLength };
+                        });
+                    }
                 }
             }
         }

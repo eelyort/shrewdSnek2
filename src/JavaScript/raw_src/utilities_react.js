@@ -217,7 +217,9 @@ class SquareFill extends React.Component{
         this.state = {
             parentWidth: 0,
             parentHeight: 0
-        }
+        };
+
+        this.updateState = this.updateState.bind(this);
     }
     render() {
         const {parentWidth: parentWidth, parentHeight: parentHeight} = this.state;
@@ -239,7 +241,8 @@ class SquareFill extends React.Component{
             </div>
         );
     }
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    updateState(){
+        // console.log("SquareFill updateState()");
         let rect = this.props.parentRef.current.getBoundingClientRect();
         const [width, height] = [rect.width, rect.height];
         if(width !== this.state.parentWidth || height !== this.state.parentHeight){
@@ -249,8 +252,16 @@ class SquareFill extends React.Component{
             }))
         }
     }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        this.updateState();
+    }
     componentDidMount() {
-        this.forceUpdate();
+        // resize listener on parent ref
+        window.addEventListener('resize', this.updateState);
+        this.updateState();
+    }
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateState);
     }
 }
 

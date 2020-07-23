@@ -342,6 +342,8 @@ var SquareFill = function (_React$Component7) {
             parentWidth: 0,
             parentHeight: 0
         };
+
+        _this9.updateState = _this9.updateState.bind(_this9);
         return _this9;
     }
 
@@ -371,8 +373,9 @@ var SquareFill = function (_React$Component7) {
             );
         }
     }, {
-        key: "componentDidUpdate",
-        value: function componentDidUpdate(prevProps, prevState, snapshot) {
+        key: "updateState",
+        value: function updateState() {
+            // console.log("SquareFill updateState()");
             var rect = this.props.parentRef.current.getBoundingClientRect();
             var _ref = [rect.width, rect.height],
                 width = _ref[0],
@@ -388,9 +391,21 @@ var SquareFill = function (_React$Component7) {
             }
         }
     }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate(prevProps, prevState, snapshot) {
+            this.updateState();
+        }
+    }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            this.forceUpdate();
+            // resize listener on parent ref
+            window.addEventListener('resize', this.updateState);
+            this.updateState();
+        }
+    }, {
+        key: "componentWillUnmount",
+        value: function componentWillUnmount() {
+            window.removeEventListener('resize', this.updateState);
         }
     }]);
 

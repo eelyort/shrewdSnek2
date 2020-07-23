@@ -241,7 +241,9 @@ class GameMenu extends React.Component{
             // when paused stop draw loop, draw one last time
             if(this.state.paused){
                 this.runningInstance.draw(this.subCanvasCTX);
-                this.setState((state) => ({score: this.runningInstance.mySnake.myLength}));
+                if(this.runningInstance.mySnake.myLength !== this.state.score) {
+                    this.setState((state) => ({score: this.runningInstance.mySnake.myLength}));
+                }
                 return;
             }
 
@@ -262,7 +264,9 @@ class GameMenu extends React.Component{
                 this.then = this.now - (elapsed % fpsInterval);
 
                 this.runningInstance.draw(this.subCanvasCTX);
-                this.setState((state) => ({score: this.runningInstance.mySnake.myLength}));
+                if(this.runningInstance.mySnake.myLength !== this.state.score) {
+                    this.setState((state) => ({score: this.runningInstance.mySnake.myLength}));
+                }
             }
         }
     }
