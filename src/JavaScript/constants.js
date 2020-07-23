@@ -54,4 +54,5 @@ const outlinePercent = 0.13;
 // weight lines
 const weightLineWidth = 10;
 // big number: darker, small: lighter
-const weightLineOpacityMultiplier = 1.5;
+const weightLineOpacityMultiplier = 1.3;
+const weightLineMinOpacity = 0.04;

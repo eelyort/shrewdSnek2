@@ -624,7 +624,7 @@ class VerticalCarousel extends React.Component{
     }
     scrollToFocus(){
         console.log(`scroll: ${this.state.scroll}, this.focusedRef.current.offsetTop: ${this.focusedRef.current.offsetTop}`);
-        this.scroll((this.focusedRef.current.offsetTop));
+        this.scroll(this.focusedRef.current.offsetTop - this.state.scroll);
     }
     componentDidMount() {
         this.scrollToFocus();

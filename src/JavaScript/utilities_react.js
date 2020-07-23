@@ -999,7 +999,7 @@ var VerticalCarousel = function (_React$Component17) {
         key: "scrollToFocus",
         value: function scrollToFocus() {
             console.log("scroll: " + this.state.scroll + ", this.focusedRef.current.offsetTop: " + this.focusedRef.current.offsetTop);
-            this.scroll(this.focusedRef.current.offsetTop);
+            this.scroll(this.focusedRef.current.offsetTop - this.state.scroll);
         }
     }, {
         key: "componentDidMount",

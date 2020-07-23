@@ -542,6 +542,7 @@ p{
     overflow: hidden;
 }
 .carousel_wrapper_2{
+    margin-top: 10%;
     z-index: 1;
     position: relative;
 }

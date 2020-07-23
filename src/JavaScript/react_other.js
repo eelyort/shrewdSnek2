@@ -558,6 +558,7 @@ var BrainDetailsNet = function (_React$Component5) {
                             // console.log(`layer: ${layer}, target: ${targetNode}, src: ${srcNode}, currVal: ${currVal}, srcCoord: ${[srcX, srcY]}, targetCoord: ${[targetX, targetY]}`);
 
                             var opacity = Math.round(Math.min(Math.abs(currVal) / (weightScale / weightLineOpacityMultiplier), 1) * 100) / 100;
+                            opacity = Math.max(opacity, weightLineMinOpacity);
                             if (currVal > 0) {
                                 ctx.strokeStyle = "rgba(0, 0, 255, " + opacity + ")";
                             } else {
