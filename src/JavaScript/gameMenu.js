@@ -54,6 +54,8 @@ var GameMenu = function (_React$Component2) {
 
         _this2.openPopUp = _this2.openPopUp.bind(_this2);
         _this2.closePopUp = _this2.closePopUp.bind(_this2);
+        _this2.changeLoadedSnakes = _this2.changeLoadedSnakes.bind(_this2);
+        _this2.spliceLoadedSnakes = _this2.spliceLoadedSnakes.bind(_this2);
 
         _this2.keyEventInDown = _this2.keyEventInDown.bind(_this2);
         _this2.keyEventInUp = _this2.keyEventInUp.bind(_this2);
@@ -109,7 +111,7 @@ var GameMenu = function (_React$Component2) {
             var popUp = null;
             if (this.state.popupActive) {
                 // bundle of functions for the popup to interact with the main menu
-                //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), pushLoaded(newSnake)
+                //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
                 var popUpFuncs = {
                     close: this.closePopUp,
                     changeSelected: function changeSelected(i) {
@@ -123,13 +125,16 @@ var GameMenu = function (_React$Component2) {
                         });
                     },
                     changeLoaded: this.changeLoadedSnakes,
-                    pushLoaded: this.pushLoadedSnakes
+                    spliceLoaded: this.spliceLoadedSnakes
                 };
                 // 1 = select snake
                 if (this.state.popupActive === 1) {
                     popUp = React.createElement(SelectSnakePopUpREACT, { metaInfo: this.state.popupMetaInfo, selectedSnake: this.state.selectedSnake, selectedSnakeGen: this.state.selectedSnakeGen, popUpFuncs: popUpFuncs, loadedSnakesIn: loadedSnakes });
                 }
                 // 2 = create/edit snake
+                else if (this.state.popupActive === 2) {
+                        popUp = React.createElement(CreateSnakePopUpREACT, { metaInfo: this.state.popupMetaInfo, popUpFuncs: popUpFuncs, loadedSnakesIn: loadedSnakes });
+                    }
             }
 
             return React.createElement(
@@ -170,8 +175,10 @@ var GameMenu = function (_React$Component2) {
                             ),
                             React.createElement(
                                 Button,
-                                { className: "gameButton", onClick: this.startSnakeButton },
-                                "Dunno"
+                                { className: "gameButton", onClick: function onClick() {
+                                        return _this3.openPopUp(2);
+                                    } },
+                                "Create Snake"
                             )
                         ),
                         React.createElement(
@@ -343,11 +350,22 @@ var GameMenu = function (_React$Component2) {
             loadedSnakes = newVer;
         }
     }, {
-        key: "pushLoadedSnakes",
-        value: function pushLoadedSnakes(newVal) {
-            console.log("pushLoadedSnakes");
-            loadedSnakes.push(new SnakeSpecies(newVal));
-            console.log(loadedSnakes);
+        key: "spliceLoadedSnakes",
+        value: function spliceLoadedSnakes(start) {
+            var deleteCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+            var items = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+            console.log("spliceLoadedSnakes(" + start + ", " + deleteCount + ", " + items + ")");
+            if (items) {
+                console.log(1);
+                loadedSnakes.splice(start, deleteCount, new SnakeSpecies(items));
+            } else if (deleteCount) {
+                console.log(2);
+                loadedSnakes.splice(start, deleteCount);
+            } else {
+                console.log(3);
+                loadedSnakes.splice(start);
+            }
         }
 
         // called on keyEvent press

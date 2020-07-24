@@ -354,6 +354,8 @@
     margin: auto;
 }
 
+/*PopUp stuff*/
+/*general popups*/
 .popUp-card{
     position: absolute;
     margin: 4%;
@@ -363,19 +365,7 @@
 
     z-index: 11;
 }
-.popUp-card .error_text{
-    color: rgba(255, 0, 0, 0.85);
-    text-align: center;
-}
-.popUp-card .text_card{
-    padding: 2%;
-
-    overflow-y: scroll;
-
-    height: calc(96% - 4px);
-    width: calc(96% - 4px);
-}
-.selectSnake > div{
+.popUp-card > div{
     padding: 0;
     margin: 3%;
 
@@ -386,7 +376,15 @@
     flex-direction: row;
     flex-wrap: nowrap;
 }
-.selectSnake .popUp_close_button{
+.popUp-card .text_card{
+    padding: 2%;
+
+    overflow-y: scroll;
+
+    height: calc(96% - 4px);
+    width: calc(96% - 4px);
+}
+.popUp-card .popUp_close_button{
     position: absolute;
 
     top: 1%;
@@ -401,6 +399,11 @@
     background-color: rgba(1, 1, 1, 0);
     border-style: none;
 }
+.popUp-card .error_text{
+    color: rgba(255, 0, 0, 0.85);
+    text-align: center;
+}
+/*select snake*/
 .selectSnake .popUp_close_button:hover {
     opacity: 0.6;
 }
@@ -441,6 +444,25 @@
     border-style: solid;
     border-width: 1px;
 }
+/*create/edit snake*/
+.create_snake .waiting_box{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    max-width: 70%;
+
+    text-align: center;
+
+    font-size: 120%;
+
+    /*TODO: delete testing borders (and margin which is set to border width)*/
+    border-color: cyan;
+    border-style: solid;
+    border-width: 1px;
+}
+
 .vertCarouselItem{
     border-radius: 20px 0 0 20px;
 
@@ -480,8 +502,7 @@
     border-radius: 1vw;
     border-style: dashed;
     /*set one*/
-    /*TODO: change color*/
-    border-color: #2d5a56;
+    border-color: #7c7c7d;
     border-width: 2px;
 }
 .snake_details .category_text_title{

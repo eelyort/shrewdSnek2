@@ -31,6 +31,8 @@ class GameMenu extends React.Component{
 
         this.openPopUp = this.openPopUp.bind(this);
         this.closePopUp = this.closePopUp.bind(this);
+        this.changeLoadedSnakes = this.changeLoadedSnakes.bind(this);
+        this.spliceLoadedSnakes = this.spliceLoadedSnakes.bind(this);
 
         this.keyEventInDown = this.keyEventInDown.bind(this);
         this.keyEventInUp = this.keyEventInUp.bind(this);
@@ -80,13 +82,13 @@ class GameMenu extends React.Component{
         let popUp = null;
         if(this.state.popupActive) {
             // bundle of functions for the popup to interact with the main menu
-            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), pushLoaded(newSnake)
+            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
             const popUpFuncs = {
                 close: this.closePopUp,
                 changeSelected: (i) => this.setState(() => ({selectedSnake: i})),
                 changeSelectedGen: (i) => this.setState(() => ({selectedSnakeGen: i})),
                 changeLoaded: this.changeLoadedSnakes,
-                pushLoaded: this.pushLoadedSnakes
+                spliceLoaded: this.spliceLoadedSnakes
             };
             // 1 = select snake
             if (this.state.popupActive === 1) {
@@ -95,6 +97,11 @@ class GameMenu extends React.Component{
                 );
             }
             // 2 = create/edit snake
+            else if(this.state.popupActive === 2){
+                popUp = (
+                    <CreateSnakePopUpREACT metaInfo={this.state.popupMetaInfo} popUpFuncs={popUpFuncs} loadedSnakesIn={loadedSnakes} />
+                );
+            }
         }
 
         return(
@@ -113,8 +120,8 @@ class GameMenu extends React.Component{
                             <Button className={"gameButton"} onClick={() => this.openPopUp(1)}>
                                 Load
                             </Button>
-                            <Button className={"gameButton"} onClick={this.startSnakeButton}>
-                                Dunno
+                            <Button className={"gameButton"} onClick={() => this.openPopUp(2)}>
+                                Create Snake
                             </Button>
                         </FadeMenu>
                         <TypewriterText className={"playing_text"}>
@@ -216,10 +223,20 @@ class GameMenu extends React.Component{
     changeLoadedSnakes(newVer){
         loadedSnakes = newVer;
     }
-    pushLoadedSnakes(newVal){
-        console.log("pushLoadedSnakes");
-        loadedSnakes.push(new SnakeSpecies(newVal));
-        console.log(loadedSnakes);
+    spliceLoadedSnakes(start, deleteCount = 0, items = null){
+        console.log(`spliceLoadedSnakes(${start}, ${deleteCount}, ${items})`);
+        if(items){
+            console.log(1);
+            loadedSnakes.splice(start, deleteCount, new SnakeSpecies(items));
+        }
+        else if(deleteCount){
+            console.log(2);
+            loadedSnakes.splice(start, deleteCount);
+        }
+        else{
+            console.log(3);
+            loadedSnakes.splice(start);
+        }
     }
 
     // called on keyEvent press
