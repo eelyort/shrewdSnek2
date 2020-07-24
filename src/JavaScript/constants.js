@@ -29,7 +29,7 @@ const gamePanelID = "gamePanel-1";
 const subCanvasID = "snakeSubCanvas";
 
 // max char count of snake names
-const snakeNameChars = 12;
+const snakeNameChars = 32;
 
 // max number of threads allowed
 const maxNumThreads = 500;

@@ -851,7 +851,7 @@ var MouseFadeDiv = function (_React$Component15) {
     return MouseFadeDiv;
 }(React.Component);
 
-// popup shell - props: "closePopUp" function that closes the popup
+// popup shell - props: "closeFunc" function to close the popup
 
 
 var PopUp = function (_React$Component16) {
@@ -868,7 +868,12 @@ var PopUp = function (_React$Component16) {
         value: function render() {
             return React.createElement(
                 "div",
-                { className: "popUp-card" + (this.props.className ? " " + this.props.className : ""), onDragLeave: this.props.closePopUp, onMouseLeave: this.props.closePopUp },
+                { className: "popUp-card" + (this.props.className ? " " + this.props.className : ""), onClick: this.props.onClick, onDragLeave: this.props.onDragLeave, onMouseLeave: this.props.onMouseLeave },
+                React.createElement(
+                    Button,
+                    { onClick: this.props.closeFunc, className: "popUp_close_button" },
+                    React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/x-button-820x820.png" })
+                ),
                 this.props.children
             );
         }
@@ -908,9 +913,12 @@ var VerticalCarousel = function (_React$Component17) {
         value: function render() {
             var _this24 = this;
 
+            console.log("render");
+
             var _props3 = this.props,
                 selected = _props3.selected,
-                select = _props3.select;
+                select = _props3.select,
+                delayInitialScroll = _props3.delayInitialScroll;
 
 
             var numChildren = React.Children.count(this.props.children);
@@ -952,6 +960,15 @@ var VerticalCarousel = function (_React$Component17) {
                 }
             });
 
+            // dynamically set max-height based off of scroll (so the arrow is always visible
+            var buttonHeight = this.buttonRef.current ? this.buttonRef.current.getBoundingClientRect().height : 80;
+            var styleMaxHeight = {
+                maxHeight: "calc(100% - " + Math.round(2 * buttonHeight - this.state.scroll) + "px)"
+            };
+            // let styleMaxHeight = {
+            //     maxHeight: `calc(90% - 5px)`
+            // };
+
             return React.createElement(
                 "div",
                 { ref: this.wrapperRef, className: "carousel_wrapper" + (this.props.className ? " " + this.props.className : "") },
@@ -972,7 +989,7 @@ var VerticalCarousel = function (_React$Component17) {
                 ),
                 React.createElement(
                     "div",
-                    { className: "carousel_wrapper_2" },
+                    { className: "carousel_wrapper_2", style: styleMaxHeight },
                     contents
                 ),
                 React.createElement(
@@ -1001,12 +1018,18 @@ var VerticalCarousel = function (_React$Component17) {
     }, {
         key: "scroll",
         value: function scroll(amount) {
+            var _this25 = this;
+
             console.log("scroll(" + amount + ")");
             var minScroll = 0;
-            var maxScroll = this.state.scroll + (this.lastObjectRef.current ? this.lastObjectRef.current.offsetTop : this.focusedRef.current.offsetTop);
+            // const maxScroll = 100;
+            var maxScroll = this.lastObjectRef.current ? this.lastObjectRef.current.offsetTop : this.focusedRef.current.offsetTop;
+            // console.log(`min: ${minScroll}, top: ${this.lastObjectRef.current.offsetTop}, max: ${maxScroll}, target: ${Math.min(Math.max(this.state.scroll + amount, minScroll), maxScroll)}`);
             if (amount !== 0) {
                 this.setState(function (state) {
                     return { scroll: Math.min(Math.max(state.scroll + amount, minScroll), maxScroll) };
+                }, function () {
+                    console.log("after: scroll: " + _this25.state.scroll);
                 });
             }
         }
@@ -1019,7 +1042,15 @@ var VerticalCarousel = function (_React$Component17) {
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            this.scrollToFocus();
+            var _this26 = this;
+
+            if (this.props.delayInitialScroll) {
+                setTimeout(function () {
+                    return _this26.scrollToFocus();
+                }, this.props.delayInitialScroll * 50);
+            } else {
+                this.scrollToFocus();
+            }
         }
     }]);
 

@@ -280,10 +280,10 @@
 
     margin: 14px;
 
-    /*TODO: delete testing borders (and margin which is set to border width)*/
-    border-color: greenyellow;
-    border-style: solid;
-    border-width: 1px;
+    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
+    /*border-color: greenyellow;*/
+    /*border-style: solid;*/
+    /*border-width: 1px;*/
 }
 
 .menu_position{
@@ -345,10 +345,10 @@
 
     text-align: center;
 
-    /*TODO: delete testing borders (and margin which is set to border width)*/
-    border-color: deeppink;
-    border-style: solid;
-    border-width: 1px;
+    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
+    /*border-color: deeppink;*/
+    /*border-style: solid;*/
+    /*border-width: 1px;*/
 }
 .bottom_ui > *{
     margin: auto;
@@ -363,6 +363,18 @@
 
     z-index: 11;
 }
+.popUp-card .error_text{
+    color: rgba(255, 0, 0, 0.85);
+    text-align: center;
+}
+.popUp-card .text_card{
+    padding: 2%;
+
+    overflow-y: scroll;
+
+    height: calc(96% - 4px);
+    width: calc(96% - 4px);
+}
 .selectSnake > div{
     padding: 0;
     margin: 3%;
@@ -373,21 +385,41 @@
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
+}
+.selectSnake .popUp_close_button{
+    position: absolute;
 
-    /*TODO: delete testing borders (and margin which is set to border width)*/
-    border-color: yellow;
-    border-style: solid;
-    border-width: 1px;
+    top: 1%;
+    right: 1%;
+
+    padding: 0;
+
+    opacity: 0.4;
+
+    box-shadow: none;
+
+    background-color: rgba(1, 1, 1, 0);
+    border-style: none;
+}
+.selectSnake .popUp_close_button:hover {
+    opacity: 0.6;
+}
+.selectSnake .popUp_close_button:active {
+    opacity: 0.8;
 }
 .selectSnake .text_card{
     border-radius: 0 15px 15px 0;
 
-    padding: 2%;
-
-    overflow-y: scroll;
-
-    height: calc(96% - 4px);
     width: calc(71% - 4px);
+}
+.selectSnake .button_div{
+    text-align: center;
+}
+.selectSnake .button_div > button{
+    margin: 3% 5%;
+}
+.selectSnake .button_div > button.faded{
+    opacity: 0.4;
 }
 .selectSnake .carousel_parent{
     position: relative;
@@ -545,6 +577,8 @@ p{
     margin-top: 10%;
     z-index: 1;
     position: relative;
+
+    /*max-height: 80%;*/
 }
 .carousel_wrapper .scroll_button{
     width: 100%;
@@ -569,10 +603,10 @@ p{
 }
 
 .mouse_div{
-    /*TODO: delete testing borders (and margin which is set to border width)*/
-    border-color: cyan;
-    border-style: solid;
-    border-width: 1px;
+    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
+    /*border-color: cyan;*/
+    /*border-style: solid;*/
+    /*border-width: 1px;*/
 }
 
 .icon{
@@ -609,6 +643,14 @@ p{
     height: 2vw;
     max-width: 34px;
     max-height: 34px;
+}
+.icon.small4{
+    min-width: 11px;
+    min-height: 11px;
+    width: 1vw;
+    height: 1vw;
+    max-width: 31px;
+    max-height: 31px;
 }
 .icon > img{
     width: 100%;

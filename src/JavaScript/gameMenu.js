@@ -42,7 +42,8 @@ var GameMenu = function (_React$Component2) {
             playing: "???",
             selectedSnake: 0,
             selectedSnakeGen: 0,
-            popupActive: 0
+            popupActive: 0,
+            popupMetaInfo: null
         };
 
         // bind functions
@@ -108,7 +109,7 @@ var GameMenu = function (_React$Component2) {
             var popUp = null;
             if (this.state.popupActive) {
                 // bundle of functions for the popup to interact with the main menu
-                //  close(newPopUp = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes)
+                //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), pushLoaded(newSnake)
                 var popUpFuncs = {
                     close: this.closePopUp,
                     changeSelected: function changeSelected(i) {
@@ -121,11 +122,14 @@ var GameMenu = function (_React$Component2) {
                             return { selectedSnakeGen: i };
                         });
                     },
-                    changeLoaded: this.changeLoadedSnakes
+                    changeLoaded: this.changeLoadedSnakes,
+                    pushLoaded: this.pushLoadedSnakes
                 };
+                // 1 = select snake
                 if (this.state.popupActive === 1) {
-                    popUp = React.createElement(SelectSnakePopUpREACT, { selectedSnake: this.state.selectedSnake, selectedSnakeGen: this.state.selectedSnakeGen, popUpFuncs: popUpFuncs, loadedSnakesIn: loadedSnakes });
+                    popUp = React.createElement(SelectSnakePopUpREACT, { metaInfo: this.state.popupMetaInfo, selectedSnake: this.state.selectedSnake, selectedSnakeGen: this.state.selectedSnakeGen, popUpFuncs: popUpFuncs, loadedSnakesIn: loadedSnakes });
                 }
+                // 2 = create/edit snake
             }
 
             return React.createElement(
@@ -304,9 +308,14 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "openPopUp",
         value: function openPopUp(i) {
+            var info = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
             console.log("openPopup(" + i + ");");
             this.setState(function () {
-                return { popupActive: i };
+                return {
+                    popupActive: i,
+                    popupMetaInfo: info
+                };
             });
             if (!this.state.paused) {
                 this.pausePlayButtonRef.current.clicked();
@@ -318,14 +327,27 @@ var GameMenu = function (_React$Component2) {
         key: "closePopUp",
         value: function closePopUp() {
             var toOpen = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+            var info = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
             console.log("TODO: closePopUp");
-            // this.setState(() => ({popupActive: toOpen}));
+            this.setState(function () {
+                return {
+                    popupActive: toOpen,
+                    popupMetaInfo: info
+                };
+            });
         }
     }, {
         key: "changeLoadedSnakes",
         value: function changeLoadedSnakes(newVer) {
             loadedSnakes = newVer;
+        }
+    }, {
+        key: "pushLoadedSnakes",
+        value: function pushLoadedSnakes(newVal) {
+            console.log("pushLoadedSnakes");
+            loadedSnakes.push(new SnakeSpecies(newVal));
+            console.log(loadedSnakes);
         }
 
         // called on keyEvent press

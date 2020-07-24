@@ -60,6 +60,19 @@ class Snake extends Component{
             this.componentName = name.substring(0, snakeNameChars);
         }
     }
+    // sets the name as if it is a clone: player (1), etc
+    setNameClone(){
+        const tokens = this.componentName.split(" ");
+        const lastToken = tokens[tokens.length-1];
+        const lastTokenNum = lastToken.substring(1, lastToken.length-1);
+        // clone of a clone
+        if(lastToken[0] === "(" && lastToken[lastToken.length-1] === ")" && !isNaN(lastTokenNum)){
+            this.setName(this.componentName.substring(0, this.componentName.length-lastToken.length) + `(${parseInt(lastTokenNum)+1})`);
+        }
+        else{
+            this.setName(this.componentName + " (1)");
+        }
+    }
     // to set parent runner
     updateParentRunner(singleSnakeRunnerIn){
         this.mySingleSnakeRunner = singleSnakeRunnerIn;

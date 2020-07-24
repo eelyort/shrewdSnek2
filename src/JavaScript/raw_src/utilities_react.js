@@ -529,11 +529,14 @@ class MouseFadeDiv extends React.Component{
     }
 }
 
-// popup shell - props: "closePopUp" function that closes the popup
+// popup shell - props: "closeFunc" function to close the popup
 class PopUp extends React.Component{
     render() {
         return(
-            <div className={"popUp-card" + ((this.props.className) ? (" " + this.props.className) : (""))} onDragLeave={this.props.closePopUp} onMouseLeave={this.props.closePopUp}>
+            <div className={"popUp-card" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={this.props.onClick} onDragLeave={this.props.onDragLeave} onMouseLeave={this.props.onMouseLeave}>
+                <Button onClick={this.props.closeFunc} className={"popUp_close_button"}>
+                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/x-button-820x820.png"}/>
+                </Button>
                 {this.props.children}
             </div>
         );
@@ -559,7 +562,9 @@ class VerticalCarousel extends React.Component{
         this.scrollToFocus = this.scrollToFocus.bind(this);
     }
     render() {
-        const {selected: selected, select: select} = this.props;
+        console.log("render");
+
+        const {selected: selected, select: select, delayInitialScroll: delayInitialScroll} = this.props;
 
         const numChildren = React.Children.count(this.props.children);
         let contents = React.Children.map(this.props.children, (child, i) => {
@@ -596,6 +601,15 @@ class VerticalCarousel extends React.Component{
             }
         });
 
+        // dynamically set max-height based off of scroll (so the arrow is always visible
+        let buttonHeight = ((this.buttonRef.current) ? (this.buttonRef.current.getBoundingClientRect().height) : (80));
+        let styleMaxHeight = {
+            maxHeight: `calc(100% - ${Math.round((2 * buttonHeight) - this.state.scroll)}px)`
+        };
+        // let styleMaxHeight = {
+        //     maxHeight: `calc(90% - 5px)`
+        // };
+
         return(
             <div ref={this.wrapperRef} className={"carousel_wrapper" + ((this.props.className) ? (" " + this.props.className) : (""))}>
                 <div className={"wrapper_div"} ref={this.buttonRef}>
@@ -605,7 +619,7 @@ class VerticalCarousel extends React.Component{
                         </Button>
                     </MouseFadeDiv>
                 </div>
-                <div className={"carousel_wrapper_2"}>
+                <div className={"carousel_wrapper_2"} style={styleMaxHeight}>
                     {contents}
                 </div>
                 <MouseFadeDiv className={"scroll_button bottom"} padding={0.1} speed={5}>
@@ -628,9 +642,13 @@ class VerticalCarousel extends React.Component{
     scroll(amount){
         console.log(`scroll(${amount})`);
         const minScroll = 0;
-        const maxScroll = this.state.scroll + ((this.lastObjectRef.current) ? (this.lastObjectRef.current.offsetTop) : (this.focusedRef.current.offsetTop));
+        // const maxScroll = 100;
+        const maxScroll = ((this.lastObjectRef.current) ? (this.lastObjectRef.current.offsetTop) : (this.focusedRef.current.offsetTop));
+        // console.log(`min: ${minScroll}, top: ${this.lastObjectRef.current.offsetTop}, max: ${maxScroll}, target: ${Math.min(Math.max(this.state.scroll + amount, minScroll), maxScroll)}`);
         if(amount !== 0) {
-            this.setState((state) => ({scroll: Math.min(Math.max(state.scroll + amount, minScroll), maxScroll)}));
+            this.setState((state) => ({scroll: Math.min(Math.max(state.scroll + amount, minScroll), maxScroll)}),() => {
+                console.log(`after: scroll: ${this.state.scroll}`);
+            });
         }
     }
     scrollToFocus(){
@@ -638,6 +656,11 @@ class VerticalCarousel extends React.Component{
         this.scroll(this.focusedRef.current.offsetTop - this.state.scroll);
     }
     componentDidMount() {
-        this.scrollToFocus();
+        if(this.props.delayInitialScroll){
+            setTimeout(() => this.scrollToFocus(), this.props.delayInitialScroll*50);
+        }
+        else {
+            this.scrollToFocus();
+        }
     }
 }
