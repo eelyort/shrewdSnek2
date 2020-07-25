@@ -178,7 +178,9 @@ class HoldButton extends React.Component{
         clearInterval(this.interval);
     }
 }
-// select object | onSelect(value) = called function | name = name | initVal = init val (optional)
+
+// forms
+// select object (pass <option>'s as children) | onSelect(value) = called function | name = name | initVal = init val (optional)
 class Select extends React.Component{
     constructor(props){
         super(props);
@@ -204,6 +206,40 @@ class Select extends React.Component{
                 value: ans
             }),
                 () => this.props.onSelect(ans));
+        }
+    }
+}
+// textArea (pass initVal as children) || props: onChange(value) = called function
+//  IMPORTANT: takes only a single text element as its child (<TextArea><p>I am a text element</p></TextArea>)
+//  IMPORTANT: only updates the function onBlur(un focus) not on change
+class TextArea extends React.Component{
+    constructor(props){
+        super(props);
+
+        // initial value is children
+        this.state = {
+            value: React.Children.only(this.props.children).props.children
+        };
+
+        this.handleChange = this.handleChange.bind(this);
+    }
+    render() {
+        let elem = React.cloneElement(React.Children.only(this.props.children), {
+            contentEditable: "true",
+            onBlur: this.handleChange,
+            children: ((this.state.value) ? (this.state.value) : (""))
+        });
+        elem.props.className = smooshClassNames("text_area", this.props.className, elem.props.className);
+
+        return elem;
+    }
+    handleChange(event){
+        const text = $(event.target).text();
+
+        if (text !== this.state.value) {
+            this.setState(() => ({value: text}), () => {
+                this.props.onChange(this.state.value);
+            });
         }
     }
 }

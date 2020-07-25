@@ -373,25 +373,29 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "keyEventInDown",
         value: function keyEventInDown(keyEvent) {
-            if (!this.keysDown.has(keyEvent.key)) {
-                if (this.runningInstance) {
-                    this.runningInstance.keyEventIn(keyEvent);
-                } else {
-                    console.log("Main menu keyEvent when not running: " + keyEvent + ", key: " + keyEvent.key);
-                }
+            if (this.state.popupActive === 0) {
+                if (!this.keysDown.has(keyEvent.key)) {
+                    if (this.runningInstance) {
+                        this.runningInstance.keyEventIn(keyEvent);
+                    } else {
+                        console.log("Main menu keyEvent when not running: " + keyEvent + ", key: " + keyEvent.key);
+                    }
 
-                // pause/unpause on space
-                if (keyEvent.key === " " || keyEvent.key === "p" || keyEvent.key === "P") {
-                    this.pausePlayButtonRef.current.clicked();
+                    // pause/unpause on space
+                    if (keyEvent.key === " " || keyEvent.key === "p" || keyEvent.key === "P") {
+                        this.pausePlayButtonRef.current.clicked();
+                    }
+                    this.keysDown.add(keyEvent.key);
                 }
-                this.keysDown.add(keyEvent.key);
             }
         }
     }, {
         key: "keyEventInUp",
         value: function keyEventInUp(keyEvent) {
-            if (this.keysDown.has(keyEvent.key)) {
-                this.keysDown.delete(keyEvent.key);
+            if (this.state.popupActive === 0) {
+                if (this.keysDown.has(keyEvent.key)) {
+                    this.keysDown.delete(keyEvent.key);
+                }
             }
         }
 

@@ -466,10 +466,53 @@ class SnakeDetails extends React.Component{
 
         return(
             <div className={"snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                <h1>{snake.getComponentName()}</h1>
                 <p className={"category_text_title"}>Description</p>
                 <TypewriterText speed={speed}>
                     <p className={"category_text"}>{snake.getComponentDescription()}</p>
                 </TypewriterText>
+                <p className={"category_text_title"}>Parameters</p>
+                <TypewriterText speed={speed}>
+                    <p className={"category_text"}>
+                        Starting Head Position: {snake.startHeadPos}{"\n"}
+                        Starting Length: {snake.myLength}{"\n"}
+                        Apple Value: {snake.appleVal}{"\n"}
+                        Grid Size: {snake.gridSize}{"\n"}
+                    </p>
+                </TypewriterText>
+                <p className={"category_text_title"}>Input</p>
+                <InputDetails input={snake.myInput} speed={speed} />
+                <p className={"category_text_title"}>Brain</p>
+                <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} />
+            </div>
+        );
+    }
+}
+
+// editable snake details || props: snake = snake to display/edit
+class SnakeDetailsEdit extends React.Component{
+    render(){
+        console.log("SnakeDetailsEdit Render");
+
+        const {snake: snake} = this.props;
+
+        const speed = 3.5;
+
+        return(
+            <div className={"snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+                <TextArea onChange={(val) => {
+                    snake.setName(val);
+                    this.forceUpdate();
+                }}>
+                    <h1>{snake.getComponentName()}</h1>
+                </TextArea>
+                <p className={"category_text_title"}>Description</p>
+                <TextArea onChange={(val) => {
+                    snake.componentDescription = val;
+                    this.forceUpdate();
+                }}>
+                    <p className={"category_text"}>{snake.getComponentDescription()}</p>
+                </TextArea>
                 <p className={"category_text_title"}>Parameters</p>
                 <TypewriterText speed={speed}>
                     <p className={"category_text"}>

@@ -15,7 +15,10 @@ var SelectSnakePopUpREACT = function (_React$Component) {
 
         var _this = _possibleConstructorReturn(this, (SelectSnakePopUpREACT.__proto__ || Object.getPrototypeOf(SelectSnakePopUpREACT)).call(this, props));
 
-        _this.state = { errorText: "" };
+        _this.state = {
+            errorText: "",
+            deleteConfirmationUp: false
+        };
 
         _this.editButton = _this.editButton.bind(_this);
         _this.deleteButton = _this.deleteButton.bind(_this);
@@ -42,7 +45,37 @@ var SelectSnakePopUpREACT = function (_React$Component) {
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
             var popUpFuncs = this.props.popUpFuncs;
 
-            // console.log(`render: selectedGen: ${selectedSnakeGen}`);
+            // delete confirmation box
+            var deleteBox = null;
+            if (this.state.deleteConfirmationUp) {
+                deleteBox = React.createElement(
+                    "div",
+                    { className: "confirmation_box" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        "Are you sure you want to delete this snake?"
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return _this2.setState(function () {
+                                        return { deleteConfirmationUp: false };
+                                    });
+                                } },
+                            "No"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: this.deleteButton },
+                            "Yes"
+                        )
+                    )
+                );
+            }
 
             return React.createElement(
                 PopUp,
@@ -50,6 +83,7 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                 React.createElement(
                     "div",
                     null,
+                    deleteBox,
                     React.createElement(
                         "div",
                         { className: "carousel_parent" },
@@ -164,8 +198,17 @@ var SelectSnakePopUpREACT = function (_React$Component) {
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
             var popUpFuncs = this.props.popUpFuncs;
 
-            popUpFuncs.spliceLoaded(this.props.selectedSnake, 1);
-            popUpFuncs.changeSelected(this.props.selectedSnake - 1);
+            if (this.state.deleteConfirmationUp) {
+                popUpFuncs.spliceLoaded(this.props.selectedSnake, 1);
+                popUpFuncs.changeSelected(this.props.selectedSnake - 1);
+                this.setState(function () {
+                    return { deleteConfirmationUp: false };
+                });
+            } else {
+                this.setState(function () {
+                    return { deleteConfirmationUp: true };
+                });
+            }
         }
     }, {
         key: "cloneButton",
@@ -300,7 +343,11 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                 React.createElement(
                     "div",
                     null,
-                    React.createElement("div", { className: "text_card background" })
+                    React.createElement(
+                        "div",
+                        { className: "text_card background" },
+                        React.createElement(SnakeDetailsEdit, { snake: this.state.snake })
+                    )
                 )
             );
         }
@@ -328,7 +375,9 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
         value: function createBlankSnake() {}
     }, {
         key: "saveResults",
-        value: function saveResults() {}
+        value: function saveResults() {
+            // TODO
+        }
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {

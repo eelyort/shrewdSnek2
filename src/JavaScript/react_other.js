@@ -667,6 +667,11 @@ var SnakeDetails = function (_React$Component7) {
                 "div",
                 { className: "snake_details" + (this.props.className ? " " + this.props.className : "") },
                 React.createElement(
+                    "h1",
+                    null,
+                    snake.getComponentName()
+                ),
+                React.createElement(
                     "p",
                     { className: "category_text_title" },
                     "Description"
@@ -722,4 +727,104 @@ var SnakeDetails = function (_React$Component7) {
     }]);
 
     return SnakeDetails;
+}(React.Component);
+
+// editable snake details || props: snake = snake to display/edit
+
+
+var SnakeDetailsEdit = function (_React$Component8) {
+    _inherits(SnakeDetailsEdit, _React$Component8);
+
+    function SnakeDetailsEdit() {
+        _classCallCheck(this, SnakeDetailsEdit);
+
+        return _possibleConstructorReturn(this, (SnakeDetailsEdit.__proto__ || Object.getPrototypeOf(SnakeDetailsEdit)).apply(this, arguments));
+    }
+
+    _createClass(SnakeDetailsEdit, [{
+        key: "render",
+        value: function render() {
+            var _this10 = this;
+
+            console.log("SnakeDetailsEdit Render");
+
+            var snake = this.props.snake;
+
+
+            var speed = 3.5;
+
+            return React.createElement(
+                "div",
+                { className: "snake_details" + (this.props.className ? " " + this.props.className : "") },
+                React.createElement(
+                    TextArea,
+                    { onChange: function onChange(val) {
+                            snake.setName(val);
+                            _this10.forceUpdate();
+                        } },
+                    React.createElement(
+                        "h1",
+                        null,
+                        snake.getComponentName()
+                    )
+                ),
+                React.createElement(
+                    "p",
+                    { className: "category_text_title" },
+                    "Description"
+                ),
+                React.createElement(
+                    TextArea,
+                    { onChange: function onChange(val) {
+                            snake.componentDescription = val;
+                            _this10.forceUpdate();
+                        } },
+                    React.createElement(
+                        "p",
+                        { className: "category_text" },
+                        snake.getComponentDescription()
+                    )
+                ),
+                React.createElement(
+                    "p",
+                    { className: "category_text_title" },
+                    "Parameters"
+                ),
+                React.createElement(
+                    TypewriterText,
+                    { speed: speed },
+                    React.createElement(
+                        "p",
+                        { className: "category_text" },
+                        "Starting Head Position: ",
+                        snake.startHeadPos,
+                        "\n",
+                        "Starting Length: ",
+                        snake.myLength,
+                        "\n",
+                        "Apple Value: ",
+                        snake.appleVal,
+                        "\n",
+                        "Grid Size: ",
+                        snake.gridSize,
+                        "\n"
+                    )
+                ),
+                React.createElement(
+                    "p",
+                    { className: "category_text_title" },
+                    "Input"
+                ),
+                React.createElement(InputDetails, { input: snake.myInput, speed: speed }),
+                React.createElement(
+                    "p",
+                    { className: "category_text_title" },
+                    "Brain"
+                ),
+                React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed })
+            );
+        }
+    }]);
+
+    return SnakeDetailsEdit;
 }(React.Component);

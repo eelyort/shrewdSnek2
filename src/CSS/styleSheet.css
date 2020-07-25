@@ -403,6 +403,37 @@
     color: rgba(255, 0, 0, 0.85);
     text-align: center;
 }
+.popUp-card .confirmation_box{
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%) translateY(-50%);
+
+    padding: 2%;
+
+    max-width: 70%;
+
+    text-align: center;
+
+    font-size: 120%;
+
+    /*set one*/
+    background-color: #d6d7d8;
+    border-color: #536574;
+    box-shadow: 0 0 8px rgba(102, 252, 241, 0.7);
+    /*set two*/
+    /*background-color: #000000;*/
+    /*border-color: #7e7e7f;*/
+    /*color: #dddedf;*/
+    border-style: solid;
+    border-width: 5px;
+    border-radius: 10px;
+
+    z-index: 1000;
+}
+.popUp-card .confirmation_box button {
+    margin: 0 2%;
+}
 /*select snake*/
 .selectSnake .popUp_close_button:hover {
     opacity: 0.6;
@@ -504,6 +535,9 @@
     /*set one*/
     border-color: #7c7c7d;
     border-width: 2px;
+}
+.snake_details h1:first-of-type{
+    margin-top: 0;
 }
 .snake_details .category_text_title{
     font-size: 120%;
@@ -691,4 +725,14 @@ p{
     border-color: red;
     border-style: solid;
     border-width: 1px;
+}
+
+.text_area:focus{
+    padding: 1%;
+
+    border-color: rgba(0, 0, 0, 0.7);
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
 }

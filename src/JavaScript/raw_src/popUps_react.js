@@ -3,7 +3,10 @@ class SelectSnakePopUpREACT extends React.Component{
     constructor(props){
         super(props);
 
-        this.state={errorText: ""};
+        this.state={
+            errorText: "",
+            deleteConfirmationUp: false
+        };
 
         this.editButton = this.editButton.bind(this);
         this.deleteButton = this.deleteButton.bind(this);
@@ -19,11 +22,24 @@ class SelectSnakePopUpREACT extends React.Component{
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
         const popUpFuncs = this.props.popUpFuncs;
 
-        // console.log(`render: selectedGen: ${selectedSnakeGen}`);
+        // delete confirmation box
+        let deleteBox = null;
+        if(this.state.deleteConfirmationUp) {
+            deleteBox = (
+                <div className={"confirmation_box"}>
+                    <h3>Are you sure you want to delete this snake?</h3>
+                    <div>
+                        <Button onClick={() => this.setState(() => ({deleteConfirmationUp: false}))}>No</Button>
+                        <Button onClick={this.deleteButton}>Yes</Button>
+                    </div>
+                </div>
+            );
+        }
 
         return (
             <PopUp className={"background selectSnake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={popUpFuncs.close}>
                 <div>
+                    {deleteBox}
                     <div className={"carousel_parent"}>
                         <VerticalCarousel delayInitialScroll={1} selected={selectedSnake} items={loadedSnakesIn} select={popUpFuncs.changeSelected}>
                             {loadedSnakesIn.map((val, i) => {
@@ -81,8 +97,14 @@ class SelectSnakePopUpREACT extends React.Component{
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
         const popUpFuncs = this.props.popUpFuncs;
 
-        popUpFuncs.spliceLoaded(this.props.selectedSnake, 1);
-        popUpFuncs.changeSelected(this.props.selectedSnake - 1);
+        if(this.state.deleteConfirmationUp) {
+            popUpFuncs.spliceLoaded(this.props.selectedSnake, 1);
+            popUpFuncs.changeSelected(this.props.selectedSnake - 1);
+            this.setState(() => ({deleteConfirmationUp: false}));
+        }
+        else{
+            this.setState(() => ({deleteConfirmationUp: true}));
+        }
     }
     cloneButton(){
         // bundle of functions for the popup to interact with the main menu
@@ -164,6 +186,7 @@ class CreateSnakePopUpREACT extends React.Component{
             <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={popUpFuncs.close}>
                 <div>
                     <div className={"text_card background"}>
+                        <SnakeDetailsEdit snake={this.state.snake}/>
                     </div>
                 </div>
             </PopUp>
@@ -184,7 +207,7 @@ class CreateSnakePopUpREACT extends React.Component{
 
     }
     saveResults(){
-
+        // TODO
     }
     componentDidMount() {
         this.updateSnake();
