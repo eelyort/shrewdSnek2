@@ -203,7 +203,6 @@ class GameMenu extends React.Component{
     // popup stuff
     // opens a popup
     openPopUp(i, info = null){
-        console.log(`openPopup(${i});`);
         this.setState(() => ({
             popupActive: i,
             popupMetaInfo: info
@@ -214,11 +213,10 @@ class GameMenu extends React.Component{
     }
     // pass as function to popups, optional parameter closes the current popup and immediately opens another
     closePopUp(toOpen = 0, info = null){
-        console.log("TODO: closePopUp");
         this.setState(() => ({
             popupActive: toOpen,
             popupMetaInfo: info
-        }));
+        }), () => console.log(this.state));
     }
     changeLoadedSnakes(newVer){
         loadedSnakes = newVer;

@@ -1,6 +1,3 @@
-// brains
-const DefaultNetBrain = new NeuralNetBrain(new TanhNormalizer(), 2, 6, .1, .1);
-
 // array of loaded snakes
 let loadedSnakes = [];
 
@@ -20,7 +17,7 @@ loadedSnakes.push(presetPlayerControlled);
 const testBasicNeuralNetSnake = new Snake(
     // looks 8 way for body, 8 way for apple, 4 way for wall
     new MultipleInput(new CardinalIntercardinalDirectionalInput([1]), new CardinalIntercardinalDirectionalInput([2]), new CardinalDirectionalInput([]), new LengthInput()),
-    DefaultNetBrain.cloneMe(),
+    blankBrains[2].cloneMe(),
     1,
     3,
     3,
@@ -57,7 +54,7 @@ loadedSnakes.push(happyMothersDay);
 const firstEvolutionSnake = new Snake(
     // looks 8 way for body, 8 way for apple, 4 way for wall
     new MultipleInput(new CardinalIntercardinalDirectionalInput([1]), new CardinalIntercardinalDirectionalInput([2]), new CardinalDirectionalInput([])),
-    DefaultNetBrain.cloneMe(),
+    blankBrains[2].cloneMe(),
     1,
     3,
     3,
@@ -74,7 +71,7 @@ loadedSnakes.push(firstEvolutionSnake);
 const secondEvolutionSnake = new Snake(
     // looks 8 way for body, 8 way for apple, 4 way for wall
     new MultipleInput(new CardinalIntercardinalDirectionalInput([1]), new CardinalIntercardinalDirectionalInput([2]), new CardinalDirectionalInput([])),
-    DefaultNetBrain.cloneMe(),
+    blankBrains[2].cloneMe(),
     1,
     3,
     3,

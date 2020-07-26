@@ -223,6 +223,30 @@
 
 /* --------------------------------------------- REACT stuff Below ------------------------------------------- */
 
+body{
+    background-color: #1F2833;
+    color: #cfd0d1;
+}
+
+p{
+    white-space: pre-wrap;
+}
+
+label{
+    margin-right: 8px;
+}
+select, input{
+    border-radius: 10px;
+
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+
+    margin: 5px;
+
+    padding-left: 4px;
+}
+
 #app_container{
     width: 90vw;
     height: 90vh;
@@ -399,6 +423,18 @@
     background-color: rgba(1, 1, 1, 0);
     border-style: none;
 }
+.popUp-card select{
+    border-color: #979899;
+}
+.popUp-card .button_div{
+    text-align: center;
+}
+.popUp-card .button_div > button{
+    margin: 3% 5%;
+}
+.popUp-card .button_div > button.faded{
+    opacity: 0.4;
+}
 .popUp-card .error_text{
     color: rgba(255, 0, 0, 0.85);
     text-align: center;
@@ -432,7 +468,7 @@
     z-index: 1000;
 }
 .popUp-card .confirmation_box button {
-    margin: 0 2%;
+    margin: 2%;
 }
 /*select snake*/
 .selectSnake .popUp_close_button:hover {
@@ -446,14 +482,8 @@
 
     width: calc(71% - 4px);
 }
-.selectSnake .button_div{
-    text-align: center;
-}
-.selectSnake .button_div > button{
-    margin: 3% 5%;
-}
-.selectSnake .button_div > button.faded{
-    opacity: 0.4;
+.selectSnake label{
+    margin-left: 10%;
 }
 .selectSnake .carousel_parent{
     position: relative;
@@ -461,19 +491,8 @@
     height: 100%;
     width: 25%;
 }
-.selectSnake .generation_label{
-    margin-left: 10%;
-    margin-right: 8px;
-}
 .selectSnake .subCanvas.black_background{
     border-color: #9d9d9e;
-}
-.selectSnake select{
-    border-radius: 10px;
-
-    border-color: #979899;
-    border-style: solid;
-    border-width: 1px;
 }
 /*create/edit snake*/
 .create_snake .waiting_box{
@@ -560,14 +579,8 @@
     margin-top: inherit;
     margin-bottom: inherit;
 }
-
-body{
-    background-color: #1F2833;
-    color: #cfd0d1;
-}
-
-p{
-    white-space: pre-wrap;
+.snake_details .start_head_pos > label{
+    margin-left: 2%;
 }
 
 /* width */

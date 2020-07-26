@@ -77,8 +77,11 @@ class SingleSnakeRunner{
     }
     // function which acts as if the menu or something just focused on this and began drawing it every draw call
     focusMe(){
-        this.focused = true;
-        this.mySnake.focusMe();
+        // prevent the "bleeding" effect where clear rect doesn't fully erase a high? resolutions
+        if(this.mySnake.gridSize < 101) {
+            this.focused = true;
+            this.mySnake.focusMe();
+        }
     }
     focusEnd(){
         this.focused = false;

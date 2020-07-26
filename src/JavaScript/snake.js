@@ -40,8 +40,7 @@ class Snake extends Component{
         // input
         this.myInput = inputIn;
         this.myInput.updateParentSnake(this);
-        this.myBrain = brainIn;
-        this.myBrain.updateWithInput(this.myInput);
+        this.changeBrain(brainIn);
 
         this.generationNumber = 0;
     }
@@ -72,6 +71,11 @@ class Snake extends Component{
         else{
             this.setName(this.componentName + " (1)");
         }
+    }
+    // changes the brain
+    changeBrain(brainIn){
+        this.myBrain = brainIn;
+        this.myBrain.updateWithInput(this.myInput);
     }
     // to set parent runner
     updateParentRunner(singleSnakeRunnerIn){

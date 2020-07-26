@@ -37,7 +37,7 @@ class SelectSnakePopUpREACT extends React.Component{
         }
 
         return (
-            <PopUp className={"background selectSnake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={popUpFuncs.close}>
+            <PopUp className={"background selectSnake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => popUpFuncs.close()}>
                 <div>
                     {deleteBox}
                     <div className={"carousel_parent"}>
@@ -52,7 +52,7 @@ class SelectSnakePopUpREACT extends React.Component{
                     <div className={"background text_card"}>
                         <div className={"inline_block_parent"}>
                             <h1>{loadedSnakesIn[selectedSnake].getComponentName()}</h1>
-                            <label htmlFor={"generation_number"} className={"generation_label"}>Generation: </label>
+                            <label htmlFor={"generation_number"}>Generation: </label>
                             <Select initVal={selectedSnakeGen} name={"generation_number"} onSelect={popUpFuncs.changeSelectedGen}>
                                 {loadedSnakesIn[selectedSnake].snakes.map((value, index) => {
                                     return(
@@ -141,12 +141,15 @@ class CreateSnakePopUpREACT extends React.Component{
         super(props);
 
         this.state={
-            snake: null
+            snake: null,
+            errorText: "",
+            confirmationBox: false
         };
 
         this.updateSnake = this.updateSnake.bind(this);
         this.createBlankSnake = this.createBlankSnake.bind(this);
         this.saveResults = this.saveResults.bind(this);
+        this.changeErrorText = this.changeErrorText.bind(this);
     }
     render() {
         const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
@@ -158,7 +161,7 @@ class CreateSnakePopUpREACT extends React.Component{
         // nothing to display
         if(!this.state.snake){
             return (
-                <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={popUpFuncs.close}>
+                <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => popUpFuncs.close()}>
                     <div>
                         <div className={"text_card background"}>
                             <div className={"waiting_box"}>
@@ -182,11 +185,41 @@ class CreateSnakePopUpREACT extends React.Component{
             );
         }
 
+        let confirmation = null;
+        if(this.state.confirmationBox){
+            confirmation = (
+                <div className={"confirmation_box"}>
+                    <h3>Are you sure you want to override the previous version of this snake?{((loadedSnakesIn[metaInfo].getLength() > 1) ? (" All generations will also be erased.") : (""))}</h3>
+                    <div>
+                        <Button onClick={() => this.setState(() => ({confirmationBox: false}))}>Cancel</Button>
+                        <Button onClick={() => {
+                            this.setState(() => ({confirmationBox: false}), () => {
+                                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, this.state.snake);
+                                popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                                this.changeErrorText("(Saved as new snake)");
+                                this.setState((state) => ({
+                                    snake: state.snake.cloneMe()
+                                }));
+                            });
+                        }}>Save as New Snake</Button>
+                        <Button onClick={this.saveResults}>Yes, Override</Button>
+                    </div>
+                </div>
+            );
+        }
+
         return (
-            <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={popUpFuncs.close}>
+            <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => popUpFuncs.close()}>
                 <div>
+                    {confirmation}
                     <div className={"text_card background"}>
                         <SnakeDetailsEdit snake={this.state.snake}/>
+                        <div className={"button_div"}>
+                            <Button onClick={this.saveResults}>Save</Button>
+                        </div>
+                        <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
+                            {this.state.errorText}
+                        </FadeDiv>
                     </div>
                 </div>
             </PopUp>
@@ -207,7 +240,53 @@ class CreateSnakePopUpREACT extends React.Component{
 
     }
     saveResults(){
-        // TODO
+        const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
+
+        // TODO: snake validation
+
+        // bundle of functions for the popup to interact with the main menu
+        //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
+        const popUpFuncs = this.props.popUpFuncs;
+
+        // replace an existing snake
+        if(metaInfo != null){
+            if(this.state.confirmationBox) {
+                this.setState(() => ({confirmationBox: false}), () => {
+                    popUpFuncs.spliceLoaded(metaInfo, 1, this.state.snake);
+                    popUpFuncs.changeSelected(metaInfo);
+                    this.changeErrorText("(Save Successful)");
+                });
+            }
+            else{
+                this.setState(() => ({confirmationBox: true}));
+            }
+        }
+        // add another
+        else{
+            popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, this.state.snake);
+            popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+            this.changeErrorText("(Saved as new snake)");
+            this.setState((state) => ({
+                snake: state.snake.cloneMe()
+            }));
+            // popUpFuncs.close(1);
+        }
+    }
+    changeErrorText(text){
+        if(!this.state.errorText){
+            this.setState((state) => ({errorText: text}));
+        }
+        else if(this.state.errorText.length < text.length){
+            this.setState((state) => ({errorText: text}));
+        }
+        else{
+            if(this.state.errorText === text){
+                this.setState((state) => ({errorText: (text + " ")}));
+            }
+            else{
+                this.setState((state) => ({errorText: text}));
+            }
+        }
     }
     componentDidMount() {
         this.updateSnake();

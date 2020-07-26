@@ -1,3 +1,5 @@
+let blankBrains = [];
+
 // Parent skeleton brain class
 // Specifications
 //  -Takes in an "input" into method, gets decision (direction) out
@@ -227,6 +229,8 @@ class PathBrain extends Brain{
         return new PathBrain(this.myRawPath);
     }
 }
+blankBrains.push(new PathBrain(
+    [[ 0, 0 ], [ 1, 0 ], [ 2, 0 ], [ 3, 0 ], [ 4, 0 ], [ 5, 0 ], [ 6, 0 ], [ 7, 0 ], [ 8, 0 ], [ 9, 0 ], [ 10, 0 ], [ 11, 0 ], [ 11, 1 ], [ 11, 2 ], [ 11, 3 ], [ 11, 4 ], [ 11, 5 ], [ 11, 6 ], [ 11, 7 ], [ 11, 8 ], [ 11, 9 ], [ 11, 10 ], [ 11, 11 ], [ 10, 11 ], [ 9, 11 ], [ 8, 11 ], [ 7, 11 ], [ 6, 11 ], [ 5, 11 ], [ 4, 11 ], [ 3, 11 ], [ 2, 11 ], [ 1, 11 ], [ 0, 11 ], [ 0, 10 ], [ 0, 9 ], [ 0, 8 ], [ 0, 7 ], [ 0, 6 ], [ 0, 5 ], [ 0, 4 ], [ 0, 3 ], [ 0, 2 ], [ 0, 1 ]]));
 
 // Player controlled snake, basically just parses an array to a direction
 class PlayerControlledBrain extends Brain{
@@ -247,13 +251,14 @@ class PlayerControlledBrain extends Brain{
         return this.getOutput(brainInput);
     }
 }
+blankBrains.push(new PlayerControlledBrain());
 
 // Neural network brain - fixed topology and feedforward only
 class NeuralNetBrain extends Brain{
     constructor(normalizer, depth, width, startWeight, startBias){
         super(2);
 
-        this.componentName = "Basic Neural Network";
+        this.componentName = "Basic Neural Network Brain";
         this.componentDescription = "This brain is a simple neural network, with a set depth and width. It can be used with most forms of machine learning. It makes all of its decisions via forward propagation.";
 
         // sigmoid/htan func to normalize/activate nodes
@@ -548,5 +553,6 @@ class NeuralNetBrain extends Brain{
         this.myNormalizer = Normalizer.parse(this.myNormalizer);
     }
 }
+blankBrains.push(new NeuralNetBrain(new TanhNormalizer(), 2, 6, 0.1, 0.1));
 
 const brainPrototypes = [PathBrain.prototype, PlayerControlledBrain.prototype, NeuralNetBrain.prototype];

@@ -79,7 +79,9 @@ var SelectSnakePopUpREACT = function (_React$Component) {
 
             return React.createElement(
                 PopUp,
-                { className: "background selectSnake" + (this.props.className ? " " + this.props.className : ""), closeFunc: popUpFuncs.close },
+                { className: "background selectSnake" + (this.props.className ? " " + this.props.className : ""), closeFunc: function closeFunc() {
+                        return popUpFuncs.close();
+                    } },
                 React.createElement(
                     "div",
                     null,
@@ -112,7 +114,7 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                             ),
                             React.createElement(
                                 "label",
-                                { htmlFor: "generation_number", className: "generation_label" },
+                                { htmlFor: "generation_number" },
                                 "Generation: "
                             ),
                             React.createElement(
@@ -263,18 +265,23 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
         var _this3 = _possibleConstructorReturn(this, (CreateSnakePopUpREACT.__proto__ || Object.getPrototypeOf(CreateSnakePopUpREACT)).call(this, props));
 
         _this3.state = {
-            snake: null
+            snake: null,
+            errorText: "",
+            confirmationBox: false
         };
 
         _this3.updateSnake = _this3.updateSnake.bind(_this3);
         _this3.createBlankSnake = _this3.createBlankSnake.bind(_this3);
         _this3.saveResults = _this3.saveResults.bind(_this3);
+        _this3.changeErrorText = _this3.changeErrorText.bind(_this3);
         return _this3;
     }
 
     _createClass(CreateSnakePopUpREACT, [{
         key: "render",
         value: function render() {
+            var _this4 = this;
+
             var _props2 = this.props,
                 metaInfo = _props2.metaInfo,
                 loadedSnakesIn = _props2.loadedSnakesIn;
@@ -288,7 +295,9 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
             if (!this.state.snake) {
                 return React.createElement(
                     PopUp,
-                    { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: popUpFuncs.close },
+                    { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: function closeFunc() {
+                            return popUpFuncs.close();
+                        } },
                     React.createElement(
                         "div",
                         null,
@@ -337,16 +346,83 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                 );
             }
 
+            var confirmation = null;
+            if (this.state.confirmationBox) {
+                confirmation = React.createElement(
+                    "div",
+                    { className: "confirmation_box" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        "Are you sure you want to override the previous version of this snake?",
+                        loadedSnakesIn[metaInfo].getLength() > 1 ? " All generations will also be erased." : ""
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return _this4.setState(function () {
+                                        return { confirmationBox: false };
+                                    });
+                                } },
+                            "Cancel"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    _this4.setState(function () {
+                                        return { confirmationBox: false };
+                                    }, function () {
+                                        popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, _this4.state.snake);
+                                        popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                                        _this4.changeErrorText("(Saved as new snake)");
+                                        _this4.setState(function (state) {
+                                            return {
+                                                snake: state.snake.cloneMe()
+                                            };
+                                        });
+                                    });
+                                } },
+                            "Save as New Snake"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: this.saveResults },
+                            "Yes, Override"
+                        )
+                    )
+                );
+            }
+
             return React.createElement(
                 PopUp,
-                { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: popUpFuncs.close },
+                { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: function closeFunc() {
+                        return popUpFuncs.close();
+                    } },
                 React.createElement(
                     "div",
                     null,
+                    confirmation,
                     React.createElement(
                         "div",
                         { className: "text_card background" },
-                        React.createElement(SnakeDetailsEdit, { snake: this.state.snake })
+                        React.createElement(SnakeDetailsEdit, { snake: this.state.snake }),
+                        React.createElement(
+                            "div",
+                            { className: "button_div" },
+                            React.createElement(
+                                Button,
+                                { onClick: this.saveResults },
+                                "Save"
+                            )
+                        ),
+                        React.createElement(
+                            FadeDiv,
+                            { speed: .75, className: "error_text", shouldReset: true },
+                            this.state.errorText
+                        )
                     )
                 )
             );
@@ -376,7 +452,70 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
     }, {
         key: "saveResults",
         value: function saveResults() {
-            // TODO
+            var _this5 = this;
+
+            var _props4 = this.props,
+                metaInfo = _props4.metaInfo,
+                loadedSnakesIn = _props4.loadedSnakesIn;
+
+            // TODO: snake validation
+
+            // bundle of functions for the popup to interact with the main menu
+            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
+
+            var popUpFuncs = this.props.popUpFuncs;
+
+            // replace an existing snake
+            if (metaInfo != null) {
+                if (this.state.confirmationBox) {
+                    this.setState(function () {
+                        return { confirmationBox: false };
+                    }, function () {
+                        popUpFuncs.spliceLoaded(metaInfo, 1, _this5.state.snake);
+                        popUpFuncs.changeSelected(metaInfo);
+                        _this5.changeErrorText("(Save Successful)");
+                    });
+                } else {
+                    this.setState(function () {
+                        return { confirmationBox: true };
+                    });
+                }
+            }
+            // add another
+            else {
+                    popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, this.state.snake);
+                    popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                    this.changeErrorText("(Saved as new snake)");
+                    this.setState(function (state) {
+                        return {
+                            snake: state.snake.cloneMe()
+                        };
+                    });
+                    // popUpFuncs.close(1);
+                }
+        }
+    }, {
+        key: "changeErrorText",
+        value: function changeErrorText(text) {
+            if (!this.state.errorText) {
+                this.setState(function (state) {
+                    return { errorText: text };
+                });
+            } else if (this.state.errorText.length < text.length) {
+                this.setState(function (state) {
+                    return { errorText: text };
+                });
+            } else {
+                if (this.state.errorText === text) {
+                    this.setState(function (state) {
+                        return { errorText: text + " " };
+                    });
+                } else {
+                    this.setState(function (state) {
+                        return { errorText: text };
+                    });
+                }
+            }
         }
     }, {
         key: "componentDidMount",

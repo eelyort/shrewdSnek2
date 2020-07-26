@@ -243,6 +243,36 @@ class TextArea extends React.Component{
         }
     }
 }
+// number form || props: name | onChange(val) | max(optional) | min(optional) | initVal(optional)
+class NumberForm extends React.Component{
+    constructor(props){
+        super(props);
+
+        this.state = {
+            value: ((this.props.initVal) ? (this.props.initVal) : ((this.props.min) ? (this.props.min) : (0)))
+        };
+
+        this.handleChange = this.handleChange.bind(this);
+    }
+    render() {
+        const {name: name, min: min, max: max} = this.props;
+
+        return (
+            <input value={this.state.value} onChange={this.handleChange} type={"number"} className={"number_input" + ((this.props.className) ? (" " + this.props.className) : (""))} name={name} />
+        );
+    }
+    handleChange(event){
+        const val = parseInt(event.target.value);
+
+        if(val !== this.state.value && val >= this.props.min && val <= this.props.max) {
+            this.setState((state) => ({
+                value: val
+            }), () => {
+                this.props.onChange(this.state.value);
+            });
+        }
+    }
+}
 
 // a div which fills as much of the parent div (parentRef) as possible while remaining a perfect square
 //   Note: parent must be relatively/absolutely positioned

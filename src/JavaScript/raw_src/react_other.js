@@ -245,17 +245,11 @@ class BrainDetailsPath extends React.Component{
                 this.index++;
                 continue;
             }
-            // update color
+            // update/clamp color
             let curr = this.stages[this.stage];
-            [this.red, this.green, this.blue] = [this.red + curr[0], this.green + curr[1], this.blue + curr[2]];
+            this.colors = this.colors.map((value, index) => Math.max(0, Math.min(255, value + curr[index]*this.colorStep)));
             // check if should proceed to next stage
-            let [num0, num255] = [0, 0];
-            num0 += (this.red === 0);
-            num0 += (this.green === 0);
-            num0 += this.blue === 0;
-            num255 += this.red === 255;
-            num255 += this.green === 255;
-            num255 += this.blue === 255;
+            let [num0, num255] = [this.colors.filter((val) => val === 0).length, this.colors.filter((val) => val === 255).length];
             if(num255 === 2 || num0 === 2){
                 this.stage++;
                 if(this.stage >= this.stages.length){
@@ -265,7 +259,7 @@ class BrainDetailsPath extends React.Component{
 
             // draw square
             let [r, c] = [rawPath[this.index][0], rawPath[this.index][1]];
-            this.ctx.fillStyle = `rgba(${this.red}, ${this.green}, ${this.blue}, 1)`;
+            this.ctx.fillStyle = `rgba(${this.colors[0]}, ${this.colors[1]}, ${this.colors[2]}, 1)`;
             this.ctx.beginPath();
             this.ctx.rect(c * this.step, r * this.step, this.step, this.step);
             this.ctx.fill();
@@ -289,13 +283,13 @@ class BrainDetailsPath extends React.Component{
         this.step = this.ctx.canvas.width/gridSize;
 
         // draws path with a gradient from green to blue to red to green
-        this.red = 0;
-        this.green = 255;
-        this.blue = 0;
+        this.colors = [0, 255, 0];
 
         this.index = 0;
         this.stage = 0;
         this.stages = [[0, 0, 1], [0, -1, 0], [1, 0, 0], [0, 0, -1], [0, 1, 0], [-1, 0, 0]];
+        // how fast the color changes
+        this.colorStep = Math.min(86, Math.max(1, Math.round((this.stages.length*255) / (rawPath.length))));
 
         this.runsPerUpdate = 20 + ((rawPath.length > 5000) ? (rawPath.length / 50) : (((rawPath.length > 2000) ? (rawPath.length / 200) : (0))));
 
@@ -373,7 +367,6 @@ class BrainDetailsNet extends React.Component{
         // console.log(centers);
 
         // draw brain
-        let curr = DrawBrain(ctx, brain, Math.floor(ctx.canvas.width/2), ctx.canvas.height, widthUsed, 0, "#000000", biasScale);
         centers = centers.concat(DrawBrain(ctx, brain, Math.floor(ctx.canvas.width/2), ctx.canvas.height, widthUsed, 0, "#000000", biasScale));
         widthUsed += Math.floor(ctx.canvas.width/2);
         // console.log("brain:");
@@ -385,37 +378,41 @@ class BrainDetailsNet extends React.Component{
         // console.log(centers);
 
         // weights
-        if(brain.hasValues){
-            // console.log(centers);
-            ctx.lineWidth = weightLineWidth;
+        ctx.lineWidth = weightLineWidth;
 
-            // layer
-            for (let layer = 0; layer < mat.length; layer++) {
-                // destination node
-                for (let targetNode = 0; targetNode < mat[layer][1].length; targetNode++) {
-                    // src node
-                    for (let srcNode = 0; srcNode < mat[layer][1][targetNode].length; srcNode++) {
-                        const currVal = mat[layer][1][targetNode][srcNode];
-                        const [srcX, srcY] = centers[layer][srcNode];
-                        const [targetX, targetY] = centers[layer + 1][targetNode];
+        // layer
+        for (let layer = 0; layer < mat.length; layer++) {
+            // destination node
+            for (let targetNode = 0; targetNode < mat[layer][1].length; targetNode++) {
+                // src node
+                for (let srcNode = 0; srcNode < mat[layer][1][targetNode].length; srcNode++) {
+                    const currVal = mat[layer][1][targetNode][srcNode];
+                    const [srcX, srcY] = centers[layer][srcNode];
+                    const [targetX, targetY] = centers[layer + 1][targetNode];
 
-                        // console.log(`layer: ${layer}, target: ${targetNode}, src: ${srcNode}, currVal: ${currVal}, srcCoord: ${[srcX, srcY]}, targetCoord: ${[targetX, targetY]}`);
+                    // console.log(`layer: ${layer}, target: ${targetNode}, src: ${srcNode}, currVal: ${currVal}, srcCoord: ${[srcX, srcY]}, targetCoord: ${[targetX, targetY]}`);
 
-                        let opacity = Math.round(Math.min(Math.abs(currVal)/(weightScale/weightLineOpacityMultiplier), 1) * 100)/100;
+                    // values: red/blue
+                    if(brain.hasValues) {
+                        let opacity = Math.round(Math.min(Math.abs(currVal) / (weightScale / weightLineOpacityMultiplier), 1) * 100) / 100;
                         opacity = Math.max(opacity, weightLineMinOpacity);
-                        if(currVal > 0) {
+                        if (currVal > 0) {
                             ctx.strokeStyle = `rgba(0, 0, 255, ${opacity})`;
-                        }
-                        else{
+                        } else {
                             ctx.strokeStyle = `rgba(255, 0, 0, ${opacity})`;
                         }
-                        // console.log(`curr: ${curr}, opacity: ${opacity}, fillStyle: ${ctx.fillStyle}`);
-                        ctx.beginPath();
-                        ctx.moveTo(srcX, srcY);
-                        ctx.lineTo(targetX, targetY);
-                        ctx.stroke();
-                        ctx.closePath();
                     }
+                    // no values, gray lines
+                    else{
+                        ctx.strokeStyle = `rgba(0, 0, 0, 0.5)`;
+                    }
+
+                    // draw
+                    ctx.beginPath();
+                    ctx.moveTo(srcX, srcY);
+                    ctx.lineTo(targetX, targetY);
+                    ctx.stroke();
+                    ctx.closePath();
                 }
             }
         }
@@ -475,7 +472,7 @@ class SnakeDetails extends React.Component{
                 <TypewriterText speed={speed}>
                     <p className={"category_text"}>
                         Starting Head Position: {snake.startHeadPos}{"\n"}
-                        Starting Length: {snake.myLength}{"\n"}
+                        Starting Length: {snake.startLength}{"\n"}
                         Apple Value: {snake.appleVal}{"\n"}
                         Grid Size: {snake.gridSize}{"\n"}
                     </p>
@@ -496,6 +493,12 @@ class SnakeDetailsEdit extends React.Component{
 
         const {snake: snake} = this.props;
 
+        // keep a log of brains so you can toggle between multiple while preserving info
+        if(!this.brains){
+            this.brains = Array(blankBrains.length).fill(null);
+        }
+        this.brains[snake.myBrain.componentID] = snake.myBrain;
+
         const speed = 3.5;
 
         return(
@@ -514,17 +517,77 @@ class SnakeDetailsEdit extends React.Component{
                     <p className={"category_text"}>{snake.getComponentDescription()}</p>
                 </TextArea>
                 <p className={"category_text_title"}>Parameters</p>
-                <TypewriterText speed={speed}>
-                    <p className={"category_text"}>
-                        Starting Head Position: {snake.startHeadPos}{"\n"}
-                        Starting Length: {snake.myLength}{"\n"}
-                        Apple Value: {snake.appleVal}{"\n"}
-                        Grid Size: {snake.gridSize}{"\n"}
-                    </p>
-                </TypewriterText>
+                <div className={"category_text"}>
+                    <div className={"start_head_pos"}>
+                        <p className={"category_text"}>Starting Head Position:</p>
+                        <label htmlFor={"head_pos_r"}>Row:</label>
+                        <NumberForm name={"head_pos_r"} min={1} max={snake.gridSize} onChange={(val) => {
+                            // TODO
+                            console.log("TODO: row/col");
+                        }}/>
+                        <label htmlFor={"head_pos_c"}>Column:</label>
+                        <NumberForm name={"head_pos_c"} min={1} max={snake.gridSize} onChange={(val) => {
+                            // TODO
+                            console.log("TODO: row/col");
+                        }}/>
+                    </div>
+                    <div>
+                        <label htmlFor={"start_length"}>Starting Length:</label>
+                        <NumberForm name={"start_length"} initVal={snake.startLength} min={1} max={snake.gridSize*snake.gridSize} onChange={(val) => {
+                            snake.startLength = val;
+                            snake.myLength = snake.startLength;
+                            this.forceUpdate();
+                        }} />
+                    </div>
+                    <div>
+                        <label htmlFor={"apple_val"}>Apple Value:</label>
+                        <NumberForm name={"apple_val"} initVal={snake.appleVal} min={1} max={99999} onChange={(val) => {
+                            snake.appleVal = val;
+                            this.forceUpdate();
+                        }} />
+                    </div>
+                    <div>
+                        <label htmlFor={"grid_size"}>Grid Size:</label>
+                        <NumberForm name={"grid_size"} initVal={snake.gridSize} min={1} max={250} onChange={(val) => {
+                            snake.gridSize = val;
+                            this.forceUpdate();
+                        }} />
+                    </div>
+                </div>
                 <p className={"category_text_title"}>Input</p>
                 <InputDetails input={snake.myInput} speed={speed} />
                 <p className={"category_text_title"}>Brain</p>
+                <div className={"wrapper_div inline_block_parent"}>
+                    <label htmlFor={"brain_type"}>Brain Type: </label>
+                    <Select initVal={snake.myBrain.componentID} name={"brain_type"} onSelect={(val) => {
+                        // target id
+                        const id = val;
+                        console.log(`target id: ${id}`);
+
+                        // ignore unnecessary switches
+                        if(id !== snake.myBrain.componentID) {
+                            // save old
+                            this.brains[snake.myBrain.componentID] = snake.myBrain;
+
+                            // change to new
+                            // this type exists already
+                            if (this.brains[id]) {
+                                snake.changeBrain(this.brains[id]);
+                            }
+                            // first time this type
+                            else{
+                                snake.changeBrain(blankBrains[id].cloneMe());
+                            }
+                            this.forceUpdate();
+                        }
+                    }}>
+                        {blankBrains.map((value, index) => {
+                            return(
+                                <option value={index}>{value.getComponentName()}</option>
+                            );
+                        })}
+                    </Select>
+                </div>
                 <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} />
             </div>
         );

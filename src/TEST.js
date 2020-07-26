@@ -1,12 +1,37 @@
 
-let a = "hello world (1)";
-let tokens = a.split(" ");
-console.log(tokens);
-let lastToken = tokens[tokens.length-1];
-console.log(lastToken);
-let b = lastToken.substring(1, lastToken.length-1);
-console.log(b);
-console.log(isNaN(b));
+// let a = "hello world (1)";
+// let tokens = a.split(" ");
+// console.log(tokens);
+// let lastToken = tokens[tokens.length-1];
+// console.log(lastToken);
+// let b = lastToken.substring(1, lastToken.length-1);
+// console.log(b);
+// console.log(isNaN(b));
+
+// let a = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+// console.log(a);
+// a.splice(1, 1, 11);
+// console.log(a);
+
+let testRect = [];
+const gridSize = 11;
+for (let i = 0; i < gridSize; i++) {
+    testRect.push([i, 0]);
+}
+for (let i = 0; i < gridSize; i++) {
+    testRect.push([gridSize, i]);
+}
+for (let i = 0; i < gridSize; i++) {
+    testRect.push([gridSize-i, gridSize]);
+}
+for (let i = 0; i < gridSize; i++) {
+    testRect.push([0, gridSize-i]);
+}
+console.log(testRect);
+
+// let a = [1, 2, 3];
+// a += [2, 3, 4];
+// console.log(a);
 
 // let [TEST, TEST2, TEST3] = [0, 0, 0];
 // // [TEST, TEST2, TEST3] += [1, 0, -1];

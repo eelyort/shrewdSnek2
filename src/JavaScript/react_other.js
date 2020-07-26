@@ -1,5 +1,7 @@
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -342,54 +344,69 @@ var BrainDetailsPath = function (_React$Component4) {
     }, {
         key: "update",
         value: function update() {
+            var _this6 = this;
+
             var rawPath = this.props.brain.myRawPath;
-            for (var i = 0; i < 20; i++) {
-                if (this.index === rawPath.length) {
-                    clearInterval(this.interval);
-                    return;
+
+            var _loop = function _loop(_i) {
+                if (_this6.index === rawPath.length) {
+                    clearInterval(_this6.interval);
+                    return {
+                        v: void 0
+                    };
                 }
                 // ignore directionals for now
-                if (!Array.isArray(rawPath[this.index])) {
-                    i--;
-                    this.index++;
-                    continue;
+                if (!Array.isArray(rawPath[_this6.index])) {
+                    _i--;
+                    _this6.index++;
+                    return "continue";
                 }
-                // update color
-                var curr = this.stages[this.stage];
-
+                // update/clamp color
+                var curr = _this6.stages[_this6.stage];
+                _this6.colors = _this6.colors.map(function (value, index) {
+                    return Math.max(0, Math.min(255, value + curr[index] * _this6.colorStep));
+                });
                 // check if should proceed to next stage
-                var _ref = [this.red + curr[0], this.green + curr[1], this.blue + curr[2]];
-                this.red = _ref[0];
-                this.green = _ref[1];
-                this.blue = _ref[2];
-                var num0 = 0,
-                    num255 = 0;
+                var _ref = [_this6.colors.filter(function (val) {
+                    return val === 0;
+                }).length, _this6.colors.filter(function (val) {
+                    return val === 255;
+                }).length],
+                    num0 = _ref[0],
+                    num255 = _ref[1];
 
-                num0 += this.red === 0;
-                num0 += this.green === 0;
-                num0 += this.blue === 0;
-                num255 += this.red === 255;
-                num255 += this.green === 255;
-                num255 += this.blue === 255;
                 if (num255 === 2 || num0 === 2) {
-                    this.stage++;
-                    if (this.stage >= this.stages.length) {
-                        this.stage = 0;
+                    _this6.stage++;
+                    if (_this6.stage >= _this6.stages.length) {
+                        _this6.stage = 0;
                     }
                 }
 
                 // draw square
-                var _ref2 = [rawPath[this.index][0], rawPath[this.index][1]],
+                var _ref2 = [rawPath[_this6.index][0], rawPath[_this6.index][1]],
                     r = _ref2[0],
                     c = _ref2[1];
 
-                this.ctx.fillStyle = "rgba(" + this.red + ", " + this.green + ", " + this.blue + ", 1)";
-                this.ctx.beginPath();
-                this.ctx.rect(c * this.step, r * this.step, this.step, this.step);
-                this.ctx.fill();
-                this.ctx.closePath();
+                _this6.ctx.fillStyle = "rgba(" + _this6.colors[0] + ", " + _this6.colors[1] + ", " + _this6.colors[2] + ", 1)";
+                _this6.ctx.beginPath();
+                _this6.ctx.rect(c * _this6.step, r * _this6.step, _this6.step, _this6.step);
+                _this6.ctx.fill();
+                _this6.ctx.closePath();
 
-                this.index++;
+                _this6.index++;
+                i = _i;
+            };
+
+            for (var i = 0; i < 20; i++) {
+                var _ret = _loop(i);
+
+                switch (_ret) {
+                    case "continue":
+                        continue;
+
+                    default:
+                        if ((typeof _ret === "undefined" ? "undefined" : _typeof(_ret)) === "object") return _ret.v;
+                }
             }
         }
     }, {
@@ -413,13 +430,13 @@ var BrainDetailsPath = function (_React$Component4) {
             this.step = this.ctx.canvas.width / gridSize;
 
             // draws path with a gradient from green to blue to red to green
-            this.red = 0;
-            this.green = 255;
-            this.blue = 0;
+            this.colors = [0, 255, 0];
 
             this.index = 0;
             this.stage = 0;
             this.stages = [[0, 0, 1], [0, -1, 0], [1, 0, 0], [0, 0, -1], [0, 1, 0], [-1, 0, 0]];
+            // how fast the color changes
+            this.colorStep = Math.min(86, Math.max(1, Math.round(this.stages.length * 255 / rawPath.length)));
 
             this.runsPerUpdate = 20 + (rawPath.length > 5000 ? rawPath.length / 50 : rawPath.length > 2000 ? rawPath.length / 200 : 0);
 
@@ -455,12 +472,12 @@ var BrainDetailsNet = function (_React$Component5) {
     function BrainDetailsNet(props) {
         _classCallCheck(this, BrainDetailsNet);
 
-        var _this6 = _possibleConstructorReturn(this, (BrainDetailsNet.__proto__ || Object.getPrototypeOf(BrainDetailsNet)).call(this, props));
+        var _this7 = _possibleConstructorReturn(this, (BrainDetailsNet.__proto__ || Object.getPrototypeOf(BrainDetailsNet)).call(this, props));
 
-        _this6.subCanvasRef = React.createRef();
+        _this7.subCanvasRef = React.createRef();
 
-        _this6.draw = _this6.draw.bind(_this6);
-        return _this6;
+        _this7.draw = _this7.draw.bind(_this7);
+        return _this7;
     }
 
     _createClass(BrainDetailsNet, [{
@@ -523,7 +540,6 @@ var BrainDetailsNet = function (_React$Component5) {
             // console.log(centers);
 
             // draw brain
-            var curr = DrawBrain(ctx, brain, Math.floor(ctx.canvas.width / 2), ctx.canvas.height, widthUsed, 0, "#000000", biasScale);
             centers = centers.concat(DrawBrain(ctx, brain, Math.floor(ctx.canvas.width / 2), ctx.canvas.height, widthUsed, 0, "#000000", biasScale));
             widthUsed += Math.floor(ctx.canvas.width / 2);
             // console.log("brain:");
@@ -535,28 +551,30 @@ var BrainDetailsNet = function (_React$Component5) {
             // console.log(centers);
 
             // weights
-            if (brain.hasValues) {
-                // console.log(centers);
-                ctx.lineWidth = weightLineWidth;
+            ctx.lineWidth = weightLineWidth;
 
-                // layer
-                for (var _layer2 = 0; _layer2 < mat.length; _layer2++) {
-                    // destination node
-                    for (var targetNode = 0; targetNode < mat[_layer2][1].length; targetNode++) {
-                        // src node
-                        for (var srcNode = 0; srcNode < mat[_layer2][1][targetNode].length; srcNode++) {
-                            var currVal = mat[_layer2][1][targetNode][srcNode];
+            // layer
+            for (var _layer2 = 0; _layer2 < mat.length; _layer2++) {
+                // destination node
+                for (var targetNode = 0; targetNode < mat[_layer2][1].length; targetNode++) {
+                    // src node
+                    for (var srcNode = 0; srcNode < mat[_layer2][1][targetNode].length; srcNode++) {
+                        var currVal = mat[_layer2][1][targetNode][srcNode];
 
-                            var _centers$_layer2$srcN = _slicedToArray(centers[_layer2][srcNode], 2),
-                                srcX = _centers$_layer2$srcN[0],
-                                srcY = _centers$_layer2$srcN[1];
+                        var _centers$_layer2$srcN = _slicedToArray(centers[_layer2][srcNode], 2),
+                            srcX = _centers$_layer2$srcN[0],
+                            srcY = _centers$_layer2$srcN[1];
 
-                            var _centers$targetNode = _slicedToArray(centers[_layer2 + 1][targetNode], 2),
-                                targetX = _centers$targetNode[0],
-                                targetY = _centers$targetNode[1];
+                        var _centers$targetNode = _slicedToArray(centers[_layer2 + 1][targetNode], 2),
+                            targetX = _centers$targetNode[0],
+                            targetY = _centers$targetNode[1];
 
-                            // console.log(`layer: ${layer}, target: ${targetNode}, src: ${srcNode}, currVal: ${currVal}, srcCoord: ${[srcX, srcY]}, targetCoord: ${[targetX, targetY]}`);
+                        // console.log(`layer: ${layer}, target: ${targetNode}, src: ${srcNode}, currVal: ${currVal}, srcCoord: ${[srcX, srcY]}, targetCoord: ${[targetX, targetY]}`);
 
+                        // values: red/blue
+
+
+                        if (brain.hasValues) {
                             var opacity = Math.round(Math.min(Math.abs(currVal) / (weightScale / weightLineOpacityMultiplier), 1) * 100) / 100;
                             opacity = Math.max(opacity, weightLineMinOpacity);
                             if (currVal > 0) {
@@ -564,13 +582,18 @@ var BrainDetailsNet = function (_React$Component5) {
                             } else {
                                 ctx.strokeStyle = "rgba(255, 0, 0, " + opacity + ")";
                             }
-                            // console.log(`curr: ${curr}, opacity: ${opacity}, fillStyle: ${ctx.fillStyle}`);
-                            ctx.beginPath();
-                            ctx.moveTo(srcX, srcY);
-                            ctx.lineTo(targetX, targetY);
-                            ctx.stroke();
-                            ctx.closePath();
                         }
+                        // no values, gray lines
+                        else {
+                                ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+                            }
+
+                        // draw
+                        ctx.beginPath();
+                        ctx.moveTo(srcX, srcY);
+                        ctx.lineTo(targetX, targetY);
+                        ctx.stroke();
+                        ctx.closePath();
                     }
                 }
             }
@@ -700,7 +723,7 @@ var SnakeDetails = function (_React$Component7) {
                         snake.startHeadPos,
                         "\n",
                         "Starting Length: ",
-                        snake.myLength,
+                        snake.startLength,
                         "\n",
                         "Apple Value: ",
                         snake.appleVal,
@@ -744,12 +767,18 @@ var SnakeDetailsEdit = function (_React$Component8) {
     _createClass(SnakeDetailsEdit, [{
         key: "render",
         value: function render() {
-            var _this10 = this;
+            var _this11 = this;
 
             console.log("SnakeDetailsEdit Render");
 
             var snake = this.props.snake;
 
+            // keep a log of brains so you can toggle between multiple while preserving info
+
+            if (!this.brains) {
+                this.brains = Array(blankBrains.length).fill(null);
+            }
+            this.brains[snake.myBrain.componentID] = snake.myBrain;
 
             var speed = 3.5;
 
@@ -760,7 +789,7 @@ var SnakeDetailsEdit = function (_React$Component8) {
                     TextArea,
                     { onChange: function onChange(val) {
                             snake.setName(val);
-                            _this10.forceUpdate();
+                            _this11.forceUpdate();
                         } },
                     React.createElement(
                         "h1",
@@ -777,7 +806,7 @@ var SnakeDetailsEdit = function (_React$Component8) {
                     TextArea,
                     { onChange: function onChange(val) {
                             snake.componentDescription = val;
-                            _this10.forceUpdate();
+                            _this11.forceUpdate();
                         } },
                     React.createElement(
                         "p",
@@ -791,23 +820,74 @@ var SnakeDetailsEdit = function (_React$Component8) {
                     "Parameters"
                 ),
                 React.createElement(
-                    TypewriterText,
-                    { speed: speed },
+                    "div",
+                    { className: "category_text" },
                     React.createElement(
-                        "p",
-                        { className: "category_text" },
-                        "Starting Head Position: ",
-                        snake.startHeadPos,
-                        "\n",
-                        "Starting Length: ",
-                        snake.myLength,
-                        "\n",
-                        "Apple Value: ",
-                        snake.appleVal,
-                        "\n",
-                        "Grid Size: ",
-                        snake.gridSize,
-                        "\n"
+                        "div",
+                        { className: "start_head_pos" },
+                        React.createElement(
+                            "p",
+                            { className: "category_text" },
+                            "Starting Head Position:"
+                        ),
+                        React.createElement(
+                            "label",
+                            { htmlFor: "head_pos_r" },
+                            "Row:"
+                        ),
+                        React.createElement(NumberForm, { name: "head_pos_r", min: 1, max: snake.gridSize, onChange: function onChange(val) {
+                                // TODO
+                                console.log("TODO: row/col");
+                            } }),
+                        React.createElement(
+                            "label",
+                            { htmlFor: "head_pos_c" },
+                            "Column:"
+                        ),
+                        React.createElement(NumberForm, { name: "head_pos_c", min: 1, max: snake.gridSize, onChange: function onChange(val) {
+                                // TODO
+                                console.log("TODO: row/col");
+                            } })
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            "label",
+                            { htmlFor: "start_length" },
+                            "Starting Length:"
+                        ),
+                        React.createElement(NumberForm, { name: "start_length", initVal: snake.startLength, min: 1, max: snake.gridSize * snake.gridSize, onChange: function onChange(val) {
+                                snake.startLength = val;
+                                snake.myLength = snake.startLength;
+                                _this11.forceUpdate();
+                            } })
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            "label",
+                            { htmlFor: "apple_val" },
+                            "Apple Value:"
+                        ),
+                        React.createElement(NumberForm, { name: "apple_val", initVal: snake.appleVal, min: 1, max: 99999, onChange: function onChange(val) {
+                                snake.appleVal = val;
+                                _this11.forceUpdate();
+                            } })
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            "label",
+                            { htmlFor: "grid_size" },
+                            "Grid Size:"
+                        ),
+                        React.createElement(NumberForm, { name: "grid_size", initVal: snake.gridSize, min: 1, max: 250, onChange: function onChange(val) {
+                                snake.gridSize = val;
+                                _this11.forceUpdate();
+                            } })
                     )
                 ),
                 React.createElement(
@@ -820,6 +900,47 @@ var SnakeDetailsEdit = function (_React$Component8) {
                     "p",
                     { className: "category_text_title" },
                     "Brain"
+                ),
+                React.createElement(
+                    "div",
+                    { className: "wrapper_div inline_block_parent" },
+                    React.createElement(
+                        "label",
+                        { htmlFor: "brain_type" },
+                        "Brain Type: "
+                    ),
+                    React.createElement(
+                        Select,
+                        { initVal: snake.myBrain.componentID, name: "brain_type", onSelect: function onSelect(val) {
+                                // target id
+                                var id = val;
+                                console.log("target id: " + id);
+
+                                // ignore unnecessary switches
+                                if (id !== snake.myBrain.componentID) {
+                                    // save old
+                                    _this11.brains[snake.myBrain.componentID] = snake.myBrain;
+
+                                    // change to new
+                                    // this type exists already
+                                    if (_this11.brains[id]) {
+                                        snake.changeBrain(_this11.brains[id]);
+                                    }
+                                    // first time this type
+                                    else {
+                                            snake.changeBrain(blankBrains[id].cloneMe());
+                                        }
+                                    _this11.forceUpdate();
+                                }
+                            } },
+                        blankBrains.map(function (value, index) {
+                            return React.createElement(
+                                "option",
+                                { value: index },
+                                value.getComponentName()
+                            );
+                        })
+                    )
                 ),
                 React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed })
             );

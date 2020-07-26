@@ -317,7 +317,6 @@ var GameMenu = function (_React$Component2) {
         value: function openPopUp(i) {
             var info = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-            console.log("openPopup(" + i + ");");
             this.setState(function () {
                 return {
                     popupActive: i,
@@ -333,15 +332,18 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "closePopUp",
         value: function closePopUp() {
+            var _this6 = this;
+
             var toOpen = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
             var info = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
-            console.log("TODO: closePopUp");
             this.setState(function () {
                 return {
                     popupActive: toOpen,
                     popupMetaInfo: info
                 };
+            }, function () {
+                return console.log(_this6.state);
             });
         }
     }, {
@@ -413,7 +415,7 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "draw",
         value: function draw() {
-            var _this6 = this;
+            var _this7 = this;
 
             if (this.runningInstance) {
                 // when paused stop draw loop, draw one last time
@@ -421,7 +423,7 @@ var GameMenu = function (_React$Component2) {
                     this.runningInstance.draw(this.subCanvasCTX);
                     if (this.runningInstance.mySnake.myLength !== this.state.score) {
                         this.setState(function (state) {
-                            return { score: _this6.runningInstance.mySnake.myLength };
+                            return { score: _this7.runningInstance.mySnake.myLength };
                         });
                     }
                     return;
@@ -432,7 +434,7 @@ var GameMenu = function (_React$Component2) {
 
                 // request another frame
                 requestAnimationFrame(function () {
-                    _this6.draw();
+                    _this7.draw();
                 });
 
                 // calc time elapsed
@@ -448,7 +450,7 @@ var GameMenu = function (_React$Component2) {
                     this.runningInstance.draw(this.subCanvasCTX);
                     if (this.runningInstance.mySnake.myLength !== this.state.score) {
                         this.setState(function (state) {
-                            return { score: _this6.runningInstance.mySnake.myLength };
+                            return { score: _this7.runningInstance.mySnake.myLength };
                         });
                     }
                 }
@@ -460,14 +462,14 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "callbackEndCurrent",
         value: function callbackEndCurrent() {
-            var _this7 = this;
+            var _this8 = this;
 
             // console.log("callback");
 
             // last draw call + score update
             this.runningInstance.draw(this.subCanvasCTX);
             this.setState(function (state) {
-                return { score: _this7.runningInstance.mySnake.myLength };
+                return { score: _this8.runningInstance.mySnake.myLength };
             });
             if (!this.state.paused) {
                 this.pausePlayButtonRef.current.clicked();
@@ -478,7 +480,7 @@ var GameMenu = function (_React$Component2) {
             // if the evolution has things it wants to show let it do so
             if (this.evolutionShell) {
                 setTimeout(function () {
-                    _this7.evolutionShell.runQueue(_this7.startSnake, _this7.startRunner);
+                    _this8.evolutionShell.runQueue(_this8.startSnake, _this8.startRunner);
                 }, 15);
             }
         }
@@ -502,7 +504,7 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "startRunner",
         value: function startRunner(runner) {
-            var _this8 = this;
+            var _this9 = this;
 
             // clear canvas
             if (this.runningInstance) {
@@ -523,8 +525,8 @@ var GameMenu = function (_React$Component2) {
             // reset display
             this.setState(function (state) {
                 return {
-                    score: _this8.runningInstance.mySnake.myLength,
-                    playing: _this8.runningInstance.mySnake.getComponentName()
+                    score: _this9.runningInstance.mySnake.myLength,
+                    playing: _this9.runningInstance.mySnake.getComponentName()
                 };
             });
             this.runningInstance.focusMe();
@@ -556,13 +558,13 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "componentWillUnmount",
         value: function componentWillUnmount() {
-            var _this9 = this;
+            var _this10 = this;
 
             document.removeEventListener("keydown", function () {
-                return _this9.keyEventInDown;
+                return _this10.keyEventInDown;
             }, false);
             document.removeEventListener("keyup", function () {
-                return _this9.keyEventInUp;
+                return _this10.keyEventInUp;
             }, false);
         }
     }]);
