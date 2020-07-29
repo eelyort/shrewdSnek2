@@ -1,3 +1,5 @@
+let blankInputs = [];
+
 // Parent skeleton input class
 // Specifications
 //  -Takes in snake, gets info from there
@@ -175,6 +177,7 @@ class MultipleInput extends Input{
         }
     }
 }
+blankInputs.push(new MultipleInput());
 
 // User input
 //  basically parses a key event
@@ -210,8 +213,11 @@ class PlayerControlledInput extends Input{
         }
     }
 }
+blankInputs.push(new PlayerControlledInput());
 
 // searches in a direction for a specific grid value
+const possibleTargets = [1, 2];
+const possibleDirections = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
 class DirectionalInput extends Input{
     constructor(adjacents, vals){
         super(2, adjacents.length);
@@ -322,12 +328,13 @@ class DirectionalInput extends Input{
         }
     }
 }
+blankInputs.push(new DirectionalInput(["N", "NE", "E", "SE", "S", "SW", "W", "NW"], []));
 // raycasts all cardinal directions
 class CardinalDirectionalInput extends DirectionalInput{
     constructor(vals) {
         super(["N", "E", "S", "W"], vals);
 
-        this.componentName = "Cardinal Direction";
+        this.componentName = "Cardinal Direction Input";
         this.componentDescription = "This input effectively looks in every cardinal direction and returns the minimum distance to the target values.";
     }
     // // grab grid size and use to calculate adjacents
@@ -346,7 +353,7 @@ class InterCardinalDirectionalInput extends DirectionalInput{
     constructor(vals) {
         super(["NE", "SE", "SW", "NW"], vals);
 
-        this.componentName = "Inter-cardinal Direction";
+        this.componentName = "Inter-cardinal Direction Input";
         this.componentDescription = "This input effectively looks in every inter-cardinal direction and returns the minimum distance to the target values.";
     }
     // // grab grid size and use to calculate adjacents
@@ -364,7 +371,7 @@ class CardinalIntercardinalDirectionalInput extends DirectionalInput{
         // N, NE, E, SE, S, SW, W, NW
         super(["N", "NE", "E", "SE", "S", "SW", "W", "NW"], vals);
 
-        this.componentName = "All Direction";
+        this.componentName = "All Direction Input";
         this.componentDescription = "This input effectively looks in every inter-cardinal direction and every cardinal direction and returns the minimum distance to the target values.";
     }
     // updateParentSnake(snake) {
@@ -380,6 +387,9 @@ class CardinalIntercardinalDirectionalInput extends DirectionalInput{
 class SimpleInput extends Input{
     constructor(){
         super(3, 2);
+
+        this.componentName = "Simple Input";
+        this.componentDescription = "This input simply returns head position and grid size. Default input for path brains.";
     }
     // returns headpos, gridsize
     getInput(keyEvent, array, offset = 0) {
@@ -390,6 +400,7 @@ class SimpleInput extends Input{
         array[1 + offset] = this.mySnake.gridSize;
     }
 }
+blankInputs.push(new SimpleInput());
 
 // simply has the snake's length
 class LengthInput extends Input{
@@ -408,5 +419,6 @@ class LengthInput extends Input{
         array[offset] = this.mySnake.myLength;
     }
 }
+blankInputs.push(new LengthInput());
 
 const inputPrototypes = [MultipleInput.prototype, PlayerControlledInput.prototype, DirectionalInput.prototype, SimpleInput.prototype, LengthInput.prototype];

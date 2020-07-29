@@ -211,32 +211,176 @@ var InputDetailsDirectional = function (_React$Component2) {
         value: function render() {
             var _props2 = this.props,
                 input = _props2.input,
-                speed = _props2.speed;
+                speed = _props2.speed,
+                edit = _props2.edit,
+                editFuncs = _props2.editFuncs,
+                multipleIndex = _props2.multipleIndex;
+
+            // console.log("InputDetailsDirectional render()");
 
             // decode targets
 
-            var targets = input.vals;
-            if (targets) {
-                targets = targets.map(function (val, i) {
+            var targets = ["Walls"];
+            if (input.vals) {
+                targets = targets.concat(input.vals.map(function (val, i) {
                     return decodeTargetVal(val);
-                });
+                }));
             }
-            targets.push("Walls");
 
-            return React.createElement(
-                TypewriterText,
-                { speed: speed },
-                React.createElement(
-                    "p",
-                    { className: this.props.className },
-                    "Targets: ",
-                    targets.join(", "),
-                    "\n",
-                    "Directions: ",
-                    input.originalAdjacents.join(", "),
-                    "\n"
-                )
-            );
+            // static display
+            if (!edit) {
+                return React.createElement(
+                    TypewriterText,
+                    { speed: speed },
+                    React.createElement(
+                        "p",
+                        { className: "" + (this.props.className ? this.props.className : "") },
+                        "Targets: ",
+                        targets.join(", "),
+                        "\n",
+                        "Directions: ",
+                        input.originalAdjacents.join(", "),
+                        "\n"
+                    )
+                );
+            }
+            // editable
+            else {
+                    var changeFunc = function changeFunc(index, e, isTarget) {
+                        // console.log(`changeFunc(${index}, ${e}, ${isTarget})`);
+                        // console.log(`start, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
+                        var newVal = isNaN(e.target.value) ? e.target.value : parseInt(e.target.value);
+
+                        // handle both targets and directions
+                        var arr = isTarget ? input.vals : input.originalAdjacents;
+
+                        // newVal = -1? delete, otherwise add
+                        if (newVal === -1) {
+                            // console.log("delete");
+                            arr.splice(index, 1);
+                        }
+                        // modify
+                        else {
+                                arr.splice(index, 1, newVal);
+                            }
+                        // console.log(`end, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
+                        editFuncs.update();
+
+                        // // don't allow duplicates - Moved to the actual option lists
+                        // const occurrences = arr.filter((value, i) => (value === newVal && i !== index)).length;
+                        // if(occurrences === 0){
+                        //     // modify
+                        //     arr.splice(index, 1, newVal);
+                        // }
+                        // editFuncs.update();
+                    };
+                    return React.createElement(
+                        Fragment,
+                        null,
+                        React.createElement(
+                            "div",
+                            { className: "inline_block_parent" },
+                            React.createElement(
+                                "p",
+                                { className: "" + (this.props.className ? this.props.className : "") },
+                                "Targets: Walls, "
+                            ),
+                            input.vals.map(function (currTarget, currIndexSelect) {
+                                return React.createElement(
+                                    "select",
+                                    { value: currTarget, name: "directional_target_" + currIndexSelect, onChange: function onChange(e) {
+                                            return changeFunc(currIndexSelect, e, true);
+                                        } },
+                                    React.createElement(
+                                        "option",
+                                        { value: -1 },
+                                        "----"
+                                    ),
+                                    possibleTargets.filter(function (filterVal) {
+                                        return !(input.vals.includes(filterVal) && filterVal !== currTarget);
+                                    }).map(function (optionVal, optionIndex) {
+                                        return React.createElement(
+                                            "option",
+                                            { value: optionVal },
+                                            decodeTargetVal(optionVal)
+                                        );
+                                    })
+                                );
+                            }),
+                            React.createElement(
+                                "select",
+                                { value: -1, name: "directional_target_" + input.vals.length, onChange: function onChange(e) {
+                                        return changeFunc(input.vals.length, e, true);
+                                    } },
+                                React.createElement(
+                                    "option",
+                                    { value: -1 },
+                                    "----"
+                                ),
+                                possibleTargets.filter(function (value1) {
+                                    return !(input.vals.includes(value1) && value1 !== -1);
+                                }).map(function (value1, index1) {
+                                    return React.createElement(
+                                        "option",
+                                        { value: value1 },
+                                        decodeTargetVal(value1)
+                                    );
+                                })
+                            )
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "inline_block_parent" },
+                            React.createElement(
+                                "p",
+                                { className: "" + (this.props.className ? this.props.className : "") },
+                                "Directions: "
+                            ),
+                            input.originalAdjacents.map(function (currDirection, currIndexSelect) {
+                                return React.createElement(
+                                    "select",
+                                    { value: currDirection, name: "directional_direction_" + currIndexSelect, onChange: function onChange(e) {
+                                            return changeFunc(currIndexSelect, e, false);
+                                        } },
+                                    React.createElement(
+                                        "option",
+                                        { value: -1 },
+                                        "----"
+                                    ),
+                                    possibleDirections.filter(function (filterVal) {
+                                        return !(input.originalAdjacents.includes(filterVal) && filterVal !== currDirection);
+                                    }).map(function (optionVal, optionIndex) {
+                                        return React.createElement(
+                                            "option",
+                                            { value: optionVal },
+                                            optionVal
+                                        );
+                                    })
+                                );
+                            }),
+                            React.createElement(
+                                "select",
+                                { value: -1, name: "directional_direction_" + input.originalAdjacents.length, onChange: function onChange(e) {
+                                        return changeFunc(input.originalAdjacents.length, e, false);
+                                    } },
+                                React.createElement(
+                                    "option",
+                                    { value: -1 },
+                                    "----"
+                                ),
+                                possibleDirections.filter(function (filterVal) {
+                                    return !(input.originalAdjacents.includes(filterVal) && filterVal !== -1);
+                                }).map(function (optionVal, optionIndex) {
+                                    return React.createElement(
+                                        "option",
+                                        { value: optionVal },
+                                        optionVal
+                                    );
+                                })
+                            )
+                        )
+                    );
+                }
         }
     }]);
 
@@ -261,7 +405,11 @@ var InputDetails = function (_React$Component3) {
 
             var _props3 = this.props,
                 input = _props3.input,
-                speed = _props3.speed;
+                speed = _props3.speed,
+                edit = _props3.edit,
+                editFuncs = _props3.editFuncs,
+                multipleIndex = _props3.multipleIndex,
+                noDelete = _props3.noDelete;
 
             // multiple inputs returns more inputs
             // if(input.componentID === 0){
@@ -271,7 +419,7 @@ var InputDetails = function (_React$Component3) {
                     Fragment,
                     null,
                     input.myInputs.map(function (item, index) {
-                        return React.createElement(InputDetails, { input: item, speed: speed, className: _this4.props.className });
+                        return React.createElement(InputDetails, { multipleIndex: index, input: item, speed: speed, className: _this4.props.className, edit: edit, editFuncs: editFuncs });
                     })
                 );
             }
@@ -281,23 +429,87 @@ var InputDetails = function (_React$Component3) {
             var extraDetails = null;
             // if(input.componentID === 2){
             if (input instanceof DirectionalInput) {
-                extraDetails = React.createElement(InputDetailsDirectional, { className: "category_text", input: input });
+                extraDetails = React.createElement(InputDetailsDirectional, { className: "category_text" + (this.props.className ? " " + this.props.className : ""), input: input, edit: edit, editFuncs: editFuncs, multipleIndex: multipleIndex });
             }
             // input info
+            var canGoUp = false,
+                canGoDown = false;
+
+            if (edit) {
+                var master = editFuncs.get();
+                if (master instanceof MultipleInput) {
+                    canGoUp = multipleIndex > 0;
+                    canGoDown = multipleIndex < master.myInputs.size - 1;
+                }
+            }
             return React.createElement(
                 Fragment,
                 null,
                 React.createElement(
-                    "p",
-                    { className: "category_text_title small" },
-                    input.getComponentName()
+                    "div",
+                    { className: "wrapper_div inline_block_parent inline_buttons" },
+                    React.createElement(
+                        "p",
+                        { className: "category_text_title small" + (this.props.className ? " " + this.props.className : "") },
+                        input.getComponentName()
+                    ),
+                    edit ? React.createElement(
+                        Fragment,
+                        null,
+                        noDelete ? React.createElement(
+                            Button,
+                            { className: "faded" + (this.props.className ? " " + this.props.className : ""), onClick: function onClick() {
+                                    return null;
+                                } },
+                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/delete-button-580x580.png" })
+                        ) : React.createElement(
+                            Button,
+                            { className: this.props.className, onClick: function onClick() {
+                                    return editFuncs.delete(multipleIndex);
+                                } },
+                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/delete-button-580x580.png" })
+                        ),
+                        React.createElement(
+                            Button,
+                            { className: this.props.className, onClick: function onClick() {
+                                    return editFuncs.add(input.cloneMe());
+                                } },
+                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/+-button-640x640.png" })
+                        ),
+                        canGoUp ? React.createElement(
+                            Button,
+                            { className: this.props.className, onClick: function onClick() {
+                                    return editFuncs.shift(multipleIndex, true);
+                                } },
+                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/up-arrow-800x800.png" })
+                        ) : React.createElement(
+                            Button,
+                            { className: "faded" + (this.props.className ? " " + this.props.className : ""), onClick: function onClick() {
+                                    return null;
+                                } },
+                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/up-arrow-800x800.png" })
+                        ),
+                        canGoDown ? React.createElement(
+                            Button,
+                            { className: this.props.className, onClick: function onClick() {
+                                    return editFuncs.shift(multipleIndex, false);
+                                } },
+                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/down-arrow-800x800.png" })
+                        ) : React.createElement(
+                            Button,
+                            { className: "faded" + (this.props.className ? " " + this.props.className : ""), onClick: function onClick() {
+                                    return null;
+                                } },
+                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/down-arrow-800x800.png" })
+                        )
+                    ) : null
                 ),
                 React.createElement(
                     TypewriterText,
                     { speed: speed },
                     React.createElement(
                         "p",
-                        { className: "category_text" },
+                        { className: "category_text" + (this.props.className ? " " + this.props.className : "") },
                         input.getComponentDescription()
                     )
                 ),
@@ -486,10 +698,143 @@ var BrainDetailsNet = function (_React$Component5) {
             var _props6 = this.props,
                 brain = _props6.brain,
                 speed = _props6.speed,
-                gridSize = _props6.gridSize;
+                gridSize = _props6.gridSize,
+                edit = _props6.edit,
+                editFuncs = _props6.editFuncs;
 
+            // static display
 
-            return React.createElement(BlankSubCanvas, { width: 2, className: "", refIn: this.subCanvasRef });
+            if (!edit) {
+                return React.createElement(
+                    Fragment,
+                    null,
+                    React.createElement(
+                        "div",
+                        { className: "indent" },
+                        React.createElement(
+                            "p",
+                            { className: "category_text_title small" },
+                            brain.myNormalizer.getComponentName()
+                        ),
+                        React.createElement(
+                            TypewriterText,
+                            { speed: speed },
+                            React.createElement(
+                                "p",
+                                { className: "category_text" },
+                                brain.myNormalizer.getComponentDescription()
+                            )
+                        )
+                    ),
+                    React.createElement(BlankSubCanvas, { width: 2, className: "", refIn: this.subCanvasRef })
+                );
+            }
+            // editable
+            else {
+                    return React.createElement(
+                        Fragment,
+                        null,
+                        React.createElement(
+                            "div",
+                            { className: "indent" },
+                            React.createElement(
+                                "p",
+                                { className: "category_text_title small" },
+                                "Parameters (will reset weights/biases)"
+                            ),
+                            React.createElement(
+                                "div",
+                                null,
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "net_depth" },
+                                    "Network Depth (# of layers):"
+                                ),
+                                React.createElement(NumberForm, { name: "net_depth", initVal: brain.myDepth, min: 1, max: 16, onChange: function onChange(val) {
+                                        var newBrain = new NeuralNetBrain(brain.myNormalizer, val, brain.myWidth, brain.startWeight, brain.startBias);
+                                        editFuncs.change(newBrain);
+                                    } })
+                            ),
+                            React.createElement(
+                                "div",
+                                null,
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "net_width" },
+                                    "Network Width (# nodes/layer):"
+                                ),
+                                React.createElement(NumberForm, { name: "net_width", initVal: brain.myWidth, min: 2, max: 36, onChange: function onChange(val) {
+                                        var newBrain = new NeuralNetBrain(brain.myNormalizer, brain.myDepth, val, brain.startWeight, brain.startBias);
+                                        editFuncs.change(newBrain);
+                                    } })
+                            ),
+                            React.createElement(
+                                "div",
+                                null,
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "net_start_weight" },
+                                    "Start Weight:"
+                                ),
+                                React.createElement(NumberForm, { name: "net_start_weight", initVal: brain.startWeight, min: 0, max: 1, step: 0.01, onChange: function onChange(val) {
+                                        var newBrain = new NeuralNetBrain(brain.myNormalizer, brain.myDepth, brain.myWidth, val, brain.startBias);
+                                        editFuncs.change(newBrain);
+                                    } })
+                            ),
+                            React.createElement(
+                                "div",
+                                null,
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "net_start_bias" },
+                                    "Start Bias:"
+                                ),
+                                React.createElement(NumberForm, { name: "net_start_bias", initVal: brain.startBias, min: 0, max: 1, step: 0.01, onChange: function onChange(val) {
+                                        var newBrain = new NeuralNetBrain(brain.myNormalizer, brain.myDepth, brain.myWidth, brain.startWeight, val);
+                                        editFuncs.change(newBrain);
+                                    } })
+                            )
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "indent" },
+                            React.createElement(
+                                "div",
+                                { className: "wrapper_div inline_block_parent" },
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "normalizer_type", className: "category_text_title small" },
+                                    "Normalizer"
+                                ),
+                                React.createElement(
+                                    Select,
+                                    { initVal: brain.myNormalizer.componentID, name: "normalizer_type", onSelect: function onSelect(val) {
+                                            val = parseInt(val);
+                                            brain.myNormalizer = blankNormalizers[val].cloneMe();
+                                            editFuncs.update();
+                                        } },
+                                    blankNormalizers.map(function (value, index) {
+                                        return React.createElement(
+                                            "option",
+                                            { value: index },
+                                            value.getComponentName()
+                                        );
+                                    })
+                                )
+                            ),
+                            React.createElement(
+                                TypewriterText,
+                                { speed: speed },
+                                React.createElement(
+                                    "p",
+                                    { className: "category_text" },
+                                    brain.myNormalizer.getComponentDescription()
+                                )
+                            )
+                        ),
+                        React.createElement(BlankSubCanvas, { width: 2, className: "", refIn: this.subCanvasRef })
+                    );
+                }
         }
     }, {
         key: "draw",
@@ -630,7 +975,9 @@ var BrainDetails = function (_React$Component6) {
             var _props8 = this.props,
                 brain = _props8.brain,
                 speed = _props8.speed,
-                gridSize = _props8.gridSize;
+                gridSize = _props8.gridSize,
+                edit = _props8.edit,
+                editFuncs = _props8.editFuncs;
 
             // extra details
 
@@ -638,7 +985,11 @@ var BrainDetails = function (_React$Component6) {
             if (brain instanceof PathBrain) {
                 extraDetails = React.createElement(BrainDetailsPath, { gridSize: gridSize, className: "category_text", brain: brain, speed: speed });
             } else if (brain instanceof NeuralNetBrain) {
-                extraDetails = React.createElement(BrainDetailsNet, { gridSize: gridSize, className: "category_text", brain: brain, speed: speed });
+                extraDetails = React.createElement(
+                    Fragment,
+                    null,
+                    React.createElement(BrainDetailsNet, { gridSize: gridSize, className: "category_text", brain: brain, speed: speed, edit: edit, editFuncs: editFuncs })
+                );
             }
             // brain info
             return React.createElement(
@@ -686,6 +1037,13 @@ var SnakeDetails = function (_React$Component7) {
 
             var speed = 3.5;
 
+            var _map = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(function (value, index) {
+                return Math.floor(value);
+            }),
+                _map2 = _slicedToArray(_map, 2),
+                currR = _map2[0],
+                currC = _map2[1];
+
             return React.createElement(
                 "div",
                 { className: "snake_details" + (this.props.className ? " " + this.props.className : "") },
@@ -719,8 +1077,11 @@ var SnakeDetails = function (_React$Component7) {
                     React.createElement(
                         "p",
                         { className: "category_text" },
-                        "Starting Head Position: ",
-                        snake.startHeadPos,
+                        "Starting Head Position (Row/Column): [",
+                        currR,
+                        ", ",
+                        currC,
+                        "]",
                         "\n",
                         "Starting Length: ",
                         snake.startLength,
@@ -752,7 +1113,7 @@ var SnakeDetails = function (_React$Component7) {
     return SnakeDetails;
 }(React.Component);
 
-// editable snake details || props: snake = snake to display/edit
+// editable snake details || props: snake = snake to display/edit | tellChange: a function which should b called on snake change
 
 
 var SnakeDetailsEdit = function (_React$Component8) {
@@ -769,18 +1130,155 @@ var SnakeDetailsEdit = function (_React$Component8) {
         value: function render() {
             var _this11 = this;
 
-            console.log("SnakeDetailsEdit Render");
+            var _props9 = this.props,
+                snake = _props9.snake,
+                tellChange = _props9.tellChange;
 
-            var snake = this.props.snake;
 
+            console.log(snake.getComponentName());
+
+            if (tellChange) {
+                tellChange();
+            }
+
+            var speed = 3.5;
+
+            var _map3 = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(function (value, index) {
+                return Math.floor(value);
+            }),
+                _map4 = _slicedToArray(_map3, 2),
+                currR = _map4[0],
+                currC = _map4[1];
+
+            // inputs
+
+
+            if (!this.inputs) {
+                this.inputs = blankInputs.map(function (value, index) {
+                    return value.cloneMe();
+                });
+                // start at 1 cuz multiple input is 0
+                this.inputActive = 0;
+            }
+            var editFuncsInput = {
+                get: function get() {
+                    return snake.myInput;
+                },
+                change: function change(inputNew) {
+                    snake.changeInput(inputNew);
+                    _this11.forceUpdate();
+                },
+                add: function add(inputNew) {
+                    // no inputs
+                    if (!snake.myInput) {
+                        snake.changeInput(inputNew);
+                    }
+                    // multiple inputs
+                    else if (snake.myInput instanceof MultipleInput) {
+                            snake.myInput.addInput(inputNew);
+                            snake.changeInput(snake.myInput);
+                        }
+                        // one input b4 add
+                        else {
+                                var newVal = new MultipleInput(snake.myInput, inputNew);
+                                snake.changeInput(newVal);
+                            }
+                    _this11.forceUpdate();
+                },
+                delete: function _delete(index) {
+                    // delete last input (total now at 0)
+                    if (!(snake.myInput instanceof MultipleInput)) {
+                        snake.changeInput(null);
+                    }
+                    // deleting from multiple
+                    else {
+                            // extract previous inputs from queue
+                            var inputs = snake.myInput.myInputs.map(function (val, i) {
+                                return val;
+                            });
+
+                            // delete 2nd input (total now at 1)
+                            if (snake.myInput.myInputs.length === 2) {
+                                var indexToKeep = index === 0 ? 1 : 0;
+                                snake.changeInput(inputs[indexToKeep].cloneMe());
+                            }
+                            // delete a random input from MultipleInput
+                            else {
+                                    var ans = new MultipleInput();
+                                    inputs.map(function (val, i) {
+                                        if (i !== index) {
+                                            ans.addInput(val);
+                                        }
+                                    });
+                                    snake.changeInput(ans);
+                                }
+                        }
+                    _this11.forceUpdate();
+                },
+                shift: function shift(origin, goUp) {
+                    // assume validation is done already
+                    var oldInputs = snake.myInput.myInputs.map(function (val, i) {
+                        return val;
+                    });
+                    var newMultiple = new MultipleInput();
+                    oldInputs.map(function (value, index) {
+                        // shift up (decrease index)
+                        if (goUp) {
+                            if (index === origin - 1) {
+                                newMultiple.addInput(oldInputs[origin]);
+                                return;
+                            }
+                            if (index === origin) {
+                                newMultiple.addInput(oldInputs[origin - 1]);
+                                return;
+                            }
+                            newMultiple.addInput(value);
+                        }
+                        // shift down (increase index)
+                        else {
+                                if (index === origin) {
+                                    newMultiple.addInput(oldInputs[origin + 1]);
+                                    return;
+                                }
+                                if (index === origin + 1) {
+                                    newMultiple.addInput(oldInputs[origin]);
+                                    return;
+                                }
+                                newMultiple.addInput(value);
+                            }
+                    });
+                    snake.changeInput(newMultiple);
+                    _this11.forceUpdate();
+                },
+                update: function update() {
+                    if (snake.myInput instanceof MultipleInput) {
+                        var ans = new MultipleInput();
+                        snake.myInput.myInputs.map(function (val, i) {
+                            return ans.addInput(val);
+                        });
+                        snake.changeInput(ans);
+                    } else {
+                        snake.changeInput(snake.myInput);
+                    }
+                    _this11.forceUpdate();
+                }
+            };
+
+            // brains
             // keep a log of brains so you can toggle between multiple while preserving info
-
             if (!this.brains) {
                 this.brains = Array(blankBrains.length).fill(null);
             }
             this.brains[snake.myBrain.componentID] = snake.myBrain;
-
-            var speed = 3.5;
+            var editFuncsBrain = {
+                change: function change(val) {
+                    snake.changeBrain(val);
+                    _this11.forceUpdate();
+                },
+                update: function update() {
+                    _this11.forceUpdate();
+                }
+            };
 
             return React.createElement(
                 "div",
@@ -835,18 +1333,18 @@ var SnakeDetailsEdit = function (_React$Component8) {
                             { htmlFor: "head_pos_r" },
                             "Row:"
                         ),
-                        React.createElement(NumberForm, { name: "head_pos_r", min: 1, max: snake.gridSize, onChange: function onChange(val) {
-                                // TODO
-                                console.log("TODO: row/col");
+                        React.createElement(NumberForm, { name: "head_pos_r", initVal: currR, min: 0, max: snake.gridSize - 1, onChange: function onChange(val) {
+                                snake.startHeadPos = val * (snake.gridSize + 2) + 1 + currC;
+                                _this11.forceUpdate();
                             } }),
                         React.createElement(
                             "label",
                             { htmlFor: "head_pos_c" },
                             "Column:"
                         ),
-                        React.createElement(NumberForm, { name: "head_pos_c", min: 1, max: snake.gridSize, onChange: function onChange(val) {
-                                // TODO
-                                console.log("TODO: row/col");
+                        React.createElement(NumberForm, { name: "head_pos_c", initVal: currC, min: 0, max: snake.gridSize - 1, onChange: function onChange(val) {
+                                snake.startHeadPos = currR * (snake.gridSize + 2) + 1 + val;
+                                _this11.forceUpdate();
                             } })
                     ),
                     React.createElement(
@@ -895,7 +1393,46 @@ var SnakeDetailsEdit = function (_React$Component8) {
                     { className: "category_text_title" },
                     "Input"
                 ),
-                React.createElement(InputDetails, { input: snake.myInput, speed: speed }),
+                React.createElement(InputDetails, { input: snake.myInput, speed: speed, edit: true, editFuncs: editFuncsInput }),
+                React.createElement(
+                    "div",
+                    { className: "edit_add_input" },
+                    React.createElement(
+                        "label",
+                        { className: "category_text_title small", htmlFor: "input_add_type" },
+                        "New Input Type: "
+                    ),
+                    React.createElement(
+                        Select,
+                        { initVal: this.inputs[this.inputActive].componentID, name: "input_add_type", onSelect: function onSelect(val) {
+                                _this11.inputActive = val;
+                                _this11.forceUpdate();
+                            } },
+                        this.inputs.map(function (value, index) {
+                            // not multiple
+                            if (index > 0) {
+                                return React.createElement(
+                                    "option",
+                                    { value: index },
+                                    value.getComponentName()
+                                );
+                            } else {
+                                return React.createElement(
+                                    "option",
+                                    { value: index },
+                                    "None"
+                                );
+                            }
+                            _this11.forceUpdate();
+                        })
+                    ),
+                    React.createElement(InputDetails, { className: "temp_input", input: this.inputs[this.inputActive], speed: speed, edit: true, editFuncs: editFuncsInput, noDelete: true }),
+                    this.inputActive > 0 ? React.createElement(
+                        "p",
+                        { className: "category_text" },
+                        "(red input does nothing unless you hit the \"+\" button)"
+                    ) : null
+                ),
                 React.createElement(
                     "p",
                     { className: "category_text_title" },
@@ -914,7 +1451,7 @@ var SnakeDetailsEdit = function (_React$Component8) {
                         { initVal: snake.myBrain.componentID, name: "brain_type", onSelect: function onSelect(val) {
                                 // target id
                                 var id = val;
-                                console.log("target id: " + id);
+                                // console.log(`target id: ${id}`);
 
                                 // ignore unnecessary switches
                                 if (id !== snake.myBrain.componentID) {
@@ -942,7 +1479,7 @@ var SnakeDetailsEdit = function (_React$Component8) {
                         })
                     )
                 ),
-                React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed })
+                React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed, edit: true, editFuncs: editFuncsBrain })
             );
         }
     }]);

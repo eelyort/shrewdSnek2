@@ -23,6 +23,7 @@ var SelectSnakePopUpREACT = function (_React$Component) {
         _this.editButton = _this.editButton.bind(_this);
         _this.deleteButton = _this.deleteButton.bind(_this);
         _this.cloneButton = _this.cloneButton.bind(_this);
+        _this.saveButton = _this.saveButton.bind(_this);
         _this.changeErrorText = _this.changeErrorText.bind(_this);
         return _this;
     }
@@ -173,6 +174,11 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                                 Button,
                                 { onClick: popUpFuncs.close },
                                 "Finish"
+                            ),
+                            React.createElement(
+                                Button,
+                                { onClick: this.saveButton },
+                                "Save"
                             )
                         ),
                         React.createElement(
@@ -226,25 +232,56 @@ var SelectSnakePopUpREACT = function (_React$Component) {
             popUpFuncs.changeSelected(this.props.loadedSnakesIn.length - 1);
         }
     }, {
+        key: "saveButton",
+        value: function saveButton() {
+            var _props2 = this.props,
+                metaInfo = _props2.metaInfo,
+                selectedSnake = _props2.selectedSnake,
+                selectedSnakeGen = _props2.selectedSnakeGen,
+                loadedSnakesIn = _props2.loadedSnakesIn;
+
+
+            console.log("todo save button - generation");
+
+            // save a snakeSpecies
+            // create a text area with the snake
+            var el = document.createElement('textarea');
+            el.value = loadedSnakesIn[selectedSnake].stringify();
+            document.body.appendChild(el);
+            // select it
+            el.select();
+            el.setSelectionRange(0, 99999); /*For mobile devices*/
+            // copy
+            document.execCommand("copy");
+            // remove
+            document.body.removeChild(el);
+
+            this.changeErrorText("(Snake(s) copied to clipboard)");
+        }
+    }, {
         key: "changeErrorText",
         value: function changeErrorText(text) {
+            var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {
+                return null;
+            };
+
             if (!this.state.errorText) {
                 this.setState(function (state) {
                     return { errorText: text };
-                });
+                }, callback);
             } else if (this.state.errorText.length < text.length) {
                 this.setState(function (state) {
                     return { errorText: text };
-                });
+                }, callback);
             } else {
                 if (this.state.errorText === text) {
                     this.setState(function (state) {
                         return { errorText: text + " " };
-                    });
+                    }, callback);
                 } else {
                     this.setState(function (state) {
                         return { errorText: text };
-                    });
+                    }, callback);
                 }
             }
         }
@@ -264,15 +301,19 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
 
         var _this3 = _possibleConstructorReturn(this, (CreateSnakePopUpREACT.__proto__ || Object.getPrototypeOf(CreateSnakePopUpREACT)).call(this, props));
 
+        _this3.saved = false;
+
         _this3.state = {
             snake: null,
             errorText: "",
-            confirmationBox: false
+            confirmationBox: false,
+            quitConfirmation: false
         };
 
         _this3.updateSnake = _this3.updateSnake.bind(_this3);
         _this3.createBlankSnake = _this3.createBlankSnake.bind(_this3);
         _this3.saveResults = _this3.saveResults.bind(_this3);
+        _this3.saveAsNew = _this3.saveAsNew.bind(_this3);
         _this3.changeErrorText = _this3.changeErrorText.bind(_this3);
         return _this3;
     }
@@ -282,9 +323,9 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
         value: function render() {
             var _this4 = this;
 
-            var _props2 = this.props,
-                metaInfo = _props2.metaInfo,
-                loadedSnakesIn = _props2.loadedSnakesIn;
+            var _props3 = this.props,
+                metaInfo = _props3.metaInfo,
+                loadedSnakesIn = _props3.loadedSnakesIn;
 
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
@@ -339,6 +380,34 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                                     Button,
                                     { onClick: this.createBlankSnake },
                                     "Create a Blank Snake"
+                                ),
+                                React.createElement(
+                                    "p",
+                                    null,
+                                    "Lastly, to load a snake you previously saved, paste the result into this box."
+                                ),
+                                React.createElement(
+                                    TextArea,
+                                    { onChange: function onChange(val) {
+                                            try {
+                                                var snek = SnakeSpecies.parse(val);
+                                                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 1, snek);
+                                                popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                                                _this4.changeErrorText("Snake loaded successfully, opening...");
+                                                popUpFuncs.close();
+                                                setTimeout(function () {
+                                                    return popUpFuncs.close(2, loadedSnakesIn.length - 1);
+                                                }, 1);
+                                            } catch (e) {
+                                                _this4.changeErrorText("Invalid snake");
+                                            }
+                                        } },
+                                    React.createElement("p", { className: "paste_saved" })
+                                ),
+                                React.createElement(
+                                    FadeDiv,
+                                    { speed: .75, className: "error_text", shouldReset: true },
+                                    this.state.errorText
                                 )
                             )
                         )
@@ -375,14 +444,7 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                                     _this4.setState(function () {
                                         return { confirmationBox: false };
                                     }, function () {
-                                        popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, _this4.state.snake);
-                                        popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
-                                        _this4.changeErrorText("(Saved as new snake)");
-                                        _this4.setState(function (state) {
-                                            return {
-                                                snake: state.snake.cloneMe()
-                                            };
-                                        });
+                                        return _this4.saveAsNew();
                                     });
                                 } },
                             "Save as New Snake"
@@ -395,20 +457,75 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                     )
                 );
             }
+            var quitConfirmation = null;
+            if (this.state.quitConfirmation) {
+                quitConfirmation = React.createElement(
+                    "div",
+                    { className: "confirmation_box" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        "Are you sure you want to quit without saving?"
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return _this4.setState(function () {
+                                        return { quitConfirmation: false };
+                                    });
+                                } },
+                            "Cancel"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return _this4.setState(function () {
+                                        return { quitConfirmation: false };
+                                    }, function () {
+                                        return _this4.saveResults();
+                                    });
+                                } },
+                            "No, Save Snake"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return popUpFuncs.close();
+                                } },
+                            "Yes, Quit Without Saving"
+                        )
+                    )
+                );
+            }
 
             return React.createElement(
                 PopUp,
                 { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: function closeFunc() {
-                        return popUpFuncs.close();
+                        if (!_this4.saved) {
+                            _this4.setState(function () {
+                                return { quitConfirmation: true };
+                            });
+                        } else {
+                            popUpFuncs.close();
+                        }
                     } },
                 React.createElement(
                     "div",
                     null,
                     confirmation,
+                    quitConfirmation,
                     React.createElement(
                         "div",
                         { className: "text_card background" },
-                        React.createElement(SnakeDetailsEdit, { snake: this.state.snake }),
+                        React.createElement(SnakeDetailsEdit, { snake: this.state.snake, tellChange: function tellChange() {
+                                console.log("unsave");
+                                if (_this4.saved) {
+                                    _this4.saved = false;
+                                }
+                            } }),
                         React.createElement(
                             "div",
                             { className: "button_div" },
@@ -432,9 +549,9 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
     }, {
         key: "updateSnake",
         value: function updateSnake() {
-            var _props3 = this.props,
-                metaInfo = _props3.metaInfo,
-                loadedSnakesIn = _props3.loadedSnakesIn;
+            var _props4 = this.props,
+                metaInfo = _props4.metaInfo,
+                loadedSnakesIn = _props4.loadedSnakesIn;
 
 
             if (!this.state.snake) {
@@ -454,9 +571,9 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
         value: function saveResults() {
             var _this5 = this;
 
-            var _props4 = this.props,
-                metaInfo = _props4.metaInfo,
-                loadedSnakesIn = _props4.loadedSnakesIn;
+            var _props5 = this.props,
+                metaInfo = _props5.metaInfo,
+                loadedSnakesIn = _props5.loadedSnakesIn;
 
             // TODO: snake validation
 
@@ -473,7 +590,10 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                     }, function () {
                         popUpFuncs.spliceLoaded(metaInfo, 1, _this5.state.snake);
                         popUpFuncs.changeSelected(metaInfo);
-                        _this5.changeErrorText("(Save Successful)");
+                        _this5.changeErrorText("(Save Successful)", function () {
+                            _this5.saved = true;
+                            console.log("saved");
+                        });
                     });
                 } else {
                     this.setState(function () {
@@ -483,37 +603,65 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
             }
             // add another
             else {
-                    popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, this.state.snake);
-                    popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
-                    this.changeErrorText("(Saved as new snake)");
-                    this.setState(function (state) {
-                        return {
-                            snake: state.snake.cloneMe()
-                        };
-                    });
+                    this.saveAsNew();
                     // popUpFuncs.close(1);
                 }
         }
     }, {
+        key: "saveAsNew",
+        value: function saveAsNew() {
+            var _this6 = this;
+
+            var _props6 = this.props,
+                metaInfo = _props6.metaInfo,
+                loadedSnakesIn = _props6.loadedSnakesIn;
+
+            // TODO: snake validation
+
+            // bundle of functions for the popup to interact with the main menu
+            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
+
+            var popUpFuncs = this.props.popUpFuncs;
+
+            this.state.snake.setNameClone();
+            this.setState(function (state) {
+                return {
+                    snake: state.snake.cloneMe()
+                };
+            }, function () {
+                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, _this6.state.snake.cloneMe());
+                popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                popUpFuncs.close(1);
+                // setTimeout(() => {
+                //     this.saved=true;
+                //     console.log("saved");
+                // }, 1);
+            });
+        }
+    }, {
         key: "changeErrorText",
         value: function changeErrorText(text) {
+            var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {
+                return null;
+            };
+
             if (!this.state.errorText) {
                 this.setState(function (state) {
                     return { errorText: text };
-                });
+                }, callback);
             } else if (this.state.errorText.length < text.length) {
                 this.setState(function (state) {
                     return { errorText: text };
-                });
+                }, callback);
             } else {
                 if (this.state.errorText === text) {
                     this.setState(function (state) {
                         return { errorText: text + " " };
-                    });
+                    }, callback);
                 } else {
                     this.setState(function (state) {
                         return { errorText: text };
-                    });
+                    }, callback);
                 }
             }
         }

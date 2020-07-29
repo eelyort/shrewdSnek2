@@ -152,14 +152,10 @@ var GameMenu = function (_React$Component2) {
                             FadeMenu,
                             null,
                             React.createElement(
-                                TypewriterText,
+                                "h3",
                                 null,
-                                React.createElement(
-                                    "h3",
-                                    null,
-                                    "Selected: ",
-                                    loadedSnakes[this.state.selectedSnake].getComponentName()
-                                )
+                                "Selected: ",
+                                loadedSnakes[this.state.selectedSnake].getComponentName()
                             ),
                             React.createElement(
                                 Button,
@@ -260,7 +256,7 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "startSnakeButton",
         value: function startSnakeButton() {
-            console.log("start snake button");
+            // console.log("start snake button");
             if (this.state.paused) {
                 this.pausePlayButtonRef.current.clicked();
             } else {
@@ -357,15 +353,15 @@ var GameMenu = function (_React$Component2) {
             var deleteCount = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
             var items = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
-            console.log("spliceLoadedSnakes(" + start + ", " + deleteCount + ", " + items + ")");
+            // console.log(`spliceLoadedSnakes(${start}, ${deleteCount}, ${items})`);
             if (items) {
-                console.log(1);
+                // console.log(1);
                 loadedSnakes.splice(start, deleteCount, new SnakeSpecies(items));
             } else if (deleteCount) {
-                console.log(2);
+                // console.log(2);
                 loadedSnakes.splice(start, deleteCount);
             } else {
-                console.log(3);
+                // console.log(3);
                 loadedSnakes.splice(start);
             }
         }

@@ -380,7 +380,7 @@ var TextArea = function (_React$Component7) {
 
     return TextArea;
 }(React.Component);
-// number form || props: name | onChange(val) | max(optional) | min(optional) | initVal(optional)
+// number form || props: name | onChange(val) | max(optional) | min(optional) | initVal(optional) | step(optional)
 
 
 var NumberForm = function (_React$Component8) {
@@ -405,17 +405,18 @@ var NumberForm = function (_React$Component8) {
             var _props2 = this.props,
                 name = _props2.name,
                 min = _props2.min,
-                max = _props2.max;
+                max = _props2.max,
+                step = _props2.step;
 
 
-            return React.createElement("input", { value: this.state.value, onChange: this.handleChange, type: "number", className: "number_input" + (this.props.className ? " " + this.props.className : ""), name: name });
+            return React.createElement("input", { value: this.state.value, onChange: this.handleChange, type: "number", className: "number_input" + (this.props.className ? " " + this.props.className : ""), name: name, step: step ? step : 1 });
         }
     }, {
         key: "handleChange",
         value: function handleChange(event) {
             var _this12 = this;
 
-            var val = parseInt(event.target.value);
+            var val = parseFloat(event.target.value);
 
             if (val !== this.state.value && val >= this.props.min && val <= this.props.max) {
                 this.setState(function (state) {

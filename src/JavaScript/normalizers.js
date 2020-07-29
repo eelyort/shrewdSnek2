@@ -1,3 +1,5 @@
+let blankNormalizers = [];
+
 // objects (functions really) that are used to normalize a single layer
 class Normalizer extends Component{
     constructor(id){
@@ -34,6 +36,7 @@ class TanhNormalizer extends Normalizer{
         return new TanhNormalizer();
     }
 }
+blankNormalizers.push(new TanhNormalizer());
 
 // Z normalization - to standard normal distribution
 class ZNormalizer extends Normalizer{
@@ -74,6 +77,7 @@ class ZNormalizer extends Normalizer{
         return new ZNormalizer();
     }
 }
+blankNormalizers.push(new ZNormalizer());
 
 // min-max, linear shift to [0,1]
 class MinMaxLinearNormalization extends Normalizer{
@@ -118,6 +122,7 @@ class MinMaxLinearNormalization extends Normalizer{
         return new MinMaxLinearNormalization();
     }
 }
+blankNormalizers.push(new MinMaxLinearNormalization());
 
 // treats the column as a vector, finds unit vector
 class UnitVectorNormalization extends Normalizer{
@@ -150,5 +155,6 @@ class UnitVectorNormalization extends Normalizer{
         return new UnitVectorNormalization();
     }
 }
+blankNormalizers.push(new UnitVectorNormalization());
 
 const normalizerPrototypes = [TanhNormalizer.prototype, ZNormalizer.prototype, MinMaxLinearNormalization.prototype, UnitVectorNormalization.prototype];

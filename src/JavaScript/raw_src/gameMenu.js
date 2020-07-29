@@ -111,9 +111,7 @@ class GameMenu extends React.Component{
                 <div className={"ui_layer"}>
                     <div className={"inline_block_parent wrapper_div"}>
                         <FadeMenu>
-                            <TypewriterText>
-                                <h3>Selected: {loadedSnakes[this.state.selectedSnake].getComponentName()}</h3>
-                            </TypewriterText>
+                            <h3>Selected: {loadedSnakes[this.state.selectedSnake].getComponentName()}</h3>
                             <Button className={"gameButton"} onClick={this.startSnakeButton}>
                                 Play
                             </Button>
@@ -165,7 +163,7 @@ class GameMenu extends React.Component{
 
     // button functions
     startSnakeButton(){
-        console.log("start snake button");
+        // console.log("start snake button");
         if(this.state.paused) {
             this.pausePlayButtonRef.current.clicked();
         }
@@ -222,17 +220,17 @@ class GameMenu extends React.Component{
         loadedSnakes = newVer;
     }
     spliceLoadedSnakes(start, deleteCount = 0, items = null){
-        console.log(`spliceLoadedSnakes(${start}, ${deleteCount}, ${items})`);
+        // console.log(`spliceLoadedSnakes(${start}, ${deleteCount}, ${items})`);
         if(items){
-            console.log(1);
+            // console.log(1);
             loadedSnakes.splice(start, deleteCount, new SnakeSpecies(items));
         }
         else if(deleteCount){
-            console.log(2);
+            // console.log(2);
             loadedSnakes.splice(start, deleteCount);
         }
         else{
-            console.log(3);
+            // console.log(3);
             loadedSnakes.splice(start);
         }
     }

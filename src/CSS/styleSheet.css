@@ -260,6 +260,17 @@ select, input{
     border-width: 1px;
 }
 
+.indent{
+    margin-left: 2%;
+}
+.smaller_text{
+    font-size: 95%;
+}
+
+.faded{
+    opacity: 0.4;
+}
+
 .square_fill > .subGameCanvas.background{
     /*(100% - width)/2 - border_width*/
     margin: calc(1% - 4px);
@@ -430,10 +441,7 @@ select, input{
     text-align: center;
 }
 .popUp-card .button_div > button{
-    margin: 3% 5%;
-}
-.popUp-card .button_div > button.faded{
-    opacity: 0.4;
+    margin: 3% 4%;
 }
 .popUp-card .error_text{
     color: rgba(255, 0, 0, 0.85);
@@ -496,10 +504,7 @@ select, input{
 }
 /*create/edit snake*/
 .create_snake .waiting_box{
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%) translateY(-50%);
+    margin: 10% auto;
 
     max-width: 70%;
 
@@ -507,10 +512,18 @@ select, input{
 
     font-size: 120%;
 
-    /*TODO: delete testing borders (and margin which is set to border width)*/
-    border-color: cyan;
-    border-style: solid;
-    border-width: 1px;
+    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
+    /*border-color: cyan;*/
+    /*border-style: solid;*/
+    /*border-width: 1px;*/
+}
+.create_snake .waiting_box .paste_saved{
+    min-width: 80%;
+    min-height: 50px;
+
+    background-color: white;
+
+    border-radius: 10px;
 }
 
 .vertCarouselItem{
@@ -575,12 +588,23 @@ select, input{
 .snake_details .category_text_title::after{
     content: ":";
 }
+.snake_details .inline_buttons > button{
+    margin: 0 8px;
+    float: right;
+}
+.snake_details .inline_buttons > button:first-of-type{
+    margin-right: 30px;
+}
 .snake_details .category_text{
     margin-top: inherit;
     margin-bottom: inherit;
 }
 .snake_details .start_head_pos > label{
     margin-left: 2%;
+}
+.snake_details .edit_add_input{
+    margin-top: 10px;
+    color: red;
 }
 
 /* width */

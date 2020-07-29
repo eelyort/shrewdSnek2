@@ -150,31 +150,118 @@ class BlankSubCanvas extends React.Component{
 // directional
 class InputDetailsDirectional extends React.Component{
     render() {
-        const {input: input, speed: speed} = this.props;
+        const {input: input, speed: speed, edit: edit, editFuncs: editFuncs, multipleIndex: multipleIndex} = this.props;
+
+        // console.log("InputDetailsDirectional render()");
 
         // decode targets
-        let targets = input.vals;
-        if(targets){
-            targets = targets.map((val, i) => {
+        let targets = ["Walls"];
+        if(input.vals){
+            targets = targets.concat(input.vals.map((val, i) => {
                 return decodeTargetVal(val);
-            });
+            }));
         }
-        targets.push("Walls");
 
-        return(
-            <TypewriterText speed={speed}>
-                <p className={this.props.className}>
-                    Targets: {targets.join(", ")}{"\n"}
-                    Directions: {input.originalAdjacents.join(", ")}{"\n"}
-                </p>
-            </TypewriterText>
-        );
+        // static display
+        if(!edit) {
+            return (
+                <TypewriterText speed={speed}>
+                    <p className={"" + ((this.props.className) ? (this.props.className) : (""))}>
+                        Targets: {targets.join(", ")}{"\n"}
+                        Directions: {input.originalAdjacents.join(", ")}{"\n"}
+                    </p>
+                </TypewriterText>
+            );
+        }
+        // editable
+        else{
+            const changeFunc = (index, e, isTarget) => {
+                // console.log(`changeFunc(${index}, ${e}, ${isTarget})`);
+                // console.log(`start, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
+                const newVal = ((isNaN(e.target.value)) ? (e.target.value) : (parseInt(e.target.value)));
+
+                // handle both targets and directions
+                let arr = ((isTarget) ? (input.vals) : (input.originalAdjacents));
+
+                // newVal = -1? delete, otherwise add
+                if(newVal === -1){
+                    // console.log("delete");
+                    arr.splice(index, 1);
+                }
+                // modify
+                else {
+                    arr.splice(index, 1, newVal);
+                }
+                // console.log(`end, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
+                editFuncs.update();
+
+                // // don't allow duplicates - Moved to the actual option lists
+                // const occurrences = arr.filter((value, i) => (value === newVal && i !== index)).length;
+                // if(occurrences === 0){
+                //     // modify
+                //     arr.splice(index, 1, newVal);
+                // }
+                // editFuncs.update();
+            };
+            return(
+                <Fragment>
+                    {/*Targets*/}
+                    <div className={"inline_block_parent"}>
+                        <p className={"" + ((this.props.className) ? (this.props.className) : (""))}>Targets: Walls, </p>
+                        {input.vals.map((currTarget, currIndexSelect) => {
+                            return(
+                                <select value={currTarget} name={`directional_target_${currIndexSelect}`} onChange={(e) => changeFunc(currIndexSelect, e, true)}>
+                                    <option value={-1}>----</option>
+                                    {possibleTargets.filter((filterVal) => !(input.vals.includes(filterVal) && filterVal !== currTarget)).map(((optionVal, optionIndex) => {
+                                        return(
+                                            <option value={optionVal}>{decodeTargetVal(optionVal)}</option>
+                                        );
+                                    }))}
+                                </select>
+                            );
+                        })}
+                        <select value={-1} name={`directional_target_${input.vals.length}`} onChange={(e) => changeFunc(input.vals.length, e, true)}>
+                            <option value={-1}>----</option>
+                            {possibleTargets.filter((value1) => !(input.vals.includes(value1) && value1 !== -1)).map(((value1, index1) => {
+                                return(
+                                    <option value={value1}>{decodeTargetVal(value1)}</option>
+                                );
+                            }))}
+                        </select>
+                    </div>
+                    {/*Directions*/}
+                    <div className={"inline_block_parent"}>
+                        <p className={"" + ((this.props.className) ? (this.props.className) : (""))}>Directions: </p>
+                        {input.originalAdjacents.map((currDirection, currIndexSelect) => {
+                            return(
+                                <select value={currDirection} name={`directional_direction_${currIndexSelect}`} onChange={(e) => changeFunc(currIndexSelect, e, false)}>
+                                    <option value={-1}>----</option>
+                                    {possibleDirections.filter((filterVal) => !(input.originalAdjacents.includes(filterVal) && filterVal !== currDirection)).map(((optionVal, optionIndex) => {
+                                        return(
+                                            <option value={optionVal}>{optionVal}</option>
+                                        );
+                                    }))}
+                                </select>
+                            );
+                        })}
+                        <select value={-1} name={`directional_direction_${input.originalAdjacents.length}`} onChange={(e) => changeFunc(input.originalAdjacents.length, e, false)}>
+                            <option value={-1}>----</option>
+                            {possibleDirections.filter((filterVal) => !(input.originalAdjacents.includes(filterVal) && filterVal !== -1)).map(((optionVal, optionIndex) => {
+                                return(
+                                    <option value={optionVal}>{optionVal}</option>
+                                );
+                            }))}
+                        </select>
+                    </div>
+                </Fragment>
+            );
+        }
     }
 }
 // an input's details || props: input | speed: typewrite speed
 class InputDetails extends React.Component{
     render() {
-        const {input: input, speed: speed} = this.props;
+        const {input: input, speed: speed, edit: edit, editFuncs: editFuncs, multipleIndex: multipleIndex, noDelete: noDelete} = this.props;
 
         // multiple inputs returns more inputs
         // if(input.componentID === 0){
@@ -183,7 +270,7 @@ class InputDetails extends React.Component{
                 <Fragment>
                     {input.myInputs.map((item, index) => {
                         return(
-                            <InputDetails input={item} speed={speed} className={this.props.className} />
+                            <InputDetails multipleIndex={index} input={item} speed={speed} className={this.props.className} edit={edit} editFuncs={editFuncs} />
                         );
                     })}
                 </Fragment>
@@ -196,15 +283,62 @@ class InputDetails extends React.Component{
         // if(input.componentID === 2){
         if(input instanceof DirectionalInput){
             extraDetails = (
-                <InputDetailsDirectional className={"category_text"} input={input} />
+                <InputDetailsDirectional className={"category_text" + ((this.props.className) ? (" " + this.props.className) : (""))} input={input} edit={edit} editFuncs={editFuncs} multipleIndex={multipleIndex} />
                 );
         }
         // input info
+        let [canGoUp, canGoDown] = [false, false];
+        if(edit) {
+            const master = editFuncs.get();
+            if(master instanceof MultipleInput) {
+                [canGoUp, canGoDown] = [multipleIndex > 0, multipleIndex < master.myInputs.size-1];
+            }
+        }
         return(
             <Fragment>
-                <p className={"category_text_title small"}>{input.getComponentName()}</p>
+                <div className={"wrapper_div inline_block_parent inline_buttons"}>
+                    <p className={"category_text_title small" + ((this.props.className) ? (" " + this.props.className) : (""))}>{input.getComponentName()}</p>
+                    {((edit) ? (
+                        <Fragment>
+                            {/*delete*/}
+                            {((noDelete) ? (
+                                <Button className={"faded" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={() => null}>
+                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
+                                </Button>
+                            ) : (
+                                <Button className={this.props.className} onClick={() => editFuncs.delete(multipleIndex)}>
+                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
+                                </Button>
+                            ))}
+                            {/*clone*/}
+                            <Button className={this.props.className} onClick={() => editFuncs.add(input.cloneMe())}>
+                                <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/+-button-640x640.png"} />
+                            </Button>
+                            {/*move up*/}
+                            {((canGoUp) ? (
+                                <Button className={this.props.className} onClick={() => editFuncs.shift(multipleIndex, true)}>
+                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/up-arrow-800x800.png"} />
+                                </Button>
+                            ) : (
+                                <Button className={"faded" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={() => null}>
+                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/up-arrow-800x800.png"} />
+                                </Button>
+                            ))}
+                            {/*move down*/}
+                            {((canGoDown) ? (
+                                <Button className={this.props.className} onClick={() => editFuncs.shift(multipleIndex, false)}>
+                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/down-arrow-800x800.png"} />
+                                </Button>
+                            ) : (
+                                <Button className={"faded" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={() => null}>
+                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/down-arrow-800x800.png"} />
+                                </Button>
+                            ))}
+                        </Fragment>
+                    ) : null)}
+                </div>
                 <TypewriterText speed={speed}>
-                    <p className={"category_text"}>{input.getComponentDescription()}</p>
+                    <p className={"category_text" + ((this.props.className) ? (" " + this.props.className) : (""))}>{input.getComponentDescription()}</p>
                 </TypewriterText>
                 {extraDetails}
             </Fragment>
@@ -318,11 +452,84 @@ class BrainDetailsNet extends React.Component{
         this.draw = this.draw.bind(this);
     }
     render() {
-        const {brain: brain, speed: speed, gridSize: gridSize} = this.props;
+        const {brain: brain, speed: speed, gridSize: gridSize, edit: edit, editFuncs: editFuncs} = this.props;
 
-        return(
-            <BlankSubCanvas width={2} className={""} refIn={this.subCanvasRef} />
-        );
+        // static display
+        if(!edit) {
+            return (
+                <Fragment>
+                    <div className={"indent"}>
+                        <p className={"category_text_title small"}>{brain.myNormalizer.getComponentName()}</p>
+                        <TypewriterText speed={speed}>
+                            <p className={"category_text"}>
+                                {brain.myNormalizer.getComponentDescription()}
+                            </p>
+                        </TypewriterText>
+                    </div>
+                    <BlankSubCanvas width={2} className={""} refIn={this.subCanvasRef}/>
+                </Fragment>
+            );
+        }
+        // editable
+        else{
+            return (
+                <Fragment>
+                    <div className={"indent"}>
+                        <p className={"category_text_title small"}>Parameters (will reset weights/biases)</p>
+                        <div>
+                            <label htmlFor={"net_depth"}>Network Depth (# of layers):</label>
+                            <NumberForm name={"net_depth"} initVal={brain.myDepth} min={1} max={16} onChange={(val) => {
+                                let newBrain = new NeuralNetBrain(brain.myNormalizer, val, brain.myWidth, brain.startWeight, brain.startBias);
+                                editFuncs.change(newBrain);
+                            }}/>
+                        </div>
+                        <div>
+                            <label htmlFor={"net_width"}>Network Width (# nodes/layer):</label>
+                            <NumberForm name={"net_width"} initVal={brain.myWidth} min={2} max={36} onChange={(val) => {
+                                let newBrain = new NeuralNetBrain(brain.myNormalizer, brain.myDepth, val, brain.startWeight, brain.startBias);
+                                editFuncs.change(newBrain);
+                            }}/>
+                        </div>
+                        <div>
+                            <label htmlFor={"net_start_weight"}>Start Weight:</label>
+                            <NumberForm name={"net_start_weight"} initVal={brain.startWeight} min={0} max={1} step={0.01} onChange={(val) => {
+                                let newBrain = new NeuralNetBrain(brain.myNormalizer, brain.myDepth, brain.myWidth, val, brain.startBias);
+                                editFuncs.change(newBrain);
+                            }}/>
+                        </div>
+                        <div>
+                            <label htmlFor={"net_start_bias"}>Start Bias:</label>
+                            <NumberForm name={"net_start_bias"} initVal={brain.startBias} min={0} max={1} step={0.01} onChange={(val) => {
+                                let newBrain = new NeuralNetBrain(brain.myNormalizer, brain.myDepth, brain.myWidth, brain.startWeight, val);
+                                editFuncs.change(newBrain);
+                            }}/>
+                        </div>
+                    </div>
+                    <div className={"indent"}>
+                        <div className={"wrapper_div inline_block_parent"}>
+                            <label htmlFor={"normalizer_type"} className={"category_text_title small"}>Normalizer</label>
+                            <Select initVal={brain.myNormalizer.componentID} name={"normalizer_type"} onSelect={(val) => {
+                                val = parseInt(val);
+                                brain.myNormalizer = blankNormalizers[val].cloneMe();
+                                editFuncs.update();
+                            }}>
+                                {blankNormalizers.map(((value, index) => {
+                                    return (
+                                        <option value={index}>{value.getComponentName()}</option>
+                                    );
+                                }))}
+                            </Select>
+                        </div>
+                        <TypewriterText speed={speed}>
+                            <p className={"category_text"}>
+                                {brain.myNormalizer.getComponentDescription()}
+                            </p>
+                        </TypewriterText>
+                    </div>
+                    <BlankSubCanvas width={2} className={""} refIn={this.subCanvasRef}/>
+                </Fragment>
+            );
+        }
     }
     draw(){
         const {brain: brain, speed: speed, gridSize: gridSize} = this.props;
@@ -427,7 +634,7 @@ class BrainDetailsNet extends React.Component{
 // a brain's details
 class BrainDetails extends React.Component{
     render() {
-        const {brain: brain, speed: speed, gridSize: gridSize} = this.props;
+        const {brain: brain, speed: speed, gridSize: gridSize, edit: edit, editFuncs: editFuncs} = this.props;
 
         // extra details
         let extraDetails = null;
@@ -438,7 +645,9 @@ class BrainDetails extends React.Component{
         }
         else if(brain instanceof NeuralNetBrain){
             extraDetails = (
-                <BrainDetailsNet gridSize={gridSize} className={"category_text"} brain={brain} speed={speed} />
+                <Fragment>
+                    <BrainDetailsNet gridSize={gridSize} className={"category_text"} brain={brain} speed={speed} edit={edit} editFuncs={editFuncs} />
+                </Fragment>
             );
         }
         // brain info
@@ -461,6 +670,8 @@ class SnakeDetails extends React.Component{
 
         const speed = 3.5;
 
+        const [currR, currC] = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(((value, index) => Math.floor(value)));
+
         return(
             <div className={"snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
                 <h1>{snake.getComponentName()}</h1>
@@ -471,7 +682,7 @@ class SnakeDetails extends React.Component{
                 <p className={"category_text_title"}>Parameters</p>
                 <TypewriterText speed={speed}>
                     <p className={"category_text"}>
-                        Starting Head Position: {snake.startHeadPos}{"\n"}
+                        Starting Head Position (Row/Column): [{currR}, {currC}]{"\n"}
                         Starting Length: {snake.startLength}{"\n"}
                         Apple Value: {snake.appleVal}{"\n"}
                         Grid Size: {snake.gridSize}{"\n"}
@@ -486,20 +697,139 @@ class SnakeDetails extends React.Component{
     }
 }
 
-// editable snake details || props: snake = snake to display/edit
+// editable snake details || props: snake = snake to display/edit | tellChange: a function which should b called on snake change
 class SnakeDetailsEdit extends React.Component{
     render(){
-        console.log("SnakeDetailsEdit Render");
+        const {snake: snake, tellChange: tellChange} = this.props;
 
-        const {snake: snake} = this.props;
+        console.log(snake.getComponentName());
 
+        if(tellChange){
+            tellChange();
+        }
+
+        const speed = 3.5;
+
+        const [currR, currC] = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(((value, index) => Math.floor(value)));
+
+        // inputs
+        if(!this.inputs){
+            this.inputs = blankInputs.map(((value, index) => value.cloneMe()));
+            // start at 1 cuz multiple input is 0
+            this.inputActive = 0;
+        }
+        const editFuncsInput = {
+            get: () => {return snake.myInput},
+            change: (inputNew) => {
+                snake.changeInput(inputNew);
+                this.forceUpdate();
+            },
+            add: (inputNew) => {
+                // no inputs
+                if(!snake.myInput){
+                    snake.changeInput(inputNew);
+                }
+                // multiple inputs
+                else if(snake.myInput instanceof MultipleInput){
+                    snake.myInput.addInput(inputNew);
+                    snake.changeInput(snake.myInput);
+                }
+                // one input b4 add
+                else{
+                    const newVal = new MultipleInput(snake.myInput, inputNew);
+                    snake.changeInput(newVal);
+                }
+                this.forceUpdate();
+            },
+            delete: (index) => {
+                // delete last input (total now at 0)
+                if(!(snake.myInput instanceof MultipleInput)){
+                    snake.changeInput(null);
+                }
+                // deleting from multiple
+                else{
+                    // extract previous inputs from queue
+                    const inputs = snake.myInput.myInputs.map((val, i) => val);
+
+                    // delete 2nd input (total now at 1)
+                    if(snake.myInput.myInputs.length === 2){
+                        const indexToKeep = ((index === 0) ? (1) : (0));
+                        snake.changeInput(inputs[indexToKeep].cloneMe());
+                    }
+                    // delete a random input from MultipleInput
+                    else{
+                        let ans = new MultipleInput();
+                        inputs.map((val, i) => {
+                            if(i !== index){
+                                ans.addInput(val);
+                            }
+                        });
+                        snake.changeInput(ans);
+                    }
+                }
+                this.forceUpdate();
+            },
+            shift: (origin, goUp) => {
+                // assume validation is done already
+                let oldInputs = snake.myInput.myInputs.map((val, i) => val);
+                let newMultiple = new MultipleInput();
+                oldInputs.map(((value, index) => {
+                    // shift up (decrease index)
+                    if(goUp){
+                        if(index === origin-1){
+                            newMultiple.addInput(oldInputs[origin]);
+                            return;
+                        }
+                        if(index === origin){
+                            newMultiple.addInput(oldInputs[origin-1]);
+                            return;
+                        }
+                        newMultiple.addInput(value);
+                    }
+                    // shift down (increase index)
+                    else{
+                        if(index === origin){
+                            newMultiple.addInput(oldInputs[origin+1]);
+                            return;
+                        }
+                        if(index === origin+1){
+                            newMultiple.addInput(oldInputs[origin]);
+                            return;
+                        }
+                        newMultiple.addInput(value);
+                    }
+                }));
+                snake.changeInput(newMultiple);
+                this.forceUpdate();
+            },
+            update: () => {
+                if(snake.myInput instanceof MultipleInput){
+                    let ans = new MultipleInput();
+                    snake.myInput.myInputs.map((val, i) => ans.addInput(val));
+                    snake.changeInput(ans);
+                }
+                else {
+                    snake.changeInput(snake.myInput);
+                }
+                this.forceUpdate();
+            }
+        };
+
+        // brains
         // keep a log of brains so you can toggle between multiple while preserving info
         if(!this.brains){
             this.brains = Array(blankBrains.length).fill(null);
         }
         this.brains[snake.myBrain.componentID] = snake.myBrain;
-
-        const speed = 3.5;
+        const editFuncsBrain = {
+            change: (val) => {
+                snake.changeBrain(val);
+                this.forceUpdate();
+            },
+            update: () => {
+                this.forceUpdate();
+            }
+        };
 
         return(
             <div className={"snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
@@ -521,14 +851,14 @@ class SnakeDetailsEdit extends React.Component{
                     <div className={"start_head_pos"}>
                         <p className={"category_text"}>Starting Head Position:</p>
                         <label htmlFor={"head_pos_r"}>Row:</label>
-                        <NumberForm name={"head_pos_r"} min={1} max={snake.gridSize} onChange={(val) => {
-                            // TODO
-                            console.log("TODO: row/col");
+                        <NumberForm name={"head_pos_r"} initVal={currR} min={0} max={snake.gridSize-1} onChange={(val) => {
+                            snake.startHeadPos = (val * (snake.gridSize+2)) + 1 + currC;
+                            this.forceUpdate();
                         }}/>
                         <label htmlFor={"head_pos_c"}>Column:</label>
-                        <NumberForm name={"head_pos_c"} min={1} max={snake.gridSize} onChange={(val) => {
-                            // TODO
-                            console.log("TODO: row/col");
+                        <NumberForm name={"head_pos_c"} initVal={currC} min={0} max={snake.gridSize-1} onChange={(val) => {
+                            snake.startHeadPos = (currR * (snake.gridSize+2)) + 1 + val;
+                            this.forceUpdate();
                         }}/>
                     </div>
                     <div>
@@ -554,15 +884,45 @@ class SnakeDetailsEdit extends React.Component{
                         }} />
                     </div>
                 </div>
+
+                {/*Input*/}
                 <p className={"category_text_title"}>Input</p>
-                <InputDetails input={snake.myInput} speed={speed} />
+                <InputDetails input={snake.myInput} speed={speed} edit={true} editFuncs={editFuncsInput} />
+                <div className={"edit_add_input"}>
+                    <label className={"category_text_title small"} htmlFor={"input_add_type"}>New Input Type: </label>
+                    <Select initVal={this.inputs[this.inputActive].componentID} name={"input_add_type"} onSelect={(val) => {
+                        this.inputActive = val;
+                        this.forceUpdate();
+                    }}>
+                        {this.inputs.map(((value, index) => {
+                            // not multiple
+                            if(index > 0) {
+                                return (
+                                    <option value={index}>{value.getComponentName()}</option>
+                                );
+                            }
+                            else{
+                                return (
+                                    <option value={index}>None</option>
+                                );
+                            }
+                            this.forceUpdate();
+                        }))}
+                    </Select>
+                    <InputDetails className={"temp_input"} input={this.inputs[this.inputActive]} speed={speed} edit={true} editFuncs={editFuncsInput} noDelete={true} />
+                    {((this.inputActive > 0) ? (
+                        <p className={"category_text"}>(red input does nothing unless you hit the "+" button)</p>
+                    ) : null)}
+                </div>
+
+                {/*Brain*/}
                 <p className={"category_text_title"}>Brain</p>
                 <div className={"wrapper_div inline_block_parent"}>
                     <label htmlFor={"brain_type"}>Brain Type: </label>
                     <Select initVal={snake.myBrain.componentID} name={"brain_type"} onSelect={(val) => {
                         // target id
                         const id = val;
-                        console.log(`target id: ${id}`);
+                        // console.log(`target id: ${id}`);
 
                         // ignore unnecessary switches
                         if(id !== snake.myBrain.componentID) {
@@ -588,7 +948,7 @@ class SnakeDetailsEdit extends React.Component{
                         })}
                     </Select>
                 </div>
-                <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} />
+                <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} edit={true} editFuncs={editFuncsBrain} />
             </div>
         );
     }

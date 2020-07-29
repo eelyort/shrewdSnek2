@@ -123,3 +123,7 @@ loadedSnakes = loadedSnakes.map((val) => {return new SnakeSpecies(val)});
 
 // snakes which you cannot edit
 const protectedSnakes = loadedSnakes.length;
+
+console.log(SnakeSpecies.parse(loadedSnakes[0].stringify()));
+const str = ["{\"componentID\":0,\"componentName\":\"Player\",\"componentDescription\":\"Starter Human Controlled Snake. Control with the WASD or arrow keys.\",\"defaultName\":\"UNNAMED\",\"defaultDesc\":\"No Description Found\",\"mySingleSnakeRunner\":null,\"startHeadPos\":1,\"myHeadPos\":1,\"myTailPos\":1,\"myBodySegs\":\"[1]\",\"myDirection\":1,\"previousDir\":-1,\"startLength\":3,\"myLength\":3,\"gridSize\":25,\"appleVal\":3,\"focused\":false,\"bodySegsToErase\":\"[]\",\"bodySegsToDraw\":\"[1]\",\"uuid\":\"normal\",\"myInput\":\"{\\\"componentID\\\":1,\\\"componentName\\\":\\\"Player Controlled Input\\\",\\\"componentDescription\\\":\\\"This takes input from the keyboard, namely WASD and the arrow keys\\\",\\\"defaultName\\\":\\\"UNNAMED\\\",\\\"defaultDesc\\\":\\\"No Description Found\\\",\\\"mySnake\\\":null,\\\"inputLength\\\":4,\\\"inputID\\\":0}\",\"myBrain\":\"{\\\"componentID\\\":1,\\\"componentName\\\":\\\"Player Controlled Brain\\\",\\\"componentDescription\\\":\\\"This brain controls the snake based off of key inputs, meant to be used with Player Controlled Input\\\",\\\"defaultName\\\":\\\"UNNAMED\\\",\\\"defaultDesc\\\":\\\"No Description Found\\\",\\\"brainID\\\":0}\",\"generationNumber\":0}"];
+console.log(SnakeSpecies.parse(JSON.stringify(str)));

@@ -38,8 +38,7 @@ class Snake extends Component{
         this.uuid = "normal";
 
         // input
-        this.myInput = inputIn;
-        this.myInput.updateParentSnake(this);
+        this.changeInput(inputIn);
         this.changeBrain(brainIn);
 
         this.generationNumber = 0;
@@ -70,6 +69,14 @@ class Snake extends Component{
         }
         else{
             this.setName(this.componentName + " (1)");
+        }
+    }
+    // changes the input
+    changeInput(inputIn){
+        this.myInput = inputIn;
+        this.myInput.updateParentSnake(this);
+        if(this.myBrain){
+            this.myBrain.updateWithInput(this.myInput);
         }
     }
     // changes the brain
@@ -324,7 +331,10 @@ class SnakeSpecies{
         return this.snakes.length;
     }
     static parse(json){
+        console.log(json);
         let a = JSON.parse(json);
+        console.log("a:");
+        console.log(a);
         return new SnakeSpecies(a.map((val) => {return Snake.parse(val)}));
     }
 }

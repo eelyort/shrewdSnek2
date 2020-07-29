@@ -13,21 +13,33 @@
 // a.splice(1, 1, 11);
 // console.log(a);
 
-let testRect = [];
-const gridSize = 11;
-for (let i = 0; i < gridSize; i++) {
-    testRect.push([i, 0]);
-}
-for (let i = 0; i < gridSize; i++) {
-    testRect.push([gridSize, i]);
-}
-for (let i = 0; i < gridSize; i++) {
-    testRect.push([gridSize-i, gridSize]);
-}
-for (let i = 0; i < gridSize; i++) {
-    testRect.push([0, gridSize-i]);
-}
-console.log(testRect);
+// let testRect = [];
+// const gridSize = 11;
+// for (let i = 0; i < gridSize; i++) {
+//     testRect.push([i, 0]);
+// }
+// for (let i = 0; i < gridSize; i++) {
+//     testRect.push([gridSize, i]);
+// }
+// for (let i = 0; i < gridSize; i++) {
+//     testRect.push([gridSize-i, gridSize]);
+// }
+// for (let i = 0; i < gridSize; i++) {
+//     testRect.push([0, gridSize-i]);
+// }
+// console.log(testRect);
+
+// let a = [1, 2, 3, 4, 5];
+// let b = a.splice(4, 1);
+//
+// console.log(a);
+// console.log(b);
+
+let a = ["one", "two", "three", "four", "five"];
+let b = JSON.stringify(a);
+console.log(typeof b);
+console.log(b + "");
+console.log(JSON.parse(JSON.stringify(a)));
 
 // let a = [1, 2, 3];
 // a += [2, 3, 4];

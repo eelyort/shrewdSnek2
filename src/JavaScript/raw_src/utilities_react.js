@@ -243,7 +243,7 @@ class TextArea extends React.Component{
         }
     }
 }
-// number form || props: name | onChange(val) | max(optional) | min(optional) | initVal(optional)
+// number form || props: name | onChange(val) | max(optional) | min(optional) | initVal(optional) | step(optional)
 class NumberForm extends React.Component{
     constructor(props){
         super(props);
@@ -255,14 +255,14 @@ class NumberForm extends React.Component{
         this.handleChange = this.handleChange.bind(this);
     }
     render() {
-        const {name: name, min: min, max: max} = this.props;
+        const {name: name, min: min, max: max, step: step} = this.props;
 
         return (
-            <input value={this.state.value} onChange={this.handleChange} type={"number"} className={"number_input" + ((this.props.className) ? (" " + this.props.className) : (""))} name={name} />
+            <input value={this.state.value} onChange={this.handleChange} type={"number"} className={"number_input" + ((this.props.className) ? (" " + this.props.className) : (""))} name={name} step={((step) ? (step) : (1))} />
         );
     }
     handleChange(event){
-        const val = parseInt(event.target.value);
+        const val = parseFloat(event.target.value);
 
         if(val !== this.state.value && val >= this.props.min && val <= this.props.max) {
             this.setState((state) => ({
