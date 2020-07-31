@@ -673,7 +673,7 @@ class SnakeDetails extends React.Component{
         const [currR, currC] = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(((value, index) => Math.floor(value)));
 
         return(
-            <div className={"snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+            <div className={"details snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
                 <h1>{snake.getComponentName()}</h1>
                 <p className={"category_text_title"}>Description</p>
                 <TypewriterText speed={speed}>
@@ -832,7 +832,7 @@ class SnakeDetailsEdit extends React.Component{
         };
 
         return(
-            <div className={"snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
+            <div className={"details snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
                 <TextArea onChange={(val) => {
                     snake.setName(val);
                     this.forceUpdate();

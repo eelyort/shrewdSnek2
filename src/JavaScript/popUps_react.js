@@ -1,3 +1,5 @@
+var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -678,4 +680,326 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
     }]);
 
     return CreateSnakePopUpREACT;
+}(React.Component);
+
+// edit evolution popup
+
+
+var EditEvolutionPopUp = function (_React$Component3) {
+    _inherits(EditEvolutionPopUp, _React$Component3);
+
+    function EditEvolutionPopUp(props) {
+        _classCallCheck(this, EditEvolutionPopUp);
+
+        var _this7 = _possibleConstructorReturn(this, (EditEvolutionPopUp.__proto__ || Object.getPrototypeOf(EditEvolutionPopUp)).call(this, props));
+
+        _this7.state = {
+            evolution: null,
+            errorText: "",
+            confirmationBox: false,
+            quitConfirmation: false
+        };
+
+        _this7.saved = true;
+
+        _this7.createBlank = _this7.createBlank.bind(_this7);
+        _this7.saveResults = _this7.saveResults.bind(_this7);
+        _this7.changeErrorText = _this7.changeErrorText.bind(_this7);
+        _this7.changed = _this7.changed.bind(_this7);
+        return _this7;
+    }
+
+    _createClass(EditEvolutionPopUp, [{
+        key: "render",
+        value: function render() {
+            var _this8 = this;
+
+            var _props7 = this.props,
+                metaInfo = _props7.metaInfo,
+                evolutionIn = _props7.evolutionIn;
+            var evolution = this.state.evolution;
+
+
+            console.log("render");
+            console.log(evolution);
+
+            if (!evolution) {
+                return null;
+            }
+
+            var speed = 3.5;
+
+            // bundle of functions for the popup to interact with the main menu
+            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
+            var popUpFuncs = this.props.popUpFuncs;
+
+            // set snake of evolution with metaInfo
+            if (metaInfo instanceof Snake) {
+                this.state.evolution.currentGeneration = [[metaInfo.cloneMe(), 1]];
+            }
+
+            var confirmation = null;
+            if (this.state.confirmationBox) {
+                confirmation = React.createElement(
+                    "div",
+                    { className: "confirmation_box" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        "Are you sure you want to override the previous parameters and evolution progress? The previous snakes will remain saved."
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return _this8.setState(function () {
+                                        return { confirmationBox: false };
+                                    });
+                                } },
+                            "Cancel"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: this.saveResults },
+                            "Yes, Override"
+                        )
+                    )
+                );
+            }
+            var quitConfirmation = null;
+            if (this.state.quitConfirmation) {
+                quitConfirmation = React.createElement(
+                    "div",
+                    { className: "confirmation_box" },
+                    React.createElement(
+                        "h3",
+                        null,
+                        "Are you sure you want to quit without saving?"
+                    ),
+                    React.createElement(
+                        "div",
+                        null,
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return _this8.setState(function () {
+                                        return { quitConfirmation: false };
+                                    });
+                                } },
+                            "Cancel"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return _this8.setState(function () {
+                                        return { quitConfirmation: false };
+                                    }, function () {
+                                        return _this8.saveResults();
+                                    });
+                                } },
+                            "No, Save"
+                        ),
+                        React.createElement(
+                            Button,
+                            { onClick: function onClick() {
+                                    return popUpFuncs.close();
+                                } },
+                            "Yes, Quit Without Saving"
+                        )
+                    )
+                );
+            }
+
+            return React.createElement(
+                PopUp,
+                { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: function closeFunc() {
+                        if (!_this8.saved) {
+                            _this8.setState(function () {
+                                return { quitConfirmation: true };
+                            });
+                        } else {
+                            popUpFuncs.close();
+                        }
+                    } },
+                React.createElement(
+                    "div",
+                    null,
+                    confirmation,
+                    quitConfirmation,
+                    React.createElement(
+                        "div",
+                        { className: "text_card background" },
+                        React.createElement(
+                            "div",
+                            { className: "details" },
+                            React.createElement(
+                                TextArea,
+                                { onChange: function onChange(val) {
+                                        evolution.componentName = val;
+                                        _this8.changed();
+                                    } },
+                                React.createElement(
+                                    "h1",
+                                    null,
+                                    evolution.getComponentName()
+                                )
+                            ),
+                            React.createElement(
+                                "p",
+                                { className: "category_text_title" },
+                                "Description"
+                            ),
+                            React.createElement(
+                                TextArea,
+                                { onChange: function onChange(val) {
+                                        evolution.componentDescription = val;
+                                        _this8.changed();
+                                    } },
+                                React.createElement(
+                                    "p",
+                                    { className: "category_text" },
+                                    evolution.getComponentDescription()
+                                )
+                            ),
+                            React.createElement(
+                                "p",
+                                { className: "category_text_title" },
+                                "Parameters"
+                            ),
+                            evolution.parameters.map(function (val, index) {
+                                var _defaultEvolutionPara = _slicedToArray(defaultEvolutionParams[index], 6),
+                                    name = _defaultEvolutionPara[0],
+                                    defaultVal = _defaultEvolutionPara[1],
+                                    desc = _defaultEvolutionPara[2],
+                                    min = _defaultEvolutionPara[3],
+                                    max = _defaultEvolutionPara[4],
+                                    step = _defaultEvolutionPara[5];
+
+                                var htmlName = name.replace(" ", "_");
+                                if (index !== 1 && index !== 2 && index !== 5) {
+                                    return React.createElement(
+                                        Fragment,
+                                        null,
+                                        React.createElement(
+                                            "div",
+                                            { className: "wrapper_div inline_block_parent" },
+                                            React.createElement(
+                                                "label",
+                                                { htmlFor: htmlName, className: "category_text_title small" },
+                                                name
+                                            ),
+                                            React.createElement(NumberForm, { name: htmlName, initVal: val, min: min, max: max, step: step, onChange: function onChange(val) {
+                                                    evolution.parameters[index] = val;
+                                                    _this8.changed();
+                                                } })
+                                        ),
+                                        React.createElement(
+                                            TypewriterText,
+                                            { speed: speed },
+                                            React.createElement(
+                                                "p",
+                                                { className: "category_text" },
+                                                desc
+                                            )
+                                        )
+                                    );
+                                }
+                            })
+                        ),
+                        React.createElement(
+                            "div",
+                            { className: "button_div" },
+                            React.createElement(
+                                Button,
+                                { onClick: this.saveResults },
+                                "Save"
+                            )
+                        ),
+                        React.createElement(
+                            FadeDiv,
+                            { speed: .75, className: "error_text", shouldReset: true },
+                            this.state.errorText
+                        )
+                    )
+                )
+            );
+        }
+    }, {
+        key: "createBlank",
+        value: function createBlank() {
+            var _this9 = this;
+
+            if (this.props.metaInfo instanceof Snake) {
+                this.setState(function (state) {
+                    return { evolution: new Evolution(_this9.props.metaInfo) };
+                });
+            } else {
+                this.setState(function (state) {
+                    return { evolution: new Evolution(null) };
+                });
+            }
+        }
+    }, {
+        key: "saveResults",
+        value: function saveResults() {
+            if (this.state.confirmationBox) {
+                // save
+                this.props.popUpFuncs.changeEvolution(this.state.evolution.cloneMe());
+                this.saved = true;
+                this.changeErrorText("Saved Successfully.");
+            } else {
+                this.setState(function () {
+                    return { confirmationBox: true };
+                });
+            }
+        }
+    }, {
+        key: "changeErrorText",
+        value: function changeErrorText(text) {
+            var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : function () {
+                return null;
+            };
+
+            if (!this.state.errorText) {
+                this.setState(function (state) {
+                    return { errorText: text };
+                }, callback);
+            } else if (this.state.errorText.length < text.length) {
+                this.setState(function (state) {
+                    return { errorText: text };
+                }, callback);
+            } else {
+                if (this.state.errorText === text) {
+                    this.setState(function (state) {
+                        return { errorText: text + " " };
+                    }, callback);
+                } else {
+                    this.setState(function (state) {
+                        return { errorText: text };
+                    }, callback);
+                }
+            }
+        }
+    }, {
+        key: "changed",
+        value: function changed() {
+            this.saved = false;
+            this.forceUpdate();
+        }
+    }, {
+        key: "componentDidMount",
+        value: function componentDidMount() {
+            var _this10 = this;
+
+            if (!this.state.evolution) {
+                this.setState(function () {
+                    return { evolution: _this10.props.evolutionIn.cloneMe() };
+                });
+            }
+        }
+    }]);
+
+    return EditEvolutionPopUp;
 }(React.Component);

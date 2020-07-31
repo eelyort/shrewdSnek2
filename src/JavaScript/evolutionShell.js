@@ -12,6 +12,7 @@ class EvolutionShell{
         if(input instanceof Evolution){
             console.log("evolution from evolution");
             this.evolution = input;
+            this.evolution.myCallback2 = this.callback.bind(this);
         }
         else if(input instanceof Snake){
             console.log("evolution from snake");

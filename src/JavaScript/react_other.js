@@ -1046,7 +1046,7 @@ var SnakeDetails = function (_React$Component7) {
 
             return React.createElement(
                 "div",
-                { className: "snake_details" + (this.props.className ? " " + this.props.className : "") },
+                { className: "details snake_details" + (this.props.className ? " " + this.props.className : "") },
                 React.createElement(
                     "h1",
                     null,
@@ -1282,7 +1282,7 @@ var SnakeDetailsEdit = function (_React$Component8) {
 
             return React.createElement(
                 "div",
-                { className: "snake_details" + (this.props.className ? " " + this.props.className : "") },
+                { className: "details snake_details" + (this.props.className ? " " + this.props.className : "") },
                 React.createElement(
                     TextArea,
                     { onChange: function onChange(val) {

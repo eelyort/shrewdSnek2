@@ -35,11 +35,15 @@
 // console.log(a);
 // console.log(b);
 
-let a = ["one", "two", "three", "four", "five"];
-let b = JSON.stringify(a);
-console.log(typeof b);
-console.log(b + "");
-console.log(JSON.parse(JSON.stringify(a)));
+// let a = ["one", "two", "three", "four", "five"];
+// let b = JSON.stringify(a);
+// console.log(typeof b);
+// console.log(b + "");
+// console.log(JSON.parse(JSON.stringify(a)));
+
+let a = ["one", "two", "three"];
+let [b, c, d, e] = a;
+console.log(`b: ${b}, c: ${c}, d: ${d}, e: ${e}`);
 
 // let a = [1, 2, 3];
 // a += [2, 3, 4];

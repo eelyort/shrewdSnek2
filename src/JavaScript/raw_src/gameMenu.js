@@ -33,6 +33,7 @@ class GameMenu extends React.Component{
         this.closePopUp = this.closePopUp.bind(this);
         this.changeLoadedSnakes = this.changeLoadedSnakes.bind(this);
         this.spliceLoadedSnakes = this.spliceLoadedSnakes.bind(this);
+        this.changeEvolution = this.changeEvolution.bind(this);
 
         this.keyEventInDown = this.keyEventInDown.bind(this);
         this.keyEventInUp = this.keyEventInUp.bind(this);
@@ -46,6 +47,7 @@ class GameMenu extends React.Component{
         this.startRunner = this.startRunner.bind(this);
 
         this.evolutionReady = this.evolutionReady.bind(this);
+        this.evolveButton = this.evolveButton.bind(this);
 
         // needed refs
         this.pausePlayButtonRef = React.createRef();
@@ -53,7 +55,8 @@ class GameMenu extends React.Component{
 
         // evolution
         // shell
-        this.evolutionShell = new EvolutionShell(this.evolutionReady); // TODO: it takes MainMenu as input atm for some reason
+        this.evolutionShell = new EvolutionShell(this.evolutionReady);
+        this.evolutionShell.createEvolution(defaultEvolution);
 
         // runner variables
         // the instance of singleSnakeRunner which is running
@@ -82,13 +85,14 @@ class GameMenu extends React.Component{
         let popUp = null;
         if(this.state.popupActive) {
             // bundle of functions for the popup to interact with the main menu
-            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
+            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
             const popUpFuncs = {
                 close: this.closePopUp,
                 changeSelected: (i) => this.setState(() => ({selectedSnake: i})),
                 changeSelectedGen: (i) => this.setState(() => ({selectedSnakeGen: i})),
                 changeLoaded: this.changeLoadedSnakes,
-                spliceLoaded: this.spliceLoadedSnakes
+                spliceLoaded: this.spliceLoadedSnakes,
+                changeEvolution: this.changeEvolution
             };
             // 1 = select snake
             if (this.state.popupActive === 1) {
@@ -100,6 +104,12 @@ class GameMenu extends React.Component{
             else if(this.state.popupActive === 2){
                 popUp = (
                     <CreateSnakePopUpREACT metaInfo={this.state.popupMetaInfo} popUpFuncs={popUpFuncs} loadedSnakesIn={loadedSnakes} />
+                );
+            }
+            // 3 = create/edit generation
+            else if(this.state.popupActive === 3){
+                popUp = (
+                    <EditEvolutionPopUp metaInfo={this.state.popupMetaInfo} popUpFuncs={popUpFuncs} evolutionIn={this.evolutionShell.evolution} />
                 );
             }
         }
@@ -120,6 +130,13 @@ class GameMenu extends React.Component{
                             </Button>
                             <Button className={"gameButton"} onClick={() => this.openPopUp(2)}>
                                 Create Snake
+                            </Button>
+                            <h3>Generation: {((this.evolutionShell.evolution) ? (this.evolutionShell.evolution.generationNumber) : (0))}</h3>
+                            <Button className={"gameButton"} onClick={() => this.evolveButton()}>
+                                Evolve
+                            </Button>
+                            <Button className={"gameButton"} onClick={() => this.openPopUp(3)}>
+                                Edit Evolution
                             </Button>
                         </FadeMenu>
                         <TypewriterText className={"playing_text"}>
@@ -201,6 +218,7 @@ class GameMenu extends React.Component{
     // popup stuff
     // opens a popup
     openPopUp(i, info = null){
+        console.log("open");
         this.setState(() => ({
             popupActive: i,
             popupMetaInfo: info
@@ -211,6 +229,7 @@ class GameMenu extends React.Component{
     }
     // pass as function to popups, optional parameter closes the current popup and immediately opens another
     closePopUp(toOpen = 0, info = null){
+        console.log("close");
         this.setState(() => ({
             popupActive: toOpen,
             popupMetaInfo: info
@@ -233,6 +252,9 @@ class GameMenu extends React.Component{
             // console.log(3);
             loadedSnakes.splice(start);
         }
+    }
+    changeEvolution(newEvolution){
+        console.log("TODO: gameMenu changeEvolution");
     }
 
     // called on keyEvent press
@@ -371,6 +393,9 @@ class GameMenu extends React.Component{
         if(!this.runningInstance || (this.runningInstance instanceof EvolutionLoadScreen)){
             this.evolutionShell.runQueue(this.startSnake, this.startRunner);
         }
+    }
+    evolveButton(){
+        console.log("TODO: gameMenu evolveButton()");
     }
 
     // REACT lifecycle

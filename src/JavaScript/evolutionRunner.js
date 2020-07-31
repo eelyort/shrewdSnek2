@@ -1,9 +1,26 @@
 const numRunVars = 3;
 
+// name, val, description, min, max, step
+const defaultEvolutionParams = [
+    ["Number of Snakes", 1600, "The number of snakes in each generation.", 10, 25000, 50],
+    ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
+    ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
+    ["Likely-hood Mutations", 3, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second.", 0, 5000, 0.1],
+    ["Number of Runs", 3, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path.", 1, 13],
+    ["Mode Normalization", 0, "Related to the above, this is how the actual score is selected from the scores above."],
+    ["Ticks per Apple Score", 50, "The amount of ticks a snake must survive to get the same score as they would from eating an apple.", 1, 999999, 5],
+    ["Max Time Score", 1, "The max score (in apples) a snake can get by surviving and not eating apples.", 0, 1000],
+    ["Ticks till Time Out", 200, "The amount of ticks a snake can survive without eating any apples, if it goes past this number it dies.", 1, 999999, 10],
+    ["Ticks till Time Out Growth", 30, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple.", 0, 1000],
+    ["Percentage Survive", 0.02, "The percentage of each generation that will survive and compete in the next generation unchanged.", 0, 1, 0.02],
+    ["Percentage Parents", 0.2, "The percentage of each generation that lives long enough to give birth to children.", 0, 1, 0.02],
+    ["Parent Selection Shape", 0.78, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often.", 0.001, 2, 0.01]
+];
+
 // "main" class for running evolutions
 // all logic should be in this class
 // start/actions should be called from outside, no ui on this layer
-class Evolution{
+class Evolution extends Component{
     // Parameters
     //  snakes has the snakes or snake to run in this evolution
     //  reproductions has an array of reproductions to use, along with the probabilities of each
@@ -19,6 +36,8 @@ class Evolution{
     //  timeouttime - the number of ticks a snake can go without eating an apple before being killed
     //   timeoutgrowth - amount of ticks added to timeouttime per length
     constructor(snakes, callback = null){
+        super(0, `Evolution`, "Evolution");
+
         this.parameters = null;
         this.setParams();
 
@@ -41,43 +60,47 @@ class Evolution{
         // the snakes of the next generation, will be run on next run call
         this.nextGeneration = null;
     }
+    setDefaultName(){
+        if(this.currentGeneration[0][1]){
+            this.componentName = `Evolution: ${this.currentGeneration[0][1].getComponentName()}`;
+            this.componentDescription = `Evolution of the snake \"${this.currentGeneration[0][1].getComponentName()}\"`;
+        }
+    }
     setParams(){
         // defaults
         if(arguments.length === 0 && this.parameters == null){
             console.log("Evolution setParams called with no arguments, adding default values");
-            this.parameters = [
-                ["Number of Snakes", 1600, "The number of snakes in each generation."],
-                ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
-                ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
-                ["Likely-hood Mutations", 3, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second."],
-                ["Number of Runs", 3, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path."],
-                ["Mode Normalization", 0, "Related to the above, this is how the actual score is selected from the scores above. 0-median, 1-mean"],
-                ["Ticks per Apple Score", 50, "The amount of ticks a snake must survive to get the same score as they would from eating an apple."],
-                ["Max Time Score", 0.999, "The max score (in apples) a snake can get by surviving and not eating apples."],
-                ["Ticks till Time Out", 200, "The amount of ticks a snake can survive without eating any apples, if it goes past this number it dies."],
-                ["Ticks till Time Out Growth", 30, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple."],
-                ["Percentage Survive", 0.02, "The percentage of each generation that will survive and compete in the next generation unchanged."],
-                ["Percentage Parents", 0.2, "The percentage of each generation that lives long enough to give birth to children."],
-                ["Parent Selection Shape", 0.78, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often. It is clamped to (0, 2]"]
-            ];
+            this.parameters = defaultEvolutionParams.map((arr, i) => arr[1]);
         }
 
         // mismatch
         else if(arguments.length && arguments.length !== this.parameters.length){
             console.log("Warning, Evolution setParams() called with incorrect number of arguments, exiting");
-            return;
+            return false;
         }
 
         // set arguments
         else{
             for (let i = 0; i < arguments.length; i++) {
-                this.parameters[i][1] = arguments[i];
+                this.parameters[i] = arguments[i];
             }
         }
 
         // analyze/simplify elements
+        // max time score
+        this.parameters[7] = this.parameters[7]-0.0001;
+
+        // clamp
+        this.parameters = this.parameters.map((val, i) => {
+            if(defaultEvolutionParams[i].length >= 5 && !isNaN(val)){
+                const [n, v, d, min, max] = defaultEvolutionParams[i];
+                return Math.min(max, Math.max(min, val));
+            }
+            return val;
+        });
+
         // reproductions
-        let reprod = this.parameters[1][1];
+        let reprod = this.parameters[1];
         let bool = true;
         let tot = 0;
         for (let i = 0; i < reprod.length; i++) {
@@ -99,7 +122,7 @@ class Evolution{
         }
 
         // mutations
-        let mutate = this.parameters[2][1];
+        let mutate = this.parameters[2];
         bool = true;
         tot = 0;
         for (let i = 0; i < mutate.length; i++) {
@@ -119,20 +142,16 @@ class Evolution{
             }
         }
 
-        // clamp shape to (0, 2]
-        this.parameters[12][1] = Math.max(this.parameters[12][1], 0.00001);
-        this.parameters[12][1] = Math.min(this.parameters[12][1], 2);
-
         // scoring function
         this.scoreFunc = function (score, timeSinceLastApple, appleVal) {
-            return score + Math.min(timeSinceLastApple / this.parameters[6][1], this.parameters[7][1]) * appleVal;
+            return score + Math.min(timeSinceLastApple / this.parameters[6], this.parameters[7]) * appleVal;
         };
 
         // timeout function
         this.timeOutFunc = function (len) {
-            return this.parameters[8][1] + len * this.parameters[9][1];
+            return this.parameters[8] + len * this.parameters[9];
         };
-        
+
         // stores the same as runningVars[0], but is synchronous, use ONLY FOR DISPLAY
         this.runningProgress = 0;
 
@@ -141,12 +160,14 @@ class Evolution{
         // index (of the next snake to be started), number running, number finished
         this.runningBuffer = new SharedArrayBuffer(Int16Array.BYTES_PER_ELEMENT * numRunVars);
         this.runningVars = new Int16Array(this.runningBuffer);
+
+        return true;
     }
 
     // creates the next generation from the current generation and its scores
     //  handles the mutations, reproductions, and whatnot
     createNextGeneration(){
-        let numPerGen = this.parameters[0][1];
+        let numPerGen = this.parameters[0];
 
         // create next gen
         this.nextGeneration = Array.apply(null, {length: numPerGen});
@@ -170,7 +191,7 @@ class Evolution{
             this.nextGeneration = Array.apply(null, {length: numPerGen});
 
             // have one snake of just the original un-cloned
-            this.nextGeneration[0] = new SpeciesRunner(originator.cloneMe(), this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], 0);
+            this.nextGeneration[0] = new SpeciesRunner(originator.cloneMe(), this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], 0);
 
             // create the next generation with a bunch of mutated versions of the originator snake
             for(let i = 1; i < this.nextGeneration.length; i++){
@@ -182,7 +203,7 @@ class Evolution{
                     this.mutatePrivate(snake);
                 }
 
-                this.nextGeneration[i] = new SpeciesRunner(snake, this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], i);
+                this.nextGeneration[i] = new SpeciesRunner(snake, this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], i);
                 // this.nextGeneration[i] = snake;
             }
 
@@ -197,17 +218,17 @@ class Evolution{
         let idx = 0;
 
         // the best snakes survive and continue on into the next generation unchanged
-        let numSurvive = Math.floor(numPerGen * this.parameters[10][1]);
+        let numSurvive = Math.floor(numPerGen * this.parameters[10]);
         for (; idx < numSurvive; idx++) {
-            this.nextGeneration[idx] = new SpeciesRunner(this.currentGeneration[idx][0].cloneMe(), this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
+            this.nextGeneration[idx] = new SpeciesRunner(this.currentGeneration[idx][0].cloneMe(), this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
             // this.nextGeneration[idx] = this.currentGeneration[idx][0].cloneMe();
         }
         // console.log(`numSurvive: ${numSurvive}, idx: ${idx}`);
 
         // get the proportions of which snakes should be chosen as parents by their scores
         //  the function here is: arg12^x
-        let shapeParam = this.parameters[12][1];
-        let numParents = Math.min(Math.max(2, Math.floor(numPerGen * this.parameters[11][1])), numPerGen);
+        let shapeParam = this.parameters[12];
+        let numParents = Math.min(Math.max(2, Math.floor(numPerGen * this.parameters[11])), numPerGen);
         let f = function (x) {
             return Math.pow(shapeParam, x/Math.sqrt(numParents));
         };
@@ -227,7 +248,7 @@ class Evolution{
             let p2 = this.currentGeneration[pickRanParent()][0].cloneMe();
 
             // mutate them
-            let mutateLikelyHood = this.parameters[3][1];
+            let mutateLikelyHood = this.parameters[3];
             // guaranteed mutations
             if(mutateLikelyHood >= 1){
                 for (let i = 0; i < Math.floor(mutateLikelyHood); i++) {
@@ -245,7 +266,7 @@ class Evolution{
             let offspring = this.reproducePrivate(p1, p2);
 
             // chuck the offspring into a siblingRunner for next generation
-            this.nextGeneration[idx] = new SiblingRunner(offspring, 1, this.parameters[4][1], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
+            this.nextGeneration[idx] = new SiblingRunner(offspring, 1, this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
             // this.nextGeneration[idx] = offspring;
 
             idx++;
@@ -268,7 +289,7 @@ class Evolution{
 
         // set parameters
         this.runningProgress = 0;
-        this.runningResults = Array.apply(null, {length: this.parameters[0][1]});
+        this.runningResults = Array.apply(null, {length: this.parameters[0]});
         for(let i = 0; i < this.runningResults.length; i++){
             this.runningResults[i] = null;
         }
@@ -282,19 +303,19 @@ class Evolution{
         this.generationNumber++;
         this.myInterval = setInterval(this.update.bind(this), 1000 / evolutionUpdatePerSec);
     }
-    
+
     // function called every once in a while, begins new snakes when needed, updates visible parameters
     update(){
         // update progress
         this.runningProgress = Atomics.load(this.runningVars, 2);
-        
+
         // finished
-        if(Atomics.load(this.runningVars, 2) >= this.parameters[0][1]){
+        if(Atomics.load(this.runningVars, 2) >= this.parameters[0]){
             this.finish();
-            
+
             return;
         }
-        
+
         // start new snakes - async so it doesn't freeze the screen
         setTimeout(function () {
             while(Atomics.load(this.runningVars, 1) < maxNumThreads){
@@ -411,7 +432,7 @@ class Evolution{
 
         // special case where probabilities are equal
         if(!this.mutationPercents){
-            selected = Math.floor(Math.random() * this.parameters[2][1].length);
+            selected = Math.floor(Math.random() * this.parameters[2].length);
         }
         // unequal probabilities, significantly slower
         else {
@@ -425,7 +446,7 @@ class Evolution{
         }
 
         // mutate by that method
-        this.parameters[2][1][selected][0].mutateBrain(snake.myBrain);
+        this.parameters[2][selected][0].mutateBrain(snake.myBrain);
     }
 
     // takes two offspring, chooses a random reproduction method and returns an array of offspring
@@ -435,7 +456,7 @@ class Evolution{
 
         // special case where probabilities are equal
         if(!this.reproductionPercents){
-            selected = Math.floor(Math.random() * this.parameters[1][1].length);
+            selected = Math.floor(Math.random() * this.parameters[1].length);
         }
         // unequal probabilities, significantly slower
         else {
@@ -449,6 +470,15 @@ class Evolution{
         }
 
         // reproduce by that method
-        return this.parameters[1][1][selected][0].produceOffspring(snake1, snake2);
+        return this.parameters[1][selected][0].produceOffspring(snake1, snake2);
+    }
+    cloneMe(){
+        let ans = new Evolution(null, null);
+        this.cloneComponents(ans);
+        ans.setParams.apply(ans, this.parameters.map((val, i) => val));
+        ans.generationNumber = this.generationNumber;
+        ans.currentGeneration = this.currentGeneration.map(((value, index) => [value[0].cloneMe(), value[1]]));
+
+        return ans;
     }
 }

@@ -412,12 +412,15 @@ select, input{
     flex-wrap: nowrap;
 }
 .popUp-card .text_card{
-    padding: 2%;
+    padding: 3%;
 
     overflow-y: scroll;
 
-    height: calc(96% - 4px);
-    width: calc(96% - 4px);
+    height: calc(94% - 4px);
+    width: calc(94% - 4px);
+}
+.popUp-card .text_card h1:first-of-type{
+    margin-top: 0;
 }
 .popUp-card .popUp_close_button{
     position: absolute;
@@ -555,7 +558,7 @@ select, input{
 }
 
 /*IMPORTANT snake details*/
-.snake_details{
+.details{
     padding: 2%;
     width: 96%;
     min-height: 10px;
@@ -568,41 +571,41 @@ select, input{
     border-color: #7c7c7d;
     border-width: 2px;
 }
-.snake_details h1:first-of-type{
+.details h1:first-of-type{
     margin-top: 0;
 }
-.snake_details .category_text_title{
+.details .category_text_title{
     font-size: 120%;
     text-decoration: underline;
 
     margin-top: 1em;
     margin-bottom: 0.2em;
 }
-.snake_details .category_text_title:first-of-type{
+.details .category_text_title:first-of-type{
     margin-top: inherit;
 }
-.snake_details .category_text_title.small{
+.details .category_text_title.small{
     margin-top: 0.5em;
     font-size: 100%;
 }
-.snake_details .category_text_title::after{
+.details .category_text_title::after{
     content: ":";
 }
-.snake_details .inline_buttons > button{
+.details .inline_buttons > button{
     margin: 0 8px;
     float: right;
 }
-.snake_details .inline_buttons > button:first-of-type{
+.details .inline_buttons > button:first-of-type{
     margin-right: 30px;
 }
-.snake_details .category_text{
+.details .category_text{
     margin-top: inherit;
     margin-bottom: inherit;
 }
-.snake_details .start_head_pos > label{
+.details .start_head_pos > label{
     margin-left: 2%;
 }
-.snake_details .edit_add_input{
+.details .edit_add_input{
     margin-top: 10px;
     color: red;
 }

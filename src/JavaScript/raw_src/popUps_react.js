@@ -381,3 +381,177 @@ class CreateSnakePopUpREACT extends React.Component{
         this.updateSnake();
     }
 }
+
+// edit evolution popup
+class EditEvolutionPopUp extends React.Component{
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            evolution: null,
+            errorText: "",
+            confirmationBox: false,
+            quitConfirmation: false
+        };
+
+        this.saved = true;
+
+        this.createBlank = this.createBlank.bind(this);
+        this.saveResults = this.saveResults.bind(this);
+        this.changeErrorText = this.changeErrorText.bind(this);
+        this.changed = this.changed.bind(this);
+    }
+    render(){
+        const {metaInfo: metaInfo, evolutionIn: evolutionIn} = this.props;
+        const {evolution: evolution} = this.state;
+
+        console.log("render");
+        console.log(evolution);
+
+        if(!evolution){
+            return null;
+        }
+
+        const speed = 3.5;
+
+        // bundle of functions for the popup to interact with the main menu
+        //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
+        const popUpFuncs = this.props.popUpFuncs;
+
+        // set snake of evolution with metaInfo
+        if(metaInfo instanceof Snake){
+            this.state.evolution.currentGeneration = [[metaInfo.cloneMe(), 1]];
+        }
+
+        let confirmation = null;
+        if(this.state.confirmationBox){
+            confirmation = (
+                <div className={"confirmation_box"}>
+                    <h3>Are you sure you want to override the previous parameters and evolution progress? The previous snakes will remain saved.</h3>
+                    <div>
+                        <Button onClick={() => this.setState(() => ({confirmationBox: false}))}>Cancel</Button>
+                        <Button onClick={this.saveResults}>Yes, Override</Button>
+                    </div>
+                </div>
+            );
+        }
+        let quitConfirmation = null;
+        if(this.state.quitConfirmation){
+            quitConfirmation = (
+                <div className={"confirmation_box"}>
+                    <h3>Are you sure you want to quit without saving?</h3>
+                    <div>
+                        <Button onClick={() => this.setState(() => ({quitConfirmation: false}))}>Cancel</Button>
+                        <Button onClick={() => this.setState(() => ({quitConfirmation: false}), () => this.saveResults())}>No, Save</Button>
+                        <Button onClick={() => popUpFuncs.close()}>Yes, Quit Without Saving</Button>
+                    </div>
+                </div>
+            );
+        }
+
+        return (
+            <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => {
+                if(!this.saved) {
+                    this.setState(() => ({quitConfirmation: true}))
+                }
+                else{
+                    popUpFuncs.close();
+                }
+            }}>
+                <div>
+                    {confirmation}
+                    {quitConfirmation}
+                    <div className={"text_card background"}>
+                        <div className={"details"}>
+                            <TextArea onChange={(val) => {
+                                evolution.componentName = val;
+                                this.changed();
+                            }}>
+                                <h1>{evolution.getComponentName()}</h1>
+                            </TextArea>
+                            <p className={"category_text_title"}>Description</p>
+                            <TextArea onChange={(val) => {
+                                evolution.componentDescription = val;
+                                this.changed();
+                            }}>
+                                <p className={"category_text"}>{evolution.getComponentDescription()}</p>
+                            </TextArea>
+                            <p className={"category_text_title"}>Parameters</p>
+                            {evolution.parameters.map((val, index) => {
+                                const [name, defaultVal, desc, min, max, step] = defaultEvolutionParams[index];
+                                const htmlName = name.replace(" ", "_");
+                                if(index !== 1 && index !== 2 && index !== 5){
+                                    return(
+                                        <Fragment>
+
+                                            <div className={"wrapper_div inline_block_parent"}>
+                                                <label htmlFor={htmlName} className={"category_text_title small"}>{name}</label>
+                                                <NumberForm name={htmlName} initVal={val} min={min} max={max} step={step} onChange={(val) => {
+                                                    evolution.parameters[index] = val;
+                                                    this.changed();
+                                                }} />
+                                            </div>
+                                            <TypewriterText speed={speed}>
+                                                <p className={"category_text"}>{desc}</p>
+                                            </TypewriterText>
+                                        </Fragment>
+                                    );
+                                }
+                            })}
+                        </div>
+                        <div className={"button_div"}>
+                            <Button onClick={this.saveResults}>Save</Button>
+                        </div>
+                        <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
+                            {this.state.errorText}
+                        </FadeDiv>
+                    </div>
+                </div>
+            </PopUp>
+        );
+    }
+    createBlank(){
+        if(this.props.metaInfo instanceof Snake){
+            this.setState((state) => ({evolution: new Evolution(this.props.metaInfo)}));
+        }
+        else{
+            this.setState((state) => ({evolution: new Evolution(null)}));
+        }
+    }
+    saveResults(){
+        if(this.state.confirmationBox){
+            // save
+            this.props.popUpFuncs.changeEvolution(this.state.evolution.cloneMe());
+            this.saved = true;
+            this.changeErrorText("Saved Successfully.")
+        }
+        else{
+            this.setState(() => ({confirmationBox: true}));
+        }
+    }
+    changeErrorText(text, callback = (() => null)){
+        if(!this.state.errorText){
+            this.setState((state) => ({errorText: text}), callback);
+        }
+        else if(this.state.errorText.length < text.length){
+            this.setState((state) => ({errorText: text}), callback);
+        }
+        else{
+            if(this.state.errorText === text){
+                this.setState((state) => ({errorText: (text + " ")}), callback);
+            }
+            else{
+                this.setState((state) => ({errorText: text}), callback);
+            }
+        }
+    }
+    changed(){
+        this.saved = false;
+        this.forceUpdate();
+    }
+    componentDidMount() {
+        if(!this.state.evolution){
+            this.setState(() => ({evolution: this.props.evolutionIn.cloneMe()}));
+        }
+    }
+}

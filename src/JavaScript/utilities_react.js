@@ -1020,7 +1020,7 @@ var VerticalCarousel = function (_React$Component19) {
         value: function render() {
             var _this28 = this;
 
-            console.log("render");
+            // console.log("render");
 
             var _props4 = this.props,
                 selected = _props4.selected,
@@ -1115,7 +1115,7 @@ var VerticalCarousel = function (_React$Component19) {
     }, {
         key: "click",
         value: function click(i) {
-            console.log("click(" + i + ")");
+            // console.log(`click(${i})`);
             if (i !== this.props.selected) {
                 this.props.select(i);
             } else {
@@ -1125,9 +1125,7 @@ var VerticalCarousel = function (_React$Component19) {
     }, {
         key: "scroll",
         value: function scroll(amount) {
-            var _this29 = this;
-
-            console.log("scroll(" + amount + ")");
+            // console.log(`scroll(${amount})`);
             var minScroll = 0;
             // const maxScroll = 100;
             var maxScroll = this.lastObjectRef.current ? this.lastObjectRef.current.offsetTop : this.focusedRef.current.offsetTop;
@@ -1136,24 +1134,24 @@ var VerticalCarousel = function (_React$Component19) {
                 this.setState(function (state) {
                     return { scroll: Math.min(Math.max(state.scroll + amount, minScroll), maxScroll) };
                 }, function () {
-                    console.log("after: scroll: " + _this29.state.scroll);
+                    // console.log(`after: scroll: ${this.state.scroll}`);
                 });
             }
         }
     }, {
         key: "scrollToFocus",
         value: function scrollToFocus() {
-            console.log("scroll: " + this.state.scroll + ", this.focusedRef.current.offsetTop: " + this.focusedRef.current.offsetTop);
+            // console.log(`scroll: ${this.state.scroll}, this.focusedRef.current.offsetTop: ${this.focusedRef.current.offsetTop}`);
             this.scroll(this.focusedRef.current.offsetTop - this.state.scroll);
         }
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            var _this30 = this;
+            var _this29 = this;
 
             if (this.props.delayInitialScroll) {
                 setTimeout(function () {
-                    return _this30.scrollToFocus();
+                    return _this29.scrollToFocus();
                 }, this.props.delayInitialScroll * 50);
             } else {
                 this.scrollToFocus();

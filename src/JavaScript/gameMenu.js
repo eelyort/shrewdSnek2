@@ -56,6 +56,7 @@ var GameMenu = function (_React$Component2) {
         _this2.closePopUp = _this2.closePopUp.bind(_this2);
         _this2.changeLoadedSnakes = _this2.changeLoadedSnakes.bind(_this2);
         _this2.spliceLoadedSnakes = _this2.spliceLoadedSnakes.bind(_this2);
+        _this2.changeEvolution = _this2.changeEvolution.bind(_this2);
 
         _this2.keyEventInDown = _this2.keyEventInDown.bind(_this2);
         _this2.keyEventInUp = _this2.keyEventInUp.bind(_this2);
@@ -69,6 +70,7 @@ var GameMenu = function (_React$Component2) {
         _this2.startRunner = _this2.startRunner.bind(_this2);
 
         _this2.evolutionReady = _this2.evolutionReady.bind(_this2);
+        _this2.evolveButton = _this2.evolveButton.bind(_this2);
 
         // needed refs
         _this2.pausePlayButtonRef = React.createRef();
@@ -76,7 +78,8 @@ var GameMenu = function (_React$Component2) {
 
         // evolution
         // shell
-        _this2.evolutionShell = new EvolutionShell(_this2.evolutionReady); // TODO: it takes MainMenu as input atm for some reason
+        _this2.evolutionShell = new EvolutionShell(_this2.evolutionReady);
+        _this2.evolutionShell.createEvolution(defaultEvolution);
 
         // runner variables
         // the instance of singleSnakeRunner which is running
@@ -111,7 +114,7 @@ var GameMenu = function (_React$Component2) {
             var popUp = null;
             if (this.state.popupActive) {
                 // bundle of functions for the popup to interact with the main menu
-                //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
+                //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
                 var popUpFuncs = {
                     close: this.closePopUp,
                     changeSelected: function changeSelected(i) {
@@ -125,7 +128,8 @@ var GameMenu = function (_React$Component2) {
                         });
                     },
                     changeLoaded: this.changeLoadedSnakes,
-                    spliceLoaded: this.spliceLoadedSnakes
+                    spliceLoaded: this.spliceLoadedSnakes,
+                    changeEvolution: this.changeEvolution
                 };
                 // 1 = select snake
                 if (this.state.popupActive === 1) {
@@ -135,6 +139,10 @@ var GameMenu = function (_React$Component2) {
                 else if (this.state.popupActive === 2) {
                         popUp = React.createElement(CreateSnakePopUpREACT, { metaInfo: this.state.popupMetaInfo, popUpFuncs: popUpFuncs, loadedSnakesIn: loadedSnakes });
                     }
+                    // 3 = create/edit generation
+                    else if (this.state.popupActive === 3) {
+                            popUp = React.createElement(EditEvolutionPopUp, { metaInfo: this.state.popupMetaInfo, popUpFuncs: popUpFuncs, evolutionIn: this.evolutionShell.evolution });
+                        }
             }
 
             return React.createElement(
@@ -175,6 +183,26 @@ var GameMenu = function (_React$Component2) {
                                         return _this3.openPopUp(2);
                                     } },
                                 "Create Snake"
+                            ),
+                            React.createElement(
+                                "h3",
+                                null,
+                                "Generation: ",
+                                this.evolutionShell.evolution ? this.evolutionShell.evolution.generationNumber : 0
+                            ),
+                            React.createElement(
+                                Button,
+                                { className: "gameButton", onClick: function onClick() {
+                                        return _this3.evolveButton();
+                                    } },
+                                "Evolve"
+                            ),
+                            React.createElement(
+                                Button,
+                                { className: "gameButton", onClick: function onClick() {
+                                        return _this3.openPopUp(3);
+                                    } },
+                                "Edit Evolution"
                             )
                         ),
                         React.createElement(
@@ -313,6 +341,7 @@ var GameMenu = function (_React$Component2) {
         value: function openPopUp(i) {
             var info = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
+            console.log("open");
             this.setState(function () {
                 return {
                     popupActive: i,
@@ -333,6 +362,7 @@ var GameMenu = function (_React$Component2) {
             var toOpen = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
             var info = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
 
+            console.log("close");
             this.setState(function () {
                 return {
                     popupActive: toOpen,
@@ -364,6 +394,11 @@ var GameMenu = function (_React$Component2) {
                 // console.log(3);
                 loadedSnakes.splice(start);
             }
+        }
+    }, {
+        key: "changeEvolution",
+        value: function changeEvolution(newEvolution) {
+            console.log("TODO: gameMenu changeEvolution");
         }
 
         // called on keyEvent press
@@ -539,6 +574,11 @@ var GameMenu = function (_React$Component2) {
             if (!this.runningInstance || this.runningInstance instanceof EvolutionLoadScreen) {
                 this.evolutionShell.runQueue(this.startSnake, this.startRunner);
             }
+        }
+    }, {
+        key: "evolveButton",
+        value: function evolveButton() {
+            console.log("TODO: gameMenu evolveButton()");
         }
 
         // REACT lifecycle
