@@ -722,8 +722,7 @@ var EditEvolutionPopUp = function (_React$Component3) {
                 evolution = _state.evolution,
                 currSnake = _state.currSnake;
 
-
-            console.log("render");
+            // console.log("render");
             // console.log(evolution);
 
             if (!evolution) {
@@ -948,8 +947,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
                                         "div",
                                         { className: "wrapper_div inline_block_parent" },
                                         React.createElement(
-                                            Select,
-                                            { className: "category_text_title small", initVal: mutation.componentID, name: htmlNameMutation, onSelect: function onSelect(val) {
+                                            "select",
+                                            { className: "category_text_title small", value: mutation.componentID, name: htmlNameMutation, onChange: function onChange(val) {
+                                                    val = val.target.value;
                                                     evolution.parameters[2].splice(mutationIndex, 1, [blankMutations[val].cloneMe(), 1]);
                                                     _this8.changed();
                                                 } },
@@ -1131,8 +1131,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
                                         "div",
                                         { className: "wrapper_div inline_block_parent" },
                                         React.createElement(
-                                            Select,
-                                            { className: "category_text_title small", initVal: reproduction.componentID, name: htmlNameReproduction, onSelect: function onSelect(val) {
+                                            "select",
+                                            { className: "category_text_title small", value: reproduction.componentID, name: htmlNameReproduction, onChange: function onChange(val) {
+                                                    val = val.target.value;
                                                     evolution.parameters[1].splice(reproductionIndex, 1, [blankReproductions[val].cloneMe(), 1]);
                                                     _this8.changed();
                                                 } },

@@ -236,7 +236,7 @@ class GameMenu extends React.Component{
         this.setState(() => ({
             popupActive: toOpen,
             popupMetaInfo: info
-        }), () => console.log(this.state));
+        }));
     }
     changeLoadedSnakes(newVer){
         loadedSnakes = newVer;
@@ -375,7 +375,9 @@ class GameMenu extends React.Component{
 
         // clear canvas
         if(this.runningInstance){
-            console.log("new runner called at startRunner() while old one still ongoing");
+            if(!(this.runningInstance instanceof EvolutionLoadScreen)) {
+                console.log("new runner called at startRunner() while old one still ongoing");
+            }
 
             this.runningInstance.kill();
             this.runningInstanceOld = this.runningInstance;

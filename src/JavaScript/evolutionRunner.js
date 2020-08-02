@@ -5,8 +5,8 @@ const defaultEvolutionParams = [
     ["Number of Snakes", 1600, "The number of snakes in each generation.", 10, 25000, 50],
     ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
     ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
-    ["Likely-hood Mutations", 2, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second.", 0, 5000, 0.1],
-    ["Number of Runs", 5, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path.", 1, 13],
+    ["Likely-hood Mutations", 3, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second.", 0, 5000, 0.1],
+    ["Number of Runs", 3, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path.", 1, 13],
     ["Mode Normalization", 0, "Related to the above, this is how the actual score is selected from the scores above."],
     ["Ticks per Apple Score", 50, "The amount of ticks a snake must survive to get the same score as they would from eating an apple.", 1, 999999, 5],
     ["Max Time Score", 1, "The max score (in apples) a snake can get by surviving and not eating apples.", 0, 1000],
@@ -177,7 +177,7 @@ class Evolution extends Component{
 
         // edge case: first generation
         if(this.currentGeneration.length === 1){
-            console.log("createNextGeneration() spawning mutated clones due to only one input snake");
+            // console.log("createNextGeneration() spawning mutated clones due to only one input snake");
 
             // input snake
             let originator = this.currentGeneration[0][0].cloneMe();
@@ -213,7 +213,7 @@ class Evolution extends Component{
         }
 
         // regular
-        console.log("Regular Create Next Generation:");
+        // console.log("Regular Create Next Generation:");
         // number of snakes in next generation
         let idx = 0;
 

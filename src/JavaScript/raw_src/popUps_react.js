@@ -406,7 +406,7 @@ class EditEvolutionPopUp extends React.Component{
         const {metaInfo: metaInfo, evolutionIn: evolutionIn} = this.props;
         const {evolution: evolution, currSnake: currSnake} = this.state;
 
-        console.log("render");
+        // console.log("render");
         // console.log(evolution);
 
         if(!evolution){
@@ -523,14 +523,15 @@ class EditEvolutionPopUp extends React.Component{
                                 return(
                                     <div className={"component_block"}>
                                         <div className={"wrapper_div inline_block_parent"}>
-                                            <Select className={"category_text_title small"} initVal={mutation.componentID} name={htmlNameMutation} onSelect={(val) => {
+                                            <select className={"category_text_title small"} value={mutation.componentID} name={htmlNameMutation} onChange={(val) => {
+                                                val = val.target.value;
                                                 evolution.parameters[2].splice(mutationIndex, 1, [blankMutations[val].cloneMe(), 1]);
                                                 this.changed();
                                             }} >
                                                 {blankMutations.map((value, index) => (
                                                     <option value={index}>{value.getComponentName()}</option>
                                                 ))}
-                                            </Select>
+                                            </select>
                                             <div className={"wrapper_div inline_block_parent float_right"}>
                                                 <label htmlFor={htmlNameMutation + "_probability"}>Relative Likelihood: </label>
                                                 <NumberForm name={htmlNameMutation + "_probability"} initVal={relativeProb} min={1} max={100000} step={0.5} onChange={(val) => {
@@ -632,14 +633,15 @@ class EditEvolutionPopUp extends React.Component{
                                 return(
                                     <div className={"component_block"}>
                                         <div className={"wrapper_div inline_block_parent"}>
-                                            <Select className={"category_text_title small"} initVal={reproduction.componentID} name={htmlNameReproduction} onSelect={(val) => {
+                                            <select className={"category_text_title small"} value={reproduction.componentID} name={htmlNameReproduction} onChange={(val) => {
+                                                val = val.target.value;
                                                 evolution.parameters[1].splice(reproductionIndex, 1, [blankReproductions[val].cloneMe(), 1]);
                                                 this.changed();
                                             }} >
                                                 {blankReproductions.map((value, index) => (
                                                     <option value={index}>{value.getComponentName()}</option>
                                                 ))}
-                                            </Select>
+                                            </select>
                                             <div className={"wrapper_div inline_block_parent float_right"}>
                                                 <label htmlFor={htmlNameReproduction + "_probability"}>Relative Likelihood: </label>
                                                 <NumberForm name={htmlNameReproduction + "_probability"} initVal={relativeProb} min={1} max={100000} step={0.5} onChange={(val) => {
