@@ -695,7 +695,8 @@ var EditEvolutionPopUp = function (_React$Component3) {
 
         _this7.state = {
             evolution: null,
-            errorText: "",
+            currSnake: null,
+            errorText: "(Nothing to Save.)",
             confirmationBox: false,
             quitConfirmation: false
         };
@@ -717,11 +718,13 @@ var EditEvolutionPopUp = function (_React$Component3) {
             var _props7 = this.props,
                 metaInfo = _props7.metaInfo,
                 evolutionIn = _props7.evolutionIn;
-            var evolution = this.state.evolution;
+            var _state = this.state,
+                evolution = _state.evolution,
+                currSnake = _state.currSnake;
 
 
             console.log("render");
-            console.log(evolution);
+            // console.log(evolution);
 
             if (!evolution) {
                 return null;
@@ -733,10 +736,10 @@ var EditEvolutionPopUp = function (_React$Component3) {
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
             var popUpFuncs = this.props.popUpFuncs;
 
-            // set snake of evolution with metaInfo
-            if (metaInfo instanceof Snake) {
-                this.state.evolution.currentGeneration = [[metaInfo.cloneMe(), 1]];
-            }
+            // // set snake of evolution with metaInfo
+            // if(metaInfo instanceof Snake){
+            //     this.state.evolution.currentGeneration = [[metaInfo.cloneMe(), 1]];
+            // }
 
             var confirmation = null;
             if (this.state.confirmationBox) {
@@ -878,7 +881,7 @@ var EditEvolutionPopUp = function (_React$Component3) {
                                     step = _defaultEvolutionPara[5];
 
                                 var htmlName = name.replace(" ", "_");
-                                if (index !== 1 && index !== 2 && index !== 5) {
+                                if (index !== 1 && index !== 2) {
                                     return React.createElement(
                                         Fragment,
                                         null,
@@ -890,10 +893,30 @@ var EditEvolutionPopUp = function (_React$Component3) {
                                                 { htmlFor: htmlName, className: "category_text_title small" },
                                                 name
                                             ),
+                                            index !== 5 ?
+                                            // all fields are numeric input except for 5
                                             React.createElement(NumberForm, { name: htmlName, initVal: val, min: min, max: max, step: step, onChange: function onChange(val) {
                                                     evolution.parameters[index] = val;
                                                     _this8.changed();
-                                                } })
+                                                } }) :
+                                            // special case for mode-normalization
+                                            React.createElement(
+                                                Select,
+                                                { initVal: evolution.parameters[index], name: htmlName, onSelect: function onSelect(val) {
+                                                        evolution.parameters[index] = parseInt(val);
+                                                        _this8.changed();
+                                                    } },
+                                                React.createElement(
+                                                    "option",
+                                                    { value: 0 },
+                                                    "Median"
+                                                ),
+                                                React.createElement(
+                                                    "option",
+                                                    { value: 1 },
+                                                    "Mean"
+                                                )
+                                            )
                                         ),
                                         React.createElement(
                                             TypewriterText,
@@ -906,7 +929,417 @@ var EditEvolutionPopUp = function (_React$Component3) {
                                         )
                                     );
                                 }
-                            })
+                            }),
+                            React.createElement(
+                                "p",
+                                { className: "category_text_title" },
+                                "Mutation Methods"
+                            ),
+                            evolution.parameters[2].map(function (arr, mutationIndex) {
+                                var _arr = _slicedToArray(arr, 2),
+                                    mutation = _arr[0],
+                                    relativeProb = _arr[1];
+
+                                var htmlNameMutation = "mutation_" + mutationIndex;
+                                return React.createElement(
+                                    "div",
+                                    { className: "component_block" },
+                                    React.createElement(
+                                        "div",
+                                        { className: "wrapper_div inline_block_parent" },
+                                        React.createElement(
+                                            Select,
+                                            { className: "category_text_title small", initVal: mutation.componentID, name: htmlNameMutation, onSelect: function onSelect(val) {
+                                                    evolution.parameters[2].splice(mutationIndex, 1, [blankMutations[val].cloneMe(), 1]);
+                                                    _this8.changed();
+                                                } },
+                                            blankMutations.map(function (value, index) {
+                                                return React.createElement(
+                                                    "option",
+                                                    { value: index },
+                                                    value.getComponentName()
+                                                );
+                                            })
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            { className: "wrapper_div inline_block_parent float_right" },
+                                            React.createElement(
+                                                "label",
+                                                { htmlFor: htmlNameMutation + "_probability" },
+                                                "Relative Likelihood: "
+                                            ),
+                                            React.createElement(NumberForm, { name: htmlNameMutation + "_probability", initVal: relativeProb, min: 1, max: 100000, step: 0.5, onChange: function onChange(val) {
+                                                    evolution.parameters[2][mutationIndex][1] = val;
+                                                    _this8.changed();
+                                                } })
+                                        )
+                                    ),
+                                    React.createElement(
+                                        TypewriterText,
+                                        { speed: speed },
+                                        React.createElement(
+                                            "p",
+                                            { className: "category_text" + (_this8.props.className ? " " + _this8.props.className : "") },
+                                            mutation.getComponentDescription()
+                                        )
+                                    ),
+                                    mutation.mutationParameters.map(function (arr, paramIndex) {
+                                        var isSelect = arr.length === 4;
+                                        var name = void 0,
+                                            val = void 0,
+                                            desc = void 0;
+
+                                        var form = null;
+
+                                        var htmlName = "parameter_" + paramIndex;
+
+                                        var min = void 0,
+                                            max = void 0,
+                                            step = void 0,
+                                            options = void 0;
+                                        if (!isSelect) {
+                                            var _arr2 = _slicedToArray(arr, 6);
+
+                                            name = _arr2[0];
+                                            val = _arr2[1];
+                                            desc = _arr2[2];
+                                            min = _arr2[3];
+                                            max = _arr2[4];
+                                            step = _arr2[5];
+
+                                            form = React.createElement(NumberForm, { name: htmlName, initVal: val, min: min, max: max, step: step, onChange: function onChange(val) {
+                                                    mutation.mutationParameters[paramIndex][1] = val;
+                                                    _this8.changed();
+                                                } });
+                                        } else {
+                                            var _arr3 = _slicedToArray(arr, 4);
+
+                                            name = _arr3[0];
+                                            val = _arr3[1];
+                                            desc = _arr3[2];
+                                            options = _arr3[3];
+
+                                            form = React.createElement(
+                                                Select,
+                                                { name: htmlName, initVal: val, onSelect: function onSelect(val) {
+                                                        mutation.mutationParameters[paramIndex][1] = val;
+                                                        _this8.changed();
+                                                    } },
+                                                options.map(function (optionVal, optionIndex) {
+                                                    return React.createElement(
+                                                        "option",
+                                                        { value: optionVal },
+                                                        optionVal + ""
+                                                    );
+                                                })
+                                            );
+                                        }
+
+                                        return React.createElement(
+                                            Fragment,
+                                            null,
+                                            React.createElement(
+                                                "div",
+                                                { className: "inline_block_parent" },
+                                                React.createElement(
+                                                    "label",
+                                                    { htmlFor: htmlName, className: "category_text_title small" },
+                                                    name
+                                                ),
+                                                form
+                                            ),
+                                            React.createElement(
+                                                "p",
+                                                { className: "category_text" },
+                                                desc
+                                            )
+                                        );
+                                    }),
+                                    React.createElement(
+                                        "div",
+                                        { className: "button_div" },
+                                        evolution.parameters[2].length <= 1 ? React.createElement(
+                                            Button,
+                                            { className: "faded" + (_this8.props.className ? " " + _this8.props.className : ""), onClick: function onClick() {
+                                                    return null;
+                                                } },
+                                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/delete-button-580x580.png" })
+                                        ) : React.createElement(
+                                            Button,
+                                            { className: _this8.props.className, onClick: function onClick() {
+                                                    evolution.parameters[2].splice(mutationIndex, 1);
+                                                    _this8.changed();
+                                                } },
+                                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/delete-button-580x580.png" })
+                                        ),
+                                        React.createElement(
+                                            Button,
+                                            { className: _this8.props.className, onClick: function onClick() {
+                                                    evolution.parameters[2].push([mutation.cloneMe(), relativeProb]);
+                                                    _this8.changed();
+                                                } },
+                                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/+-button-640x640.png" })
+                                        )
+                                    )
+                                );
+                            }),
+                            React.createElement(
+                                "div",
+                                { className: "inline_block_parent inline_buttons edit_add_component" },
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "mutation_extra" },
+                                    "Add Mutation:"
+                                ),
+                                React.createElement(
+                                    "select",
+                                    { value: -1, name: "mutation_extra", onChange: function onChange(val) {
+                                            val = val.target.value;
+                                            evolution.parameters[2].push([blankMutations[val].cloneMe(), 1]);
+                                            _this8.changed();
+                                        } },
+                                    React.createElement(
+                                        "option",
+                                        { value: -1 },
+                                        "------"
+                                    ),
+                                    blankMutations.map(function (value, index) {
+                                        return React.createElement(
+                                            "option",
+                                            { value: index },
+                                            value.getComponentName()
+                                        );
+                                    })
+                                )
+                            ),
+                            React.createElement(
+                                "p",
+                                { className: "category_text_title" },
+                                "Reproduction Methods"
+                            ),
+                            evolution.parameters[1].map(function (arr, reproductionIndex) {
+                                var _arr4 = _slicedToArray(arr, 2),
+                                    reproduction = _arr4[0],
+                                    relativeProb = _arr4[1];
+
+                                var htmlNameReproduction = "reproduction_" + reproductionIndex;
+                                return React.createElement(
+                                    "div",
+                                    { className: "component_block" },
+                                    React.createElement(
+                                        "div",
+                                        { className: "wrapper_div inline_block_parent" },
+                                        React.createElement(
+                                            Select,
+                                            { className: "category_text_title small", initVal: reproduction.componentID, name: htmlNameReproduction, onSelect: function onSelect(val) {
+                                                    evolution.parameters[1].splice(reproductionIndex, 1, [blankReproductions[val].cloneMe(), 1]);
+                                                    _this8.changed();
+                                                } },
+                                            blankReproductions.map(function (value, index) {
+                                                return React.createElement(
+                                                    "option",
+                                                    { value: index },
+                                                    value.getComponentName()
+                                                );
+                                            })
+                                        ),
+                                        React.createElement(
+                                            "div",
+                                            { className: "wrapper_div inline_block_parent float_right" },
+                                            React.createElement(
+                                                "label",
+                                                { htmlFor: htmlNameReproduction + "_probability" },
+                                                "Relative Likelihood: "
+                                            ),
+                                            React.createElement(NumberForm, { name: htmlNameReproduction + "_probability", initVal: relativeProb, min: 1, max: 100000, step: 0.5, onChange: function onChange(val) {
+                                                    evolution.parameters[1][reproductionIndex][1] = val;
+                                                    _this8.changed();
+                                                } })
+                                        )
+                                    ),
+                                    React.createElement(
+                                        TypewriterText,
+                                        { speed: speed },
+                                        React.createElement(
+                                            "p",
+                                            { className: "category_text" + (_this8.props.className ? " " + _this8.props.className : "") },
+                                            reproduction.getComponentDescription()
+                                        )
+                                    ),
+                                    reproduction.reproductionParameters.map(function (arr, paramIndex) {
+                                        var isSelect = arr.length === 4;
+                                        var name = void 0,
+                                            val = void 0,
+                                            desc = void 0;
+
+                                        var form = null;
+
+                                        var htmlName = "parameter_" + paramIndex;
+
+                                        var min = void 0,
+                                            max = void 0,
+                                            step = void 0,
+                                            options = void 0;
+                                        if (!isSelect) {
+                                            var _arr5 = _slicedToArray(arr, 6);
+
+                                            name = _arr5[0];
+                                            val = _arr5[1];
+                                            desc = _arr5[2];
+                                            min = _arr5[3];
+                                            max = _arr5[4];
+                                            step = _arr5[5];
+
+                                            form = React.createElement(NumberForm, { name: htmlName, initVal: val, min: min, max: max, step: step, onChange: function onChange(val) {
+                                                    reproduction.reproductionParameters[paramIndex][1] = val;
+                                                    _this8.changed();
+                                                } });
+                                        } else {
+                                            var _arr6 = _slicedToArray(arr, 4);
+
+                                            name = _arr6[0];
+                                            val = _arr6[1];
+                                            desc = _arr6[2];
+                                            options = _arr6[3];
+
+                                            form = React.createElement(
+                                                Select,
+                                                { name: htmlName, initVal: val, onSelect: function onSelect(val) {
+                                                        reproduction.reproductionParameters[paramIndex][1] = val;
+                                                        _this8.changed();
+                                                    } },
+                                                options.map(function (optionVal, optionIndex) {
+                                                    return React.createElement(
+                                                        "option",
+                                                        { value: optionVal },
+                                                        optionVal + ""
+                                                    );
+                                                })
+                                            );
+                                        }
+
+                                        return React.createElement(
+                                            Fragment,
+                                            null,
+                                            React.createElement(
+                                                "div",
+                                                { className: "inline_block_parent" },
+                                                React.createElement(
+                                                    "label",
+                                                    { htmlFor: htmlName, className: "category_text_title small" },
+                                                    name
+                                                ),
+                                                form
+                                            ),
+                                            React.createElement(
+                                                "p",
+                                                { className: "category_text" },
+                                                desc
+                                            )
+                                        );
+                                    }),
+                                    React.createElement(
+                                        "div",
+                                        { className: "button_div" },
+                                        evolution.parameters[1].length <= 1 ? React.createElement(
+                                            Button,
+                                            { className: "faded" + (_this8.props.className ? " " + _this8.props.className : ""), onClick: function onClick() {
+                                                    return null;
+                                                } },
+                                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/delete-button-580x580.png" })
+                                        ) : React.createElement(
+                                            Button,
+                                            { className: _this8.props.className, onClick: function onClick() {
+                                                    evolution.parameters[1].splice(reproductionIndex, 1);
+                                                    _this8.changed();
+                                                } },
+                                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/delete-button-580x580.png" })
+                                        ),
+                                        React.createElement(
+                                            Button,
+                                            { className: _this8.props.className, onClick: function onClick() {
+                                                    evolution.parameters[1].push([reproduction.cloneMe(), relativeProb]);
+                                                    _this8.changed();
+                                                } },
+                                            React.createElement(ImgIcon, { className: "wrapper_div", small: 3, src: "src/Images/+-button-640x640.png" })
+                                        )
+                                    )
+                                );
+                            }),
+                            React.createElement(
+                                "div",
+                                { className: "inline_block_parent inline_buttons edit_add_component" },
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "reproduction_extra" },
+                                    "Add Reproduction:"
+                                ),
+                                React.createElement(
+                                    "select",
+                                    { value: -1, name: "reproduction_extra", onChange: function onChange(val) {
+                                            val = val.target.value;
+                                            evolution.parameters[1].push([blankReproductions[val].cloneMe(), 1]);
+                                            _this8.changed();
+                                        } },
+                                    React.createElement(
+                                        "option",
+                                        { value: -1 },
+                                        "------"
+                                    ),
+                                    blankReproductions.map(function (value, index) {
+                                        return React.createElement(
+                                            "option",
+                                            { value: index },
+                                            value.getComponentName()
+                                        );
+                                    })
+                                )
+                            ),
+                            React.createElement(
+                                "div",
+                                { className: "inline_block_parent" },
+                                React.createElement(
+                                    "label",
+                                    { className: "category_text_title", htmlFor: "snake_select" },
+                                    "Snake"
+                                ),
+                                React.createElement(
+                                    Select,
+                                    { initVal: -1, name: "snake_select", onSelect: function onSelect(val) {
+                                            val = parseInt(val);
+                                            if (val !== -1) {
+                                                _this8.setState(function () {
+                                                    return { currSnake: loadedSnakes[val].cloneMe() };
+                                                });
+                                                _this8.changed();
+                                            }
+                                        } },
+                                    React.createElement(
+                                        "option",
+                                        { value: -1 },
+                                        currSnake ? currSnake.getComponentName() : "---"
+                                    ),
+                                    loadedSnakes.map(function (snek, index) {
+                                        snek = snek.snakes[0];
+                                        if (snek.myBrain.componentID === 2) {
+                                            return React.createElement(
+                                                "option",
+                                                { value: index },
+                                                snek.getComponentName()
+                                            );
+                                        } else {
+                                            return null;
+                                        }
+                                    })
+                                )
+                            ),
+                            React.createElement(
+                                "h4",
+                                null,
+                                "(Snakes Must Have One Of The Following Brains: \"Neural Network Brain\")"
+                            ),
+                            currSnake ? React.createElement(SnakeDetails, { snake: currSnake }) : null
                         ),
                         React.createElement(
                             "div",
@@ -944,15 +1377,21 @@ var EditEvolutionPopUp = function (_React$Component3) {
     }, {
         key: "saveResults",
         value: function saveResults() {
-            if (this.state.confirmationBox) {
-                // save
-                this.props.popUpFuncs.changeEvolution(this.state.evolution.cloneMe());
-                this.saved = true;
-                this.changeErrorText("Saved Successfully.");
+            if (!this.saved) {
+                if (this.state.confirmationBox) {
+                    // save
+                    var ans = this.state.evolution.cloneMe();
+                    ans.currentGeneration = [[this.state.currSnake.cloneMe(), 1]];
+                    this.props.popUpFuncs.changeEvolution(ans);
+                    this.saved = true;
+                    this.changeErrorText("(Saved Successfully.)");
+                } else {
+                    this.setState(function () {
+                        return { confirmationBox: true };
+                    });
+                }
             } else {
-                this.setState(function () {
-                    return { confirmationBox: true };
-                });
+                this.changeErrorText("(Nothing to Save.)");
             }
         }
     }, {
@@ -986,6 +1425,7 @@ var EditEvolutionPopUp = function (_React$Component3) {
         key: "changed",
         value: function changed() {
             this.saved = false;
+            // console.log(this.state.evolution);
             this.forceUpdate();
         }
     }, {
@@ -996,6 +1436,12 @@ var EditEvolutionPopUp = function (_React$Component3) {
             if (!this.state.evolution) {
                 this.setState(function () {
                     return { evolution: _this10.props.evolutionIn.cloneMe() };
+                }, function () {
+                    if (_this10.state.evolution.currentGeneration && _this10.state.evolution.currentGeneration[0] && _this10.state.evolution.currentGeneration[0][0] instanceof Snake) {
+                        _this10.setState(function () {
+                            return { currSnake: _this10.state.evolution.currentGeneration[0][0].cloneMe() };
+                        });
+                    }
                 });
             }
         }

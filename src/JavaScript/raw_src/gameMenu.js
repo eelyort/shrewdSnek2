@@ -20,7 +20,8 @@ class GameMenu extends React.Component{
             selectedSnake: 0,
             selectedSnakeGen: 0,
             popupActive: 0,
-            popupMetaInfo: null
+            popupMetaInfo: null,
+            infiniteEvolve: false
         };
 
         // bind functions
@@ -48,6 +49,18 @@ class GameMenu extends React.Component{
 
         this.evolutionReady = this.evolutionReady.bind(this);
         this.evolveButton = this.evolveButton.bind(this);
+        this.infiniteButton = this.infiniteButton.bind(this);
+
+        // bundle of functions for the popup to interact with the main menu
+        //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
+        this.popUpFuncs = {
+            close: this.closePopUp,
+            changeSelected: (i) => this.setState(() => ({selectedSnake: i})),
+            changeSelectedGen: (i) => this.setState(() => ({selectedSnakeGen: i})),
+            changeLoaded: this.changeLoadedSnakes,
+            spliceLoaded: this.spliceLoadedSnakes,
+            changeEvolution: this.changeEvolution
+        };
 
         // needed refs
         this.pausePlayButtonRef = React.createRef();
@@ -55,8 +68,7 @@ class GameMenu extends React.Component{
 
         // evolution
         // shell
-        this.evolutionShell = new EvolutionShell(this.evolutionReady);
-        this.evolutionShell.createEvolution(defaultEvolution);
+        this.changeEvolution(defaultEvolution);
 
         // runner variables
         // the instance of singleSnakeRunner which is running
@@ -69,6 +81,7 @@ class GameMenu extends React.Component{
         this.then = 0;
         this.now = 0;
         this.fps = defaultFPS;
+        this.drawing = false;
 
         // popups: 0 - none, 1 - select snake, TODO:
 
@@ -84,32 +97,22 @@ class GameMenu extends React.Component{
         // popUps
         let popUp = null;
         if(this.state.popupActive) {
-            // bundle of functions for the popup to interact with the main menu
-            //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
-            const popUpFuncs = {
-                close: this.closePopUp,
-                changeSelected: (i) => this.setState(() => ({selectedSnake: i})),
-                changeSelectedGen: (i) => this.setState(() => ({selectedSnakeGen: i})),
-                changeLoaded: this.changeLoadedSnakes,
-                spliceLoaded: this.spliceLoadedSnakes,
-                changeEvolution: this.changeEvolution
-            };
             // 1 = select snake
             if (this.state.popupActive === 1) {
                 popUp = (
-                    <SelectSnakePopUpREACT metaInfo={this.state.popupMetaInfo} selectedSnake={this.state.selectedSnake} selectedSnakeGen={this.state.selectedSnakeGen} popUpFuncs={popUpFuncs} loadedSnakesIn={loadedSnakes} />
+                    <SelectSnakePopUpREACT metaInfo={this.state.popupMetaInfo} selectedSnake={this.state.selectedSnake} selectedSnakeGen={this.state.selectedSnakeGen} popUpFuncs={this.popUpFuncs} loadedSnakesIn={loadedSnakes} />
                 );
             }
             // 2 = create/edit snake
             else if(this.state.popupActive === 2){
                 popUp = (
-                    <CreateSnakePopUpREACT metaInfo={this.state.popupMetaInfo} popUpFuncs={popUpFuncs} loadedSnakesIn={loadedSnakes} />
+                    <CreateSnakePopUpREACT metaInfo={this.state.popupMetaInfo} popUpFuncs={this.popUpFuncs} loadedSnakesIn={loadedSnakes} />
                 );
             }
             // 3 = create/edit generation
             else if(this.state.popupActive === 3){
                 popUp = (
-                    <EditEvolutionPopUp metaInfo={this.state.popupMetaInfo} popUpFuncs={popUpFuncs} evolutionIn={this.evolutionShell.evolution} />
+                    <EditEvolutionPopUp metaInfo={this.state.popupMetaInfo} popUpFuncs={this.popUpFuncs} evolutionIn={this.evolutionShell.evolution} />
                 );
             }
         }
@@ -138,6 +141,10 @@ class GameMenu extends React.Component{
                             <Button className={"gameButton"} onClick={() => this.openPopUp(3)}>
                                 Edit Evolution
                             </Button>
+                            <div className={"inline_block_parent"}>
+                                <input type={"checkbox"} name={"infinite_evolve"} checked={this.state.infiniteEvolve} onChange={this.infiniteButton} />
+                                <label htmlFor={"infinite_evolve"}>Evolve Infinitely</label>
+                            </div>
                         </FadeMenu>
                         <TypewriterText className={"playing_text"}>
                             <h2>
@@ -181,12 +188,7 @@ class GameMenu extends React.Component{
     // button functions
     startSnakeButton(){
         // console.log("start snake button");
-        if(this.state.paused) {
-            this.pausePlayButtonRef.current.clicked();
-        }
-        else {
-            this.startSnake(this.getSelectedSnake());
-        }
+        this.startSnake(this.getSelectedSnake());
     }
     changeTickRate(val){
         this.setState((state) => ({tickRate: Math.max(this.tickRateLowerBound, Math.min(this.tickRateUpperBound, state.tickRate + val))}), () => {
@@ -197,28 +199,29 @@ class GameMenu extends React.Component{
     }
     pauseButton(){
         // console.log("pause");
-        if(this.runningInstance){
-            this.runningInstance.pause();
-        }
-        this.setState((state) => ({paused: true}));
+        this.setState((state) => ({paused: true}), () => {
+            if(this.runningInstance){
+                this.runningInstance.pause();
+            }
+        });
     }
     unpauseButton(){
         // console.log("unpause");
-        if(this.runningInstance){
-            this.runningInstance.unpause();
-        }
-        else{
-            this.startSnake(this.getSelectedSnake());
-        }
         this.setState((state) => ({paused: false}), () => {
             this.startDraw();
+            if(this.runningInstance){
+                this.runningInstance.unpause();
+            }
+            else{
+                this.startSnake(this.getSelectedSnake());
+            }
         });
     }
 
     // popup stuff
     // opens a popup
     openPopUp(i, info = null){
-        console.log("open");
+        // console.log("open");
         this.setState(() => ({
             popupActive: i,
             popupMetaInfo: info
@@ -229,7 +232,7 @@ class GameMenu extends React.Component{
     }
     // pass as function to popups, optional parameter closes the current popup and immediately opens another
     closePopUp(toOpen = 0, info = null){
-        console.log("close");
+        // console.log("close");
         this.setState(() => ({
             popupActive: toOpen,
             popupMetaInfo: info
@@ -254,7 +257,8 @@ class GameMenu extends React.Component{
         }
     }
     changeEvolution(newEvolution){
-        console.log("TODO: gameMenu changeEvolution");
+        this.evolutionShell = new EvolutionShell(this.evolutionReady, this.popUpFuncs);
+        this.evolutionShell.createEvolution(newEvolution);
     }
 
     // called on keyEvent press
@@ -286,8 +290,11 @@ class GameMenu extends React.Component{
     // drawing
     // begins the draw loop
     startDraw(){
-        this.then = Date.now();
-        this.draw();
+        if(!this.drawing) {
+            this.drawing = true;
+            this.then = Date.now();
+            this.draw();
+        }
     }
     // draw loop
     draw(){
@@ -298,6 +305,7 @@ class GameMenu extends React.Component{
                 if(this.runningInstance.mySnake.myLength !== this.state.score) {
                     this.setState((state) => ({score: this.runningInstance.mySnake.myLength}));
                 }
+                this.drawing = false;
                 return;
             }
 
@@ -323,6 +331,9 @@ class GameMenu extends React.Component{
                 }
             }
         }
+        else{
+            this.drawing = false;
+        }
     }
 
     // runner interaction methods
@@ -338,17 +349,17 @@ class GameMenu extends React.Component{
         this.runningInstanceOld = this.runningInstance;
         this.runningInstance = null;
 
-        // if the evolution has things it wants to show let it do so
-        if(this.evolutionShell) {
-            setTimeout(() => {
-                this.evolutionShell.runQueue(this.startSnake, this.startRunner);
-            }, 15);
+        if(this.evolutionShell && (this.evolutionShell.runningGen || this.evolutionShell.viewQueue.size > 0)){
+            setTimeout(() => this.evolutionShell.runQueue(this.startSnake, this.startRunner), 1000);
         }
     }
     getSelectedSnake(){
-        return loadedSnakes[this.state.selectedSnake].cloneMe();
+        return loadedSnakes[this.state.selectedSnake].snakes[this.state.selectedSnakeGen].cloneMe();
     }
     startSnake(snake){
+        // console.log("Game Menu startSnake, snake:");
+        // console.log(snake);
+
         let runner;
         // special runners for special cases
         if(snake.uuid && snake.uuid === "Mother's Day!!!"){
@@ -360,6 +371,8 @@ class GameMenu extends React.Component{
         this.startRunner(runner);
     }
     startRunner(runner){
+        // console.log("Game Menu startRunner");
+
         // clear canvas
         if(this.runningInstance){
             console.log("new runner called at startRunner() while old one still ongoing");
@@ -382,20 +395,42 @@ class GameMenu extends React.Component{
             score: this.runningInstance.mySnake.myLength,
             playing: this.runningInstance.mySnake.getComponentName()
         }));
+
         this.runningInstance.focusMe();
         this.startDraw();
         this.runningInstance.startMe();
+        if(this.state.paused){
+            this.runningInstance.pause();
+            this.pausePlayButtonRef.current.clicked();
+        }
     }
 
     // evolution shell interaction methods
     // called by the shell when it has something new to show
     evolutionReady(){
+        // console.log("Game Menu evolutionReady");
         if(!this.runningInstance || (this.runningInstance instanceof EvolutionLoadScreen)){
+            // console.log("Game Menu evolutionReady 2");
+            // if(this.runningInstance) {
+            //     this.runningInstance.kill();
+            //     this.runningInstanceOld = this.runningInstance;
+            //     this.runningInstance = null;
+            // }
             this.evolutionShell.runQueue(this.startSnake, this.startRunner);
         }
     }
     evolveButton(){
-        console.log("TODO: gameMenu evolveButton()");
+        this.evolutionShell.runGen();
+        this.evolutionShell.runQueue(this.startSnake, this.startRunner);
+    }
+    infiniteButton(){
+        this.setState((state) => ({
+            infiniteEvolve: !state.infiniteEvolve
+        }), () => {
+            if(this.evolutionShell){
+                this.evolutionShell.infiniteRun = this.state.infiniteEvolve;
+            }
+        });
     }
 
     // REACT lifecycle

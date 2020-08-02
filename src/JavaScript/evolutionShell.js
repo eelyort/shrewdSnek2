@@ -1,12 +1,16 @@
 // small class to handle the displaying and whatnot of evolutionRunner
 class EvolutionShell{
-    constructor(tellReady) {
+    constructor(tellReady, popUpFuncs) {
         this.viewQueue = new CustomQueue();
         this.runningGen = false;
         this.infiniteRun = false;
         this.evolution = null;
 
         this.tellReady = tellReady;
+
+        // bundle of functions for the popup to interact with the main menu
+        //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
+        this.popUpFuncs = popUpFuncs;
     }
     createEvolution(input){
         if(input instanceof Evolution){
@@ -46,15 +50,8 @@ class EvolutionShell{
     }
     // called from mainMenu - runs next ready snake/loading screen
     runQueue(startSnake, startRunner){
-        // if(!this.mainMenu.isRunning || this.mainMenu.runningInstance instanceof EvolutionLoadScreen) {
-        //     this.mainMenu.isRunning = false;
-        //     if (this.viewQueue.size > 0) {
-        //         this.mainMenu.startSnake(this.viewQueue.poll());
-        //         this.mainMenu.updateSelectedSnake(loadedSnakes.length - 1);
-        //     } else if (this.runningGen) {
-        //         this.mainMenu.startRunner(new EvolutionLoadScreen(this.evolution, this.mainMenu));
-        //     }
-        // }
+        // console.log("evolutionShell runQueue");
+
         if(this.viewQueue.size > 0){
             startSnake(this.viewQueue.poll());
         }
@@ -63,9 +60,10 @@ class EvolutionShell{
         }
     }
     callback(best){
+        // console.log("shell callback, best: ");
+        // console.log(best);
         this.save(best);
         this.viewQueue.enqueue(best);
-        setTimeout(this.runQueue.bind(this), 15);
         this.runningGen = false;
         this.tellReady();
         if(this.infiniteRun){
@@ -73,28 +71,26 @@ class EvolutionShell{
         }
     }
     save(snake){
-        // if (loadedSnakes[loadedSnakes.length - 1].componentName !== `G${this.evolution.generationNumber}`) {
-        //     // save old
-        //     snake = snake.cloneMe();
-        //     snake.generationNumber = this.;
-        //     if(snake.getComponentName() === loadedSnakes[loadedSnakes.length - 1].getComponentName()){
-        //     }
-        //     loadedSnakes.push(snake);
-        //
-        //     // this.mainMenu.myPopUps.get("SelectSnake").updateSnakes(loadedSnakes);
-        // }
+        // bundle of functions for the popup to interact with the main menu
+        //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
 
         // save old
         snake = snake.cloneMe();
         snake.generationNumber = this.evolution.generationNumber;
+        // console.log(`evolutionShell save, snake.gen: ${snake.generationNumber}`);
         if(snake.getComponentName() === loadedSnakes[loadedSnakes.length - 1].getComponentName()){
-            if(loadedSnakes[loadedSnakes.length - 1].getLength() + 1 !== snake.generationNumber){
+            // console.log(`save, loadedSnakes:`);
+            // console.log(loadedSnakes);
+            const lastSpecies = loadedSnakes[loadedSnakes.length - 1];
+            if(lastSpecies.snakes[lastSpecies.getLength() - 1].generationNumber !== snake.generationNumber){
                 loadedSnakes[loadedSnakes.length - 1].push(snake);
+                // console.log(loadedSnakes);
             }
         }
         else{
-            loadedSnakes.push(new SnakeSpecies(snake));
+            this.popUpFuncs.spliceLoaded(loadedSnakes.length, 0, snake);
+            this.popUpFuncs.changeSelected(loadedSnakes.length-1);
         }
-        console.log(loadedSnakes);
+        // console.log(loadedSnakes);
     }
 }

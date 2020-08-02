@@ -1,3 +1,5 @@
+let blankMutations = [];
+
 // class which represents a single possible mutation
 //  pass it a brain - mutates a random weight/bias/node
 //  IMPORTANT: destructive, doesn't make a clone TODO: make clones in evolutionRunner
@@ -70,8 +72,8 @@ class Mutation extends Component{
 class PercentMutation extends Mutation{
     constructor(){
         super(0, [
-            ["Minimum", 0.4, "The minimum scalar the weight can be multiplied by."],
-            ["Maximum", 1.6, "The maximum scalar the weight can be multiplied by."]
+            ["Minimum", 0.4, "The minimum scalar the weight can be multiplied by.", 0, 1, 0.1],
+            ["Maximum", 1.6, "The maximum scalar the weight can be multiplied by.", 1, 10, 0.1]
         ]);
 
         this.componentName = "Percent Mutation";
@@ -87,13 +89,14 @@ class PercentMutation extends Mutation{
         return valIn * ran;
     }
 }
+blankMutations.push(new PercentMutation());
 
 // replaces the weight with a random value
 class ReplaceMutation extends Mutation{
     constructor(){
         super(1, [
-            ["Minimum", -1, "The minimum scalar the weight can be changed to."],
-            ["Maximum", 1, "The maximum scalar the weight can be changed to."]
+            ["Minimum", -1, "The minimum scalar the weight can be changed to.", -100, 0, 0.5],
+            ["Maximum", 1, "The maximum scalar the weight can be changed to.", 0, 100, 0.5]
         ]);
 
         this.componentName = "Replace Mutation";
@@ -106,13 +109,14 @@ class ReplaceMutation extends Mutation{
         return (Math.random() * (max - min)) + min;
     }
 }
+blankMutations.push(new ReplaceMutation());
 
 // adds a random number
 class AddMutation extends Mutation{
     constructor(){
         super(2, [
-            ["Minimum", -0.5, "The minimum scalar added to the weight."],
-            ["Maximum", 0.5, "The maximum scalar added to the weight."]
+            ["Minimum", -0.5, "The minimum scalar added to the weight.", -100, 0, 0.5],
+            ["Maximum", 0.5, "The maximum scalar added to the weight.", 0, 100, 0.5]
         ]);
 
         this.componentName = "Addition/Subtraction Mutation";
@@ -125,6 +129,7 @@ class AddMutation extends Mutation{
         return valIn + ((Math.random() * (max - min)) + min);
     }
 }
+blankMutations.push(new AddMutation());
 
 // changes the sign of the weight
 class NegateMutation extends Mutation{
@@ -138,13 +143,14 @@ class NegateMutation extends Mutation{
         return -valIn;
     }
 }
+blankMutations.push(new NegateMutation());
 
 // swaps x pairs of the weights on the currently selected node
 class SwapMutation extends Mutation{
     constructor() {
         super(4, [
-            ["Number Pairs", 1, "The number of pairs of weight on the selected node to swap"],
-            ["Include Biases", false, "Whether to allow bias swapping, this is not recommended because bias and weights are typically different."]
+            ["Number Pairs", 1, "The number of pairs of weight on the selected node to swap", 0, 200],
+            ["Include Biases", false, "Whether to allow bias swapping, this is not recommended because bias and weights are typically different.", [true, false]]
         ]);
 
         this.componentName = "Swap Mutation";
@@ -221,5 +227,6 @@ class SwapMutation extends Mutation{
         }
     }
 }
+blankMutations.push(new SwapMutation());
 
 const mutationPrototypes = [PercentMutation.prototype, ReplaceMutation.prototype, AddMutation.prototype, NegateMutation.prototype, SwapMutation.prototype];

@@ -260,6 +260,10 @@ select, input{
     border-width: 1px;
 }
 
+.float_right{
+    float: right;
+}
+
 .indent{
     margin-left: 2%;
 }
@@ -349,7 +353,7 @@ select, input{
 .menu_insides > *{
     display: block;
 
-    margin: 12px;
+    margin: 12px auto;
 
     min-width: 80px;
     width: 15vw;
@@ -581,7 +585,7 @@ select, input{
     margin-top: 1em;
     margin-bottom: 0.2em;
 }
-.details .category_text_title:first-of-type{
+.details > .category_text_title:first-of-type{
     margin-top: inherit;
 }
 .details .category_text_title.small{
@@ -599,15 +603,34 @@ select, input{
     margin-right: 30px;
 }
 .details .category_text{
-    margin-top: inherit;
-    margin-bottom: inherit;
+    margin: 0 auto;
 }
 .details .start_head_pos > label{
     margin-left: 2%;
 }
-.details .edit_add_input{
+.details .edit_add_component{
     margin-top: 10px;
     color: red;
+}
+.details .edit_add_component * {
+    color: red;
+}
+.details .component_block{
+    padding: 2%;
+    margin: 2% 0;
+
+    border-radius: 1vw;
+    border-style: dashed;
+    /*set one*/
+    border-color: #7c7c7d;
+    border-width: 2px;
+}
+.details .component_block select.category_text_title{
+    text-decoration: none;
+    margin-left: 0;
+}
+.details .component_block .button_div{
+    margin: -1% 0 -3% 0;
 }
 
 /* width */

@@ -443,8 +443,8 @@ var InputDetails = function (_React$Component3) {
                 }
             }
             return React.createElement(
-                Fragment,
-                null,
+                "div",
+                { className: "component_block" },
                 React.createElement(
                     "div",
                     { className: "wrapper_div inline_block_parent inline_buttons" },
@@ -1396,11 +1396,11 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 React.createElement(InputDetails, { input: snake.myInput, speed: speed, edit: true, editFuncs: editFuncsInput }),
                 React.createElement(
                     "div",
-                    { className: "edit_add_input" },
+                    { className: "edit_add_component" },
                     React.createElement(
                         "label",
                         { className: "category_text_title small", htmlFor: "input_add_type" },
-                        "New Input Type: "
+                        "New Input Type"
                     ),
                     React.createElement(
                         Select,

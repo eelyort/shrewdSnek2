@@ -295,7 +295,7 @@ class InputDetails extends React.Component{
             }
         }
         return(
-            <Fragment>
+            <div className={"component_block"}>
                 <div className={"wrapper_div inline_block_parent inline_buttons"}>
                     <p className={"category_text_title small" + ((this.props.className) ? (" " + this.props.className) : (""))}>{input.getComponentName()}</p>
                     {((edit) ? (
@@ -341,7 +341,7 @@ class InputDetails extends React.Component{
                     <p className={"category_text" + ((this.props.className) ? (" " + this.props.className) : (""))}>{input.getComponentDescription()}</p>
                 </TypewriterText>
                 {extraDetails}
-            </Fragment>
+            </div>
         )
     }
 }
@@ -888,8 +888,8 @@ class SnakeDetailsEdit extends React.Component{
                 {/*Input*/}
                 <p className={"category_text_title"}>Input</p>
                 <InputDetails input={snake.myInput} speed={speed} edit={true} editFuncs={editFuncsInput} />
-                <div className={"edit_add_input"}>
-                    <label className={"category_text_title small"} htmlFor={"input_add_type"}>New Input Type: </label>
+                <div className={"edit_add_component"}>
+                    <label className={"category_text_title small"} htmlFor={"input_add_type"}>New Input Type</label>
                     <Select initVal={this.inputs[this.inputActive].componentID} name={"input_add_type"} onSelect={(val) => {
                         this.inputActive = val;
                         this.forceUpdate();

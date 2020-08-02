@@ -1,3 +1,5 @@
+let blankReproductions = [];
+
 // similar to mutations.js, this deals with taking two "parents" and produces "offspring"
 //  works off of brains
 class Reproduction extends Component{
@@ -50,7 +52,7 @@ class Reproduction extends Component{
 class SingleWeightSwapReproduction extends Reproduction{
     constructor(){
         super(0, [
-            ["Number of Pairs", 1, "The number of pairs of weights/biases to swap among the parents."]
+            ["Number of Pairs", 1, "The number of pairs of weights/biases to swap among the parents.", 1, 1000]
         ]);
         
         // name
@@ -90,12 +92,13 @@ class SingleWeightSwapReproduction extends Reproduction{
         return [child1, child2];
     }
 }
+blankReproductions.push(new SingleWeightSwapReproduction());
 
 // swaps all the weights and biases of x nodes
 class NodeSwapReproduction extends Reproduction{
     constructor(){
         super(1, [
-            ["Number of Swaps", 1, "Number of nodes to swap the weights/biases of."]
+            ["Number of Swaps", 1, "Number of nodes to swap the weights/biases of.", 1, 1000]
         ]);
         
         this.componentName = "Node Swap Reproduction";
@@ -128,12 +131,13 @@ class NodeSwapReproduction extends Reproduction{
         return [child1, child2];
     }
 }
+blankReproductions.push(new NodeSwapReproduction());
 
 // swaps an entire layer of weights/biases
 class LayerSwapReproduction extends Reproduction{
     constructor(){
         super(2, [
-            ["Number of Swaps", 1, "Number of layers to swap the weights/biases of."]
+            ["Number of Swaps", 1, "Number of layers to swap the weights/biases of.", 1, 10]
         ]);
 
         this.componentName = "Layer Swap Reproduction";
@@ -159,5 +163,6 @@ class LayerSwapReproduction extends Reproduction{
         return [child1, child2];
     }
 }
+blankReproductions.push(new LayerSwapReproduction());
 
 const reproductionPrototypes = [SingleWeightSwapReproduction.prototype, NodeSwapReproduction.prototype, LayerSwapReproduction.prototype];

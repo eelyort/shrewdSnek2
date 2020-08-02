@@ -2,6 +2,8 @@ class EvolutionLoadScreen extends SingleSnakeRunner{
     constructor(evolution){
         super(loadingSignSnake.cloneMe(), 8, function () {/*Do nothing*/}, null, pathAppleSpawn);
         this.myEvolution = evolution;
+        // console.log("load screen constructor");
+        // console.log(evolution);
 
         // loading bar
         this.loadLeft = .1;
@@ -29,7 +31,8 @@ class EvolutionLoadScreen extends SingleSnakeRunner{
         ctx.closePath();
         // erase
         let margin = size * this.loadMargin;
-        let finished = this.myEvolution.runningProgress/this.myEvolution.parameters[0][1];
+        // console.log(`load draw: .runningProg: ${this.myEvolution.runningProgress}`);
+        let finished = this.myEvolution.runningProgress/this.myEvolution.parameters[0];
         let finWidth = (width - margin * 2) * finished;
         ctx.clearRect(left + margin + finWidth, top + margin, width - margin * 2 - finWidth, height - 2 * margin);
 
@@ -39,6 +42,6 @@ class EvolutionLoadScreen extends SingleSnakeRunner{
         }
     }
     changeTickRate(newVal) {
-        // do nothing
+        super.changeTickRate(25);
     }
 }

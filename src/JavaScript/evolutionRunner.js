@@ -5,8 +5,8 @@ const defaultEvolutionParams = [
     ["Number of Snakes", 1600, "The number of snakes in each generation.", 10, 25000, 50],
     ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
     ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
-    ["Likely-hood Mutations", 3, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second.", 0, 5000, 0.1],
-    ["Number of Runs", 3, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path.", 1, 13],
+    ["Likely-hood Mutations", 2, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second.", 0, 5000, 0.1],
+    ["Number of Runs", 5, "The number of times each specific snake is run, this helps to reduce evolution by luck. Otherwise, especially in the first few generations, snake will survive simply because an apple happened to spawn in their path.", 1, 13],
     ["Mode Normalization", 0, "Related to the above, this is how the actual score is selected from the scores above."],
     ["Ticks per Apple Score", 50, "The amount of ticks a snake must survive to get the same score as they would from eating an apple.", 1, 999999, 5],
     ["Max Time Score", 1, "The max score (in apples) a snake can get by surviving and not eating apples.", 0, 1000],
@@ -333,7 +333,7 @@ class Evolution extends Component{
             clearInterval(this.myInterval);
         }
 
-        console.log(`running vars: [${Atomics.load(this.runningVars, 0)}, ${Atomics.load(this.runningVars, 1)}, ${Atomics.load(this.runningVars, 2)}]`);
+        // console.log(`running vars: [${Atomics.load(this.runningVars, 0)}, ${Atomics.load(this.runningVars, 1)}, ${Atomics.load(this.runningVars, 2)}]`);
 
         // console.log("finish, before sort, results:");
         // console.log(this.runningResults);
@@ -348,9 +348,9 @@ class Evolution extends Component{
         this.currentGeneration = this.runningResults;
 
         // log
-        console.log("evolutionRunner finish(), runningResults:");
-        console.log(this.currentGeneration);
-        console.log(`Best: ${this.currentGeneration[0][0].stringify()}`);
+        // console.log("evolutionRunner finish(), runningResults:");
+        // console.log(this.currentGeneration);
+        // console.log(`Best: ${this.currentGeneration[0][0].stringify()}`);
 
         if(this.myCallback2){
             this.myCallback2(this.currentGeneration[0][0]);

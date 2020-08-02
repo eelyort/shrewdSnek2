@@ -391,9 +391,12 @@ class NeuralNetBrain extends Brain{
 
     // called in snake.js to update the brain with the length of the inputs
     updateWithInput(input){
+        // console.log(`updateWithInput, hasValues: ${this.hasValues}, inputLength: ${typeof input.inputLength} ${input.inputLength}, myInputWidth: ${this.myInputWidth}`);
+        if(this.hasValues && input.inputLength === this.myInputWidth){
+            return;
+        }
         if(this.hasValues){
-            console.log(`Warning: updateWithInput called on brain with values already.`);
-            // return;
+            console.log(`Warning: updateWithInput called on brain with values already, resetting values.`);
         }
 
         let newWidth = ((input) ? (input.inputLength) : (0));
