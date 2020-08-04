@@ -451,3 +451,4 @@ class AppleVectorInput extends Input{
         array[offset + 1] = appleC - appleC;
     }
 }
+blankInputs.push(new AppleVectorInput());
