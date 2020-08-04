@@ -1,20 +1,58 @@
 /*#0B0C10*/
 /*https://visme.co/blog/website-color-schemes/ 12*/
 
-.absolute {
-    position: absolute;
+body{
+    background-color: #1F2833;
+    color: #dfe0e1;
 }
 
-/*flex box*/
-.flexboxBasic {
-    position: relative;
-    min-width: 0;
-    margin: 2px;
+p{
+    white-space: pre-wrap;
 }
-.flexParent{
-    display: flex;
+
+label{
+    margin-right: 8px;
 }
-/*end flex box*/
+select, input{
+    border-radius: 10px;
+
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+
+    margin: 5px;
+
+    padding-left: 4px;
+}
+
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    opacity: 0;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.30);
+
+    border-radius: 500px;
+}
+.popUp-card ::-webkit-scrollbar-thumb{
+    background: rgba(0, 0, 0, 0.15);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.40);
+}
+.popUp-card ::-webkit-scrollbar-thumb:hover{
+    background: rgba(0, 0, 0, 0.30);
+}
+
 
 /*backgrounds*/
 /*main menu*/
@@ -68,74 +106,13 @@
     /*set one*/
     border-color: #2d5a56;
 }
-.popUp-card .textWrapper .background div {
-    font-size: calc(1.0vw + 0.35vh);
-    /*font-size: calc(80% * 1.5);*/
-    text-overflow: fade;
-    padding: 1.2vh;
-}
 /*end backgrounds*/
 
 /*text colors*/
-.gamePanelContainer{
-    color: #cfd0d1;
-}
 .popUp-card{
     color: #1F2833;
 }
 /*end text colors*/
-
-.gamePanelContainer {
-    position: relative;
-    padding: 0;
-
-    display: block;
-    margin: auto;
-/*padding: 0;*/
-}
-
-#gamePanel-1 {
-    width: 100%;
-    height: 100%;
-}
-
-.gameCanvas {
-    width: 100%;
-    display: block;
-    /*height: 5%;*/
-}
-
-.textBoxWrapper *{
-    /*prevent text overflow*/
-    overflow-wrap: break-word;
-    max-width: 100%;
-    font-size: calc(0.9vh + 0.7vw);
-}
-.vertTextBoxWrapper div{
-    font-size: calc(10px + 0.8vw);
-    text-align: center;
-    /*vertical-align: middle;*/
-    position: absolute;
-    top: 50%;
-    left: 0;
-    width: 100%;
-    transform: translateY(-50%);
-}
-.vertTextBoxWrapper.left div{
-    text-align: left;
-}
-.vertTextBoxWrapper.right div{
-    text-align: right;
-}
-
-/*fade code, element should have .fadeOut, add .fadeOut2 to fade*/
-.fadeOut{
-    opacity: 80%;
-}
-.fadeOut2{
-    transition: opacity 900ms ease-in;
-    opacity: 0;
-}
 
 /*buttons of all types*/
 .button {
@@ -156,8 +133,13 @@
 }
 /*text buttons*/
 .button.gameButton {
-    font-size: calc(1.7vw + 35%);
+    font-size: 1.2em;
     color: #303944;
+}
+@media only screen and (min-width: 1160px){
+    .button.gameButton{
+        font-size: 1.5em;
+    }
 }
 .button:active {
     box-shadow: none;
@@ -174,90 +156,8 @@
     border-color: rgba(31, 40, 51, 0.71);
     border-style: solid;
     border-width: 1px;
-    font-size: 100%;
+    font-size: 1em;
     box-shadow: none;
-}
-/*end buttons*/
-
-/*Carousel Stuff*/
-.selectCarouselWrapper {
-    background-color: inherit;
-    padding: 0;
-    margin: 0;
-}
-.popUp-card .selectCarouselMember {
-    /*border*/
-    border-bottom-style: none;
-    border-radius: 25px 25px 0 0;
-
-    transition: opacity 150ms ease, transform 250ms ease, margin-top 80ms ease, padding-bottom 80ms ease, width 150ms ease-out, height 150ms ease-out, left 300ms ease-in, top 300ms ease-in;
-}
-.selectCarouselMember:hover {
-    margin-top: -8px;
-    padding-bottom: 8px;
-}
-.selectCarouselMember.currentlySelected {
-    border-color: #60cdbb;
-    box-shadow: 0 -3px 2px #60cdbb;
-}
-.selectCarouselMember.currentlySelected:hover {
-    box-shadow: 0 -3px 6px #60cdbb;
-}
-/*text of member*/
-.selectCarouselMember div {
-    font-size: calc(3px + 1.8vw);
-}
-.selectImgButton {
-    border-radius: 1.4em;
-    box-shadow: none;
-    /*transform: none;*/
-    background-color: rgba(0, 0, 0, 0);
-    opacity: 8%;
-    transition: opacity 250ms ease, transform 250ms ease;
-}
-.selectImgButton:hover {
-    box-shadow: 0 0 0.3vw #C5C6C7;
-    background-color: rgba(0, 0, 0, 0.05);
-    opacity: 100%;
-}
-
-/* --------------------------------------------- REACT stuff Below ------------------------------------------- */
-
-body{
-    background-color: #1F2833;
-    color: #cfd0d1;
-}
-
-p{
-    white-space: pre-wrap;
-}
-
-label{
-    margin-right: 8px;
-}
-select, input{
-    border-radius: 10px;
-
-    border-color: black;
-    border-style: solid;
-    border-width: 1px;
-
-    margin: 5px;
-
-    padding-left: 4px;
-}
-
-#app_container{
-    width: 90vw;
-    height: 90vh;
-    margin: auto;
-
-    background-color: inherit;
-
-    /*TODO: delete testing borders*/
-    border-color: magenta;
-    border-style: solid;
-    border-width: 1px;
 }
 
 .float_right{
@@ -268,7 +168,7 @@ select, input{
     margin-left: 2%;
 }
 .smaller_text{
-    font-size: 95%;
+    font-size: 0.95em;
 }
 
 .faded{
@@ -318,11 +218,6 @@ select, input{
     bottom: 0;
 
     margin: 14px;
-
-    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
-    /*border-color: greenyellow;*/
-    /*border-style: solid;*/
-    /*border-width: 1px;*/
 }
 
 .menu_position{
@@ -383,10 +278,6 @@ select, input{
     margin: 0;
 
     text-align: center;
-
-    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
-    /*border-color: deeppink;*/
-    /*border-style: solid;*/
     /*border-width: 1px;*/
 }
 .bottom_ui > *{
@@ -404,7 +295,7 @@ select, input{
 
     z-index: 11;
 }
-.popUp-card > div{
+.popUp-card > div.container{
     padding: 0;
     margin: 3%;
 
@@ -453,6 +344,13 @@ select, input{
 .popUp-card .error_text{
     color: rgba(255, 0, 0, 0.85);
     text-align: center;
+
+    font-size: 2em;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
 }
 .popUp-card .confirmation_box{
     position: absolute;
@@ -466,7 +364,7 @@ select, input{
 
     text-align: center;
 
-    font-size: 120%;
+    font-size: 1.2em;
 
     /*set one*/
     background-color: #d6d7d8;
@@ -517,12 +415,7 @@ select, input{
 
     text-align: center;
 
-    font-size: 120%;
-
-    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
-    /*border-color: cyan;*/
-    /*border-style: solid;*/
-    /*border-width: 1px;*/
+    font-size: 1.2em;
 }
 .create_snake .waiting_box .paste_saved{
     min-width: 80%;
@@ -579,18 +472,18 @@ select, input{
     margin-top: 0;
 }
 .details .category_text_title{
-    font-size: 120%;
+    font-size: 1.2em;
     text-decoration: underline;
 
     margin-top: 1em;
     margin-bottom: 0.2em;
 }
-.details > .category_text_title:first-of-type{
-    margin-top: inherit;
+.details .collapse_div:first-of-type .category_text_title, .details .collapse_div:first-of-type{
+    margin-top: 0;
 }
 .details .category_text_title.small{
     margin-top: 0.5em;
-    font-size: 100%;
+    font-size: 1em;
 }
 .details .category_text_title::after{
     content: ":";
@@ -633,32 +526,64 @@ select, input{
     margin: -1% 0 -3% 0;
 }
 
-/* width */
-::-webkit-scrollbar {
-    width: 10px;
+/*other text, non-snake*/
+.info_text{
+    margin: 3em 1em;
+    text-align: center;
+
+    font-size: 1.1em;
+}
+.info_text.main{
+    margin-top: 2em;
+}
+.info_text span.title{
+    font-size: 1.6em;
+    font-weight: bold;
+
+    /*border-image: url("../Images/custom-underline-760x60.png") 60 stretch;*/
+    /*border-bottom: 8px solid;*/
+
+    /*padding: 0 6px 1.6% 6px;*/
+    padding-bottom: 0.65em;
+    background-image: url("../Images/custom-underline-narrow-760x60.png");
+    background-repeat: no-repeat;
+    background-position: 0 1.07em;
+    background-size: 100% auto;
+}
+.info_text span.title.small{
+    font-size: 1em;
+}
+.info_text.main span.title{
+    font-size: 2em;
+    background-position: 0 1.1em;
+}
+.info_text p{
+    margin-top: 0.5em;
+    margin-bottom: 2em;
+    white-space: initial;
+}
+.info_text p:first-of-type{
+    margin-top: 1.8em;
+}
+.info_text.main p:first-of-type{
+    margin-top: 2.6em;
+}
+.info_text a{
+    color: #66FCF1;
+}
+.info_text a:visited{
+    color: #4ec0bb;
+}
+.info_text a:active{
+    color: white;
 }
 
-/* Track */
-::-webkit-scrollbar-track {
-    opacity: 0;
-}
+#app_container{
+    width: 90vw;
+    height: 90vh;
+    margin: auto;
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.30);
-
-    border-radius: 500px;
-}
-.popUp-card ::-webkit-scrollbar-thumb{
-    background: rgba(0, 0, 0, 0.15);
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.40);
-}
-.popUp-card ::-webkit-scrollbar-thumb:hover{
-    background: rgba(0, 0, 0, 0.30);
+    background-color: inherit;
 }
 
 /*General Purpose react classes BELOW*/
@@ -721,10 +646,6 @@ select, input{
 }
 
 .mouse_div{
-    /*!*TODO: delete testing borders (and margin which is set to border width)*!*/
-    /*border-color: cyan;*/
-    /*border-style: solid;*/
-    /*border-width: 1px;*/
 }
 
 .icon{
@@ -765,8 +686,8 @@ select, input{
 .icon.small4{
     min-width: 11px;
     min-height: 11px;
-    width: 1vw;
-    height: 1vw;
+    width: 1.5vw;
+    height: 1.5vw;
     max-width: 31px;
     max-height: 31px;
 }
@@ -783,11 +704,6 @@ select, input{
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-
-    /*TODO: delete testing borders (and margin which is set to border width)*/
-    border-color: red;
-    border-style: solid;
-    border-width: 1px;
 }
 
 .text_area:focus{
@@ -798,4 +714,20 @@ select, input{
     border-width: 2px;
     border-radius: 10px;
     background-color: rgba(255, 255, 255, 0.7);
+}
+
+.collapse_div.open{
+    position: relative;
+    margin: 1.4em 0;
+}
+.collapse_div.close{
+    position: relative;
+    margin: 0.5em 0;
+}
+.collapse_div .collapse_button{
+    position: absolute;
+
+    top: 5px;
+    right: 5px;
+    opacity: .7;
 }

@@ -6,56 +6,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-// TODO: depreciated, delete me
-var MainMenuShell = function (_React$Component) {
-    _inherits(MainMenuShell, _React$Component);
-
-    function MainMenuShell(props) {
-        _classCallCheck(this, MainMenuShell);
-
-        // TODO: fix main menu and remove this stuff
-        var _this = _possibleConstructorReturn(this, (MainMenuShell.__proto__ || Object.getPrototypeOf(MainMenuShell)).call(this, props));
-
-        _this.runningMainMenu = null;
-        _this.gamePanelRef = React.createRef();
-        // -----------------------------------------
-
-        _this.change = _this.change.bind(_this);
-        return _this;
-    }
-
-    _createClass(MainMenuShell, [{
-        key: "render",
-        value: function render() {
-            var _this2 = this;
-
-            setTimeout(function () {
-                _this2.runningMainMenu = new MainMenu(document, _this2.gamePanelRef.current, function (target) {
-                    return _this2.change(target);
-                });
-            }, 50);
-
-            return React.createElement("div", { ref: this.gamePanelRef, id: "gamePanel-1", className: "gamePanelContainer" });
-        }
-    }, {
-        key: "change",
-        value: function change(target) {
-            if (this.runningMainMenu) {
-                this.runningMainMenu.KILLME();
-                this.runningMainMenu = null;
-            }
-            this.props.change(target);
-        }
-    }]);
-
-    return MainMenuShell;
-}(React.Component);
-
 // top level shell which manages the game display
-
-
-var ShrewdSnek2Shell = function (_React$Component2) {
-    _inherits(ShrewdSnek2Shell, _React$Component2);
+var ShrewdSnek2Shell = function (_React$Component) {
+    _inherits(ShrewdSnek2Shell, _React$Component);
 
     function ShrewdSnek2Shell(props) {
         _classCallCheck(this, ShrewdSnek2Shell);
@@ -64,14 +17,14 @@ var ShrewdSnek2Shell = function (_React$Component2) {
         // 1 - main menu TODO: become REACT
         // 2 - game menu
         // 3 - empty wrapper
-        var _this3 = _possibleConstructorReturn(this, (ShrewdSnek2Shell.__proto__ || Object.getPrototypeOf(ShrewdSnek2Shell)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (ShrewdSnek2Shell.__proto__ || Object.getPrototypeOf(ShrewdSnek2Shell)).call(this, props));
 
-        _this3.state = { currentlyRunning: 0 };
+        _this.state = { currentlyRunning: 0 };
 
-        _this3.wrapperRef = React.createRef();
+        _this.wrapperRef = React.createRef();
 
-        _this3.change = _this3.change.bind(_this3);
-        return _this3;
+        _this.change = _this.change.bind(_this);
+        return _this;
     }
 
     _createClass(ShrewdSnek2Shell, [{
@@ -84,11 +37,7 @@ var ShrewdSnek2Shell = function (_React$Component2) {
         value: function render() {
             // main menu - OLD
             if (this.state.currentlyRunning === 1) {
-                return React.createElement(
-                    "div",
-                    { ref: this.wrapperRef, className: "react_wrapper" },
-                    React.createElement(MainMenuShell, { change: this.change })
-                );
+                return React.createElement("div", { ref: this.wrapperRef, className: "react_wrapper" });
             }
             // Game Menu
             else if (this.state.currentlyRunning === 2) {
@@ -119,11 +68,11 @@ var ShrewdSnek2Shell = function (_React$Component2) {
     }, {
         key: "componentDidUpdate",
         value: function componentDidUpdate(prevProps, prevState, snapshot) {
-            var _this4 = this;
+            var _this2 = this;
 
             if (this.state.currentlyRunning !== 2) {
                 requestAnimationFrame(function () {
-                    return _this4.change(2);
+                    return _this2.change(2);
                 });
             }
         }

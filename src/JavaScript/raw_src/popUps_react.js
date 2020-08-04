@@ -39,7 +39,10 @@ class SelectSnakePopUpREACT extends React.Component{
 
         return (
             <PopUp className={"background selectSnake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => popUpFuncs.close()}>
-                <div>
+                <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
+                    <span>{this.state.errorText}</span>
+                </FadeDiv>
+                <div className={"container"}>
                     {deleteBox}
                     <div className={"carousel_parent"}>
                         <VerticalCarousel delayInitialScroll={1} selected={selectedSnake} items={loadedSnakesIn} select={popUpFuncs.changeSelected}>
@@ -79,9 +82,6 @@ class SelectSnakePopUpREACT extends React.Component{
                             <Button onClick={popUpFuncs.close}>Finish</Button>
                             <Button onClick={this.saveButton}>Save</Button>
                         </div>
-                        <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
-                            {this.state.errorText}
-                        </FadeDiv>
                     </div>
                 </div>
             </PopUp>
@@ -188,7 +188,10 @@ class CreateSnakePopUpREACT extends React.Component{
         if(!this.state.snake){
             return (
                 <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => popUpFuncs.close()}>
-                    <div>
+                    <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
+                        <span>{this.state.errorText}</span>
+                    </FadeDiv>
+                    <div className={"container"}>
                         <div className={"text_card background"}>
                             <div className={"waiting_box"}>
                                 <h2>Welcome to the snake creator!</h2>
@@ -222,9 +225,6 @@ class CreateSnakePopUpREACT extends React.Component{
                                 }}>
                                     <p className={"paste_saved"} />
                                 </TextArea>
-                                <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
-                                    {this.state.errorText}
-                                </FadeDiv>
                             </div>
                         </div>
                     </div>
@@ -270,7 +270,10 @@ class CreateSnakePopUpREACT extends React.Component{
                     popUpFuncs.close();
                 }
             }}>
-                <div>
+                <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
+                    <span>{this.state.errorText}</span>
+                </FadeDiv>
+                <div className={"container"}>
                     {confirmation}
                     {quitConfirmation}
                     <div className={"text_card background"}>
@@ -283,9 +286,6 @@ class CreateSnakePopUpREACT extends React.Component{
                         <div className={"button_div"}>
                             <Button onClick={this.saveResults}>Save</Button>
                         </div>
-                        <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
-                            {this.state.errorText}
-                        </FadeDiv>
                     </div>
                 </div>
             </PopUp>
@@ -459,7 +459,10 @@ class EditEvolutionPopUp extends React.Component{
                     popUpFuncs.close();
                 }
             }}>
-                <div>
+                <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
+                    <span>{this.state.errorText}</span>
+                </FadeDiv>
+                <div className={"container"}>
                     {confirmation}
                     {quitConfirmation}
                     <div className={"text_card background"}>
@@ -471,305 +474,313 @@ class EditEvolutionPopUp extends React.Component{
                             }}>
                                 <h1>{evolution.getComponentName()}</h1>
                             </TextArea>
-                            <p className={"category_text_title"}>Description</p>
-                            <TextArea onChange={(val) => {
-                                evolution.componentDescription = val;
-                                this.changed();
-                            }}>
-                                <p className={"category_text"}>{evolution.getComponentDescription()}</p>
-                            </TextArea>
+
+                            <CollapsibleDiv>
+                                <p className={"category_text_title"}>Description</p>
+                                <TextArea onChange={(val) => {
+                                    evolution.componentDescription = val;
+                                    this.changed();
+                                }}>
+                                    <p className={"category_text"}>{evolution.getComponentDescription()}</p>
+                                </TextArea>
+                            </CollapsibleDiv>
 
                             {/*parameters*/}
-                            <p className={"category_text_title"}>Parameters</p>
-                            {evolution.parameters.map((val, index) => {
-                                const [name, defaultVal, desc, min, max, step] = defaultEvolutionParams[index];
-                                const htmlName = name.replace(" ", "_");
-                                if(index !== 1 && index !== 2){
-                                    return(
-                                        <Fragment>
+                            <CollapsibleDiv>
+                                <p className={"category_text_title"}>Parameters</p>
+                                {evolution.parameters.map((val, index) => {
+                                    const [name, defaultVal, desc, min, max, step] = defaultEvolutionParams[index];
+                                    const htmlName = name.replace(" ", "_");
+                                    if(index !== 1 && index !== 2){
+                                        return(
+                                            <Fragment>
 
-                                            <div className={"wrapper_div inline_block_parent"}>
-                                                <label htmlFor={htmlName} className={"category_text_title small"}>{name}</label>
-                                                {((index !== 5) ? (
-                                                    // all fields are numeric input except for 5
-                                                    <NumberForm name={htmlName} initVal={val} min={min} max={max} step={step} onChange={(val) => {
-                                                        evolution.parameters[index] = val;
-                                                        this.changed();
-                                                    }} />
-                                                ) : (
-                                                    // special case for mode-normalization
-                                                    <Select initVal={evolution.parameters[index]} name={htmlName} onSelect={(val) => {
-                                                        evolution.parameters[index] = parseInt(val);
-                                                        this.changed();
-                                                    }}>
-                                                        <option value={0}>Median</option>
-                                                        <option value={1}>Mean</option>
-                                                    </Select>
-                                                ))}
-                                            </div>
-                                            <TypewriterText speed={speed}>
-                                                <p className={"category_text"}>{desc}</p>
-                                            </TypewriterText>
-                                        </Fragment>
-                                    );
-                                }
-                            })}
+                                                <div className={"wrapper_div inline_block_parent"}>
+                                                    <label htmlFor={htmlName} className={"category_text_title small"}>{name}</label>
+                                                    {((index !== 5) ? (
+                                                        // all fields are numeric input except for 5
+                                                        <NumberForm name={htmlName} initVal={val} min={min} max={max} step={step} onChange={(val) => {
+                                                            evolution.parameters[index] = val;
+                                                            this.changed();
+                                                        }} />
+                                                    ) : (
+                                                        // special case for mode-normalization
+                                                        <Select initVal={evolution.parameters[index]} name={htmlName} onSelect={(val) => {
+                                                            evolution.parameters[index] = parseInt(val);
+                                                            this.changed();
+                                                        }}>
+                                                            <option value={0}>Median</option>
+                                                            <option value={1}>Mean</option>
+                                                        </Select>
+                                                    ))}
+                                                </div>
+                                                <TypewriterText speed={speed}>
+                                                    <p className={"category_text"}>{desc}</p>
+                                                </TypewriterText>
+                                            </Fragment>
+                                        );
+                                    }
+                                })}
+                            </CollapsibleDiv>
 
                             {/*mutations | parameters[2]=[mutation, likelyhood]*/}
-                            <p className={"category_text_title"}>Mutation Methods</p>
-                            {evolution.parameters[2].map((arr, mutationIndex) => {
-                                const [mutation, relativeProb] = arr;
-                                const htmlNameMutation = `mutation_${mutationIndex}`;
-                                return(
-                                    <div className={"component_block"}>
-                                        <div className={"wrapper_div inline_block_parent"}>
-                                            <select className={"category_text_title small"} value={mutation.componentID} name={htmlNameMutation} onChange={(val) => {
-                                                val = val.target.value;
-                                                evolution.parameters[2].splice(mutationIndex, 1, [blankMutations[val].cloneMe(), 1]);
-                                                this.changed();
-                                            }} >
-                                                {blankMutations.map((value, index) => (
-                                                    <option value={index}>{value.getComponentName()}</option>
-                                                ))}
-                                            </select>
-                                            <div className={"wrapper_div inline_block_parent float_right"}>
-                                                <label htmlFor={htmlNameMutation + "_probability"}>Relative Likelihood: </label>
-                                                <NumberForm name={htmlNameMutation + "_probability"} initVal={relativeProb} min={1} max={100000} step={0.5} onChange={(val) => {
-                                                    evolution.parameters[2][mutationIndex][1] = val;
+                            <CollapsibleDiv>
+                                <p className={"category_text_title"}>Mutation Methods</p>
+                                {evolution.parameters[2].map((arr, mutationIndex) => {
+                                    const [mutation, relativeProb] = arr;
+                                    const htmlNameMutation = `mutation_${mutationIndex}`;
+                                    return(
+                                        <CollapsibleDiv>
+                                            <div className={"wrapper_div inline_block_parent"}>
+                                                <select className={"category_text_title small"} value={mutation.componentID} name={htmlNameMutation} onChange={(val) => {
+                                                    val = val.target.value;
+                                                    evolution.parameters[2].splice(mutationIndex, 1, [blankMutations[val].cloneMe(), 1]);
                                                     this.changed();
-                                                }} />
-                                            </div>
-                                        </div>
-                                        <TypewriterText speed={speed}>
-                                            <p className={"category_text" + ((this.props.className) ? (" " + this.props.className) : (""))}>{mutation.getComponentDescription()}</p>
-                                        </TypewriterText>
-                                        {/*parameters*/}
-                                        {mutation.mutationParameters.map((arr, paramIndex) => {
-                                            const isSelect = arr.length === 4;
-                                            let name, val, desc;
-
-                                            let form = null;
-
-                                            const htmlName = `parameter_${paramIndex}`;
-
-                                            let min, max, step, options;
-                                            if(!isSelect){
-                                                [name, val, desc, min, max, step] = arr;
-                                                form = (
-                                                    <NumberForm name={htmlName} initVal={val} min={min} max={max} step={step} onChange={(val) => {
-                                                        mutation.mutationParameters[paramIndex][1] = val;
+                                                }} >
+                                                    {blankMutations.map((value, index) => (
+                                                        <option value={index}>{value.getComponentName()}</option>
+                                                    ))}
+                                                </select>
+                                                <div className={"wrapper_div inline_block_parent float_right"}>
+                                                    <label htmlFor={htmlNameMutation + "_probability"}>Relative Likelihood: </label>
+                                                    <NumberForm name={htmlNameMutation + "_probability"} initVal={relativeProb} min={1} max={100000} step={0.5} onChange={(val) => {
+                                                        evolution.parameters[2][mutationIndex][1] = val;
                                                         this.changed();
                                                     }} />
+                                                </div>
+                                            </div>
+                                            <TypewriterText speed={speed}>
+                                                <p className={"category_text" + ((this.props.className) ? (" " + this.props.className) : (""))}>{mutation.getComponentDescription()}</p>
+                                            </TypewriterText>
+                                            {/*parameters*/}
+                                            {mutation.mutationParameters.map((arr, paramIndex) => {
+                                                const isSelect = arr.length === 4;
+                                                let name, val, desc;
+
+                                                let form = null;
+
+                                                const htmlName = `parameter_${paramIndex}`;
+
+                                                let min, max, step, options;
+                                                if(!isSelect){
+                                                    [name, val, desc, min, max, step] = arr;
+                                                    form = (
+                                                        <NumberForm name={htmlName} initVal={val} min={min} max={max} step={step} onChange={(val) => {
+                                                            mutation.mutationParameters[paramIndex][1] = val;
+                                                            this.changed();
+                                                        }} />
+                                                    );
+                                                }
+                                                else{
+                                                    [name, val, desc, options] = arr;
+                                                    form = (
+                                                        <Select name={htmlName} initVal={val} onSelect={(val) => {
+                                                            mutation.mutationParameters[paramIndex][1] = val;
+                                                            this.changed();
+                                                        }}>
+                                                            {options.map((optionVal, optionIndex) => (
+                                                                <option value={optionVal}>{optionVal + ""}</option>
+                                                            ))}
+                                                        </Select>
+                                                    );
+                                                }
+
+                                                return(
+                                                    <Fragment>
+                                                        <div className={"inline_block_parent"}>
+                                                            <label htmlFor={htmlName} className={"category_text_title small"}>{name}</label>
+                                                            {form}
+                                                        </div>
+                                                        <p className={"category_text"}>{desc}</p>
+                                                    </Fragment>
                                                 );
-                                            }
-                                            else{
-                                                [name, val, desc, options] = arr;
-                                                form = (
-                                                    <Select name={htmlName} initVal={val} onSelect={(val) => {
-                                                        mutation.mutationParameters[paramIndex][1] = val;
+                                            })}
+                                            <div className={"button_div"}>
+                                                {/*delete*/}
+                                                {((evolution.parameters[2].length <= 1) ? (
+                                                    <Button className={"faded" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={() => null}>
+                                                        <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
+                                                    </Button>
+                                                ) : (
+                                                    <Button className={this.props.className} onClick={() => {
+                                                        evolution.parameters[2].splice(mutationIndex, 1);
                                                         this.changed();
                                                     }}>
-                                                        {options.map((optionVal, optionIndex) => (
-                                                            <option value={optionVal}>{optionVal + ""}</option>
-                                                        ))}
-                                                    </Select>
-                                                );
-                                            }
-
-                                            return(
-                                                <Fragment>
-                                                    <div className={"inline_block_parent"}>
-                                                        <label htmlFor={htmlName} className={"category_text_title small"}>{name}</label>
-                                                        {form}
-                                                    </div>
-                                                    <p className={"category_text"}>{desc}</p>
-                                                </Fragment>
-                                            );
-                                        })}
-                                        <div className={"button_div"}>
-                                            {/*delete*/}
-                                            {((evolution.parameters[2].length <= 1) ? (
-                                                <Button className={"faded" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={() => null}>
-                                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
-                                                </Button>
-                                            ) : (
+                                                        <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
+                                                    </Button>
+                                                ))}
+                                                {/*clone*/}
                                                 <Button className={this.props.className} onClick={() => {
-                                                    evolution.parameters[2].splice(mutationIndex, 1);
+                                                    evolution.parameters[2].push([mutation.cloneMe(), relativeProb]);
                                                     this.changed();
                                                 }}>
-                                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
+                                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/+-button-640x640.png"} />
                                                 </Button>
-                                            ))}
-                                            {/*clone*/}
-                                            <Button className={this.props.className} onClick={() => {
-                                                evolution.parameters[2].push([mutation.cloneMe(), relativeProb]);
-                                                this.changed();
-                                            }}>
-                                                <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/+-button-640x640.png"} />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            <div className={"inline_block_parent inline_buttons edit_add_component"}>
-                                <label htmlFor={"mutation_extra"}>Add Mutation:</label>
-                                <select value={-1} name={`mutation_extra`} onChange={(val) => {
-                                    val = val.target.value;
-                                    evolution.parameters[2].push([blankMutations[val].cloneMe(), 1]);
-                                    this.changed();
-                                }} >
-                                    <option value={-1}>------</option>
-                                    {blankMutations.map((value, index) => (
-                                        <option value={index}>{value.getComponentName()}</option>
-                                    ))}
-                                </select>
-                            </div>
+                                            </div>
+                                        </CollapsibleDiv>
+                                    );
+                                })}
+                                <div className={"inline_block_parent inline_buttons edit_add_component"}>
+                                    <label htmlFor={"mutation_extra"}>Add Mutation:</label>
+                                    <select value={-1} name={`mutation_extra`} onChange={(val) => {
+                                        val = val.target.value;
+                                        evolution.parameters[2].push([blankMutations[val].cloneMe(), 1]);
+                                        this.changed();
+                                    }} >
+                                        <option value={-1}>------</option>
+                                        {blankMutations.map((value, index) => (
+                                            <option value={index}>{value.getComponentName()}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </CollapsibleDiv>
 
                             {/*reproductions | parameters[1]=[reproduction, likelyhood]*/}
-                            <p className={"category_text_title"}>Reproduction Methods</p>
-                            {evolution.parameters[1].map((arr, reproductionIndex) => {
-                                const [reproduction, relativeProb] = arr;
-                                const htmlNameReproduction = `reproduction_${reproductionIndex}`;
-                                return(
-                                    <div className={"component_block"}>
-                                        <div className={"wrapper_div inline_block_parent"}>
-                                            <select className={"category_text_title small"} value={reproduction.componentID} name={htmlNameReproduction} onChange={(val) => {
-                                                val = val.target.value;
-                                                evolution.parameters[1].splice(reproductionIndex, 1, [blankReproductions[val].cloneMe(), 1]);
-                                                this.changed();
-                                            }} >
-                                                {blankReproductions.map((value, index) => (
-                                                    <option value={index}>{value.getComponentName()}</option>
-                                                ))}
-                                            </select>
-                                            <div className={"wrapper_div inline_block_parent float_right"}>
-                                                <label htmlFor={htmlNameReproduction + "_probability"}>Relative Likelihood: </label>
-                                                <NumberForm name={htmlNameReproduction + "_probability"} initVal={relativeProb} min={1} max={100000} step={0.5} onChange={(val) => {
-                                                    evolution.parameters[1][reproductionIndex][1] = val;
+                            <CollapsibleDiv>
+                                <p className={"category_text_title"}>Reproduction Methods</p>
+                                {evolution.parameters[1].map((arr, reproductionIndex) => {
+                                    const [reproduction, relativeProb] = arr;
+                                    const htmlNameReproduction = `reproduction_${reproductionIndex}`;
+                                    return(
+                                        <CollapsibleDiv>
+                                            <div className={"wrapper_div inline_block_parent"}>
+                                                <select className={"category_text_title small"} value={reproduction.componentID} name={htmlNameReproduction} onChange={(val) => {
+                                                    val = val.target.value;
+                                                    evolution.parameters[1].splice(reproductionIndex, 1, [blankReproductions[val].cloneMe(), 1]);
                                                     this.changed();
-                                                }} />
-                                            </div>
-                                        </div>
-                                        <TypewriterText speed={speed}>
-                                            <p className={"category_text" + ((this.props.className) ? (" " + this.props.className) : (""))}>{reproduction.getComponentDescription()}</p>
-                                        </TypewriterText>
-                                        {/*parameters*/}
-                                        {reproduction.reproductionParameters.map((arr, paramIndex) => {
-                                            const isSelect = (arr.length === 4);
-                                            let name, val, desc;
-
-                                            let form = null;
-
-                                            const htmlName = `parameter_${paramIndex}`;
-
-                                            let min, max, step, options;
-                                            if(!isSelect){
-                                                [name, val, desc, min, max, step] = arr;
-                                                form = (
-                                                    <NumberForm name={htmlName} initVal={val} min={min} max={max} step={step} onChange={(val) => {
-                                                        reproduction.reproductionParameters[paramIndex][1] = val;
+                                                }} >
+                                                    {blankReproductions.map((value, index) => (
+                                                        <option value={index}>{value.getComponentName()}</option>
+                                                    ))}
+                                                </select>
+                                                <div className={"wrapper_div inline_block_parent float_right"}>
+                                                    <label htmlFor={htmlNameReproduction + "_probability"}>Relative Likelihood: </label>
+                                                    <NumberForm name={htmlNameReproduction + "_probability"} initVal={relativeProb} min={1} max={100000} step={0.5} onChange={(val) => {
+                                                        evolution.parameters[1][reproductionIndex][1] = val;
                                                         this.changed();
                                                     }} />
+                                                </div>
+                                            </div>
+                                            <TypewriterText speed={speed}>
+                                                <p className={"category_text" + ((this.props.className) ? (" " + this.props.className) : (""))}>{reproduction.getComponentDescription()}</p>
+                                            </TypewriterText>
+                                            {/*parameters*/}
+                                            {reproduction.reproductionParameters.map((arr, paramIndex) => {
+                                                const isSelect = (arr.length === 4);
+                                                let name, val, desc;
+
+                                                let form = null;
+
+                                                const htmlName = `parameter_${paramIndex}`;
+
+                                                let min, max, step, options;
+                                                if(!isSelect){
+                                                    [name, val, desc, min, max, step] = arr;
+                                                    form = (
+                                                        <NumberForm name={htmlName} initVal={val} min={min} max={max} step={step} onChange={(val) => {
+                                                            reproduction.reproductionParameters[paramIndex][1] = val;
+                                                            this.changed();
+                                                        }} />
+                                                    );
+                                                }
+                                                else{
+                                                    [name, val, desc, options] = arr;
+                                                    form = (
+                                                        <Select name={htmlName} initVal={val} onSelect={(val) => {
+                                                            reproduction.reproductionParameters[paramIndex][1] = val;
+                                                            this.changed();
+                                                        }}>
+                                                            {options.map((optionVal, optionIndex) => (
+                                                                <option value={optionVal}>{optionVal + ""}</option>
+                                                            ))}
+                                                        </Select>
+                                                    );
+                                                }
+
+                                                return(
+                                                    <Fragment>
+                                                        <div className={"inline_block_parent"}>
+                                                            <label htmlFor={htmlName} className={"category_text_title small"}>{name}</label>
+                                                            {form}
+                                                        </div>
+                                                        <p className={"category_text"}>{desc}</p>
+                                                    </Fragment>
+                                                );
+                                            })}
+                                            <div className={"button_div"}>
+                                                {/*delete*/}
+                                                {((evolution.parameters[1].length <= 1) ? (
+                                                    <Button className={"faded" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={() => null}>
+                                                        <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
+                                                    </Button>
+                                                ) : (
+                                                    <Button className={this.props.className} onClick={() => {
+                                                        evolution.parameters[1].splice(reproductionIndex, 1);
+                                                        this.changed();
+                                                    }}>
+                                                        <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
+                                                    </Button>
+                                                ))}
+                                                {/*clone*/}
+                                                <Button className={this.props.className} onClick={() => {
+                                                    evolution.parameters[1].push([reproduction.cloneMe(), relativeProb]);
+                                                    this.changed();
+                                                }}>
+                                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/+-button-640x640.png"} />
+                                                </Button>
+                                            </div>
+                                        </CollapsibleDiv>
+                                    );
+                                })}
+                                <div className={"inline_block_parent inline_buttons edit_add_component"}>
+                                    <label htmlFor={"reproduction_extra"}>Add Reproduction:</label>
+                                    <select value={-1} name={`reproduction_extra`} onChange={(val) => {
+                                        val = val.target.value;
+                                        evolution.parameters[1].push([blankReproductions[val].cloneMe(), 1]);
+                                        this.changed();
+                                    }} >
+                                        <option value={-1}>------</option>
+                                        {blankReproductions.map((value, index) => (
+                                            <option value={index}>{value.getComponentName()}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </CollapsibleDiv>
+
+                            {/*snake*/}
+                            <CollapsibleDiv>
+                                <div className={"inline_block_parent"}>
+                                    <label className={"category_text_title"} htmlFor={"snake_select"}>Snake</label>
+                                    <Select initVal={-1} name={"snake_select"} onSelect={(val) => {
+                                        val = parseInt(val);
+                                        if(val !== -1){
+                                            this.setState(() => ({currSnake: loadedSnakes[val].cloneMe()}));
+                                            this.changed();
+                                        }
+                                    }}>
+                                        <option value={-1}>{((currSnake) ? (currSnake.getComponentName()) : ("---"))}</option>
+                                        {loadedSnakes.map((snek, index) => {
+                                            snek = snek.snakes[0];
+                                            if(evolutionBrains.includes(snek.myBrain.componentID)) {
+                                                return (
+                                                    <option value={index}>{snek.getComponentName()}</option>
                                                 );
                                             }
                                             else{
-                                                [name, val, desc, options] = arr;
-                                                form = (
-                                                    <Select name={htmlName} initVal={val} onSelect={(val) => {
-                                                        reproduction.reproductionParameters[paramIndex][1] = val;
-                                                        this.changed();
-                                                    }}>
-                                                        {options.map((optionVal, optionIndex) => (
-                                                            <option value={optionVal}>{optionVal + ""}</option>
-                                                        ))}
-                                                    </Select>
-                                                );
+                                                return null;
                                             }
-
-                                            return(
-                                                <Fragment>
-                                                    <div className={"inline_block_parent"}>
-                                                        <label htmlFor={htmlName} className={"category_text_title small"}>{name}</label>
-                                                        {form}
-                                                    </div>
-                                                    <p className={"category_text"}>{desc}</p>
-                                                </Fragment>
-                                            );
                                         })}
-                                        <div className={"button_div"}>
-                                            {/*delete*/}
-                                            {((evolution.parameters[1].length <= 1) ? (
-                                                <Button className={"faded" + ((this.props.className) ? (" " + this.props.className) : (""))} onClick={() => null}>
-                                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
-                                                </Button>
-                                            ) : (
-                                                <Button className={this.props.className} onClick={() => {
-                                                    evolution.parameters[1].splice(reproductionIndex, 1);
-                                                    this.changed();
-                                                }}>
-                                                    <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/delete-button-580x580.png"} />
-                                                </Button>
-                                            ))}
-                                            {/*clone*/}
-                                            <Button className={this.props.className} onClick={() => {
-                                                evolution.parameters[1].push([reproduction.cloneMe(), relativeProb]);
-                                                this.changed();
-                                            }}>
-                                                <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/+-button-640x640.png"} />
-                                            </Button>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                            <div className={"inline_block_parent inline_buttons edit_add_component"}>
-                                <label htmlFor={"reproduction_extra"}>Add Reproduction:</label>
-                                <select value={-1} name={`reproduction_extra`} onChange={(val) => {
-                                    val = val.target.value;
-                                    evolution.parameters[1].push([blankReproductions[val].cloneMe(), 1]);
-                                    this.changed();
-                                }} >
-                                    <option value={-1}>------</option>
-                                    {blankReproductions.map((value, index) => (
-                                        <option value={index}>{value.getComponentName()}</option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            {/*snake*/}
-                            <div className={"inline_block_parent"}>
-                                <label className={"category_text_title"} htmlFor={"snake_select"}>Snake</label>
-                                <Select initVal={-1} name={"snake_select"} onSelect={(val) => {
-                                    val = parseInt(val);
-                                    if(val !== -1){
-                                        this.setState(() => ({currSnake: loadedSnakes[val].cloneMe()}));
-                                        this.changed();
-                                    }
-                                }}>
-                                    <option value={-1}>{((currSnake) ? (currSnake.getComponentName()) : ("---"))}</option>
-                                    {loadedSnakes.map((snek, index) => {
-                                        snek = snek.snakes[0];
-                                        if(snek.myBrain.componentID === 2) {
-                                            return (
-                                                <option value={index}>{snek.getComponentName()}</option>
-                                            );
-                                        }
-                                        else{
-                                            return null;
-                                        }
-                                    })}
-                                </Select>
-                            </div>
-                            <h4>(Snakes Must Have One Of The Following Brains: "Neural Network Brain")</h4>
-                            {((currSnake) ? (
-                                <SnakeDetails snake={currSnake} />
-                            ) : null)}
+                                    </Select>
+                                </div>
+                                <h4>(Snakes Must Have One Of The Following Brains: "Neural Network Brain")</h4>
+                                {((currSnake) ? (
+                                    <SnakeDetails snake={currSnake} />
+                                ) : null)}
+                            </CollapsibleDiv>
                         </div>
                         <div className={"button_div"}>
                             <Button onClick={this.saveResults}>Save</Button>
                         </div>
-                        <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
-                            {this.state.errorText}
-                        </FadeDiv>
                     </div>
                 </div>
             </PopUp>

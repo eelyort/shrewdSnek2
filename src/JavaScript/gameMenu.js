@@ -37,7 +37,7 @@ var GameMenu = function (_React$Component2) {
 
         _this2.state = {
             score: 0,
-            tickRate: 20,
+            tickRate: defaultTickRate,
             paused: false,
             playing: "???",
             selectedSnake: 0,
@@ -67,6 +67,7 @@ var GameMenu = function (_React$Component2) {
 
         _this2.callbackEndCurrent = _this2.callbackEndCurrent.bind(_this2);
         _this2.getSelectedSnake = _this2.getSelectedSnake.bind(_this2);
+        _this2.showcaseRandomEvolutionSnake = _this2.showcaseRandomEvolutionSnake.bind(_this2);
         _this2.startSnake = _this2.startSnake.bind(_this2);
         _this2.startRunner = _this2.startRunner.bind(_this2);
 
@@ -114,7 +115,7 @@ var GameMenu = function (_React$Component2) {
         _this2.fps = defaultFPS;
         _this2.drawing = false;
 
-        // popups: 0 - none, 1 - select snake, TODO:
+        _this2.showcase = true;
 
         // keyEvents: note that it is using keyDown instead of keyPress because keyPress doesn't register arrowKeys, shift, etc
         document.addEventListener("keydown", _this2.keyEventInDown, false);
@@ -297,7 +298,8 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "startSnakeButton",
         value: function startSnakeButton() {
-            // console.log("start snake button");
+            this.showcase = false;
+
             this.startSnake(this.getSelectedSnake());
         }
     }, {
@@ -352,6 +354,8 @@ var GameMenu = function (_React$Component2) {
         key: "openPopUp",
         value: function openPopUp(i) {
             var info = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+            this.showcase = false;
 
             // console.log("open");
             this.setState(function () {
@@ -523,7 +527,11 @@ var GameMenu = function (_React$Component2) {
             this.runningInstanceOld = this.runningInstance;
             this.runningInstance = null;
 
-            if (this.evolutionShell && (this.evolutionShell.runningGen || this.evolutionShell.viewQueue.size > 0)) {
+            if (this.showcase) {
+                setTimeout(function () {
+                    return _this8.showcaseRandomEvolutionSnake();
+                }, 1000);
+            } else if (this.evolutionShell && (this.evolutionShell.runningGen || this.evolutionShell.viewQueue.size > 0)) {
                 setTimeout(function () {
                     return _this8.evolutionShell.runQueue(_this8.startSnake, _this8.startRunner);
                 }, 1000);
@@ -535,8 +543,41 @@ var GameMenu = function (_React$Component2) {
             return loadedSnakes[this.state.selectedSnake].snakes[this.state.selectedSnakeGen].cloneMe();
         }
     }, {
+        key: "showcaseRandomEvolutionSnake",
+        value: function showcaseRandomEvolutionSnake() {
+            var _this9 = this;
+
+            var filtered = loadedSnakes.filter(function (value, index) {
+                var snekBrain = value.snakes[value.getLength() - 1].myBrain;
+
+                // only snakes which play by themselves
+                if (evolutionBrains.includes(snekBrain.componentID)) {
+                    // console.log(`startBias: ${snekBrain.startBias}, startWeight: ${snekBrain.startWeight}, 1: ${snekBrain.myMat[0][2][0]}, 2: ${snekBrain.myMat[0][1][0][0]}`);
+                    // console.log(snekBrain.myMat);
+
+                    // only previously evolved snakes
+                    if (snekBrain.hasValues && (snekBrain.myMat[0][2][0] !== snekBrain.startBias || snekBrain.myMat[0][1][0][0] !== snekBrain.startWeight / Math.sqrt(snekBrain.myMat[0][0].length))) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+            // console.log(filtered);
+            var snek = filtered[Math.floor(Math.random() * filtered.length)].cloneMe();
+            var timeOut = function timeOut(length) {
+                return snek.gridSize * 6 + length * 8;
+            };
+
+            this.startRunner(new SingleSnakeRunner(snek, this.state.tickRate === defaultTickRate ? showcaseTickRate : this.state.tickRate, function () {
+                return _this9.callbackEndCurrent();
+            }, timeOut));
+        }
+    }, {
         key: "startSnake",
         value: function startSnake(snake) {
+            var _this10 = this;
+
             // console.log("Game Menu startSnake, snake:");
             // console.log(snake);
 
@@ -544,15 +585,23 @@ var GameMenu = function (_React$Component2) {
             // special runners for special cases
             if (snake.uuid && snake.uuid === "Mother's Day!!!") {
                 runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), null, pathAppleSpawn);
+            } else if (evolutionBrains.includes(snake.myBrain.componentID)) {
+                var timeOut = function timeOut(length) {
+                    return snek.gridSize * 6 + length * 8;
+                };
+
+                runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), timeOut);
             } else {
-                runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this));
+                runner = new SingleSnakeRunner(snake, this.state.tickRate, function () {
+                    return _this10.callbackEndCurrent();
+                });
             }
             this.startRunner(runner);
         }
     }, {
         key: "startRunner",
         value: function startRunner(runner) {
-            var _this9 = this;
+            var _this11 = this;
 
             // console.log("Game Menu startRunner");
 
@@ -577,8 +626,8 @@ var GameMenu = function (_React$Component2) {
             // reset display
             this.setState(function (state) {
                 return {
-                    score: _this9.runningInstance.mySnake.myLength,
-                    playing: _this9.runningInstance.mySnake.getComponentName()
+                    score: _this11.runningInstance.mySnake.myLength,
+                    playing: _this11.runningInstance.mySnake.getComponentName()
                 };
             });
 
@@ -617,15 +666,15 @@ var GameMenu = function (_React$Component2) {
     }, {
         key: "infiniteButton",
         value: function infiniteButton() {
-            var _this10 = this;
+            var _this12 = this;
 
             this.setState(function (state) {
                 return {
                     infiniteEvolve: !state.infiniteEvolve
                 };
             }, function () {
-                if (_this10.evolutionShell) {
-                    _this10.evolutionShell.infiniteRun = _this10.state.infiniteEvolve;
+                if (_this12.evolutionShell) {
+                    _this12.evolutionShell.infiniteRun = _this12.state.infiniteEvolve;
                 }
             });
         }
@@ -638,18 +687,18 @@ var GameMenu = function (_React$Component2) {
             // console.log(this.subCanvasRef.current);
             this.subCanvasCTX = this.subCanvasRef.current.getContext("2d");
 
-            this.startSnakeButton();
+            this.showcaseRandomEvolutionSnake();
         }
     }, {
         key: "componentWillUnmount",
         value: function componentWillUnmount() {
-            var _this11 = this;
+            var _this13 = this;
 
             document.removeEventListener("keydown", function () {
-                return _this11.keyEventInDown;
+                return _this13.keyEventInDown;
             }, false);
             document.removeEventListener("keyup", function () {
-                return _this11.keyEventInUp;
+                return _this13.keyEventInUp;
             }, false);
         }
     }]);

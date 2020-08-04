@@ -958,11 +958,87 @@ var MouseFadeDiv = function (_React$Component17) {
     return MouseFadeDiv;
 }(React.Component);
 
+// div which can be collapsed
+
+
+var CollapsibleDiv = function (_React$Component18) {
+    _inherits(CollapsibleDiv, _React$Component18);
+
+    function CollapsibleDiv(props) {
+        _classCallCheck(this, CollapsibleDiv);
+
+        var _this26 = _possibleConstructorReturn(this, (CollapsibleDiv.__proto__ || Object.getPrototypeOf(CollapsibleDiv)).call(this, props));
+
+        var startOpen = _this26.props.startOpen;
+
+
+        _this26.state = {
+            open: startOpen !== undefined ? startOpen : true
+        };
+        return _this26;
+    }
+
+    _createClass(CollapsibleDiv, [{
+        key: "render",
+        value: function render() {
+            var _this27 = this;
+
+            var header = null;
+            var openClose = this.state.open ? "open" : "close";
+            var rest = React.Children.map(this.props.children, function (val, index) {
+                // console.log(`val: ${val}, index: ${index}`);
+                if (index === 0) {
+                    header = React.cloneElement(val, {
+                        className: "collapse_header " + openClose + (val.props.className ? " " + val.props.className : "")
+                    });
+                } else {
+                    return val;
+                }
+            });
+
+            if (this.state.open) {
+                return React.createElement(
+                    "div",
+                    { className: "collapse_div " + openClose },
+                    header,
+                    React.createElement(
+                        Button,
+                        { className: "collapse_button", onClick: function onClick() {
+                                return _this27.setState(function (state) {
+                                    return { open: !state.open };
+                                });
+                            } },
+                        React.createElement(ImgIcon, { className: "wrapper_div", small: 4, src: "src/Images/--button-640x640.png" })
+                    ),
+                    rest
+                );
+            } else {
+                return React.createElement(
+                    "div",
+                    { className: "collapse_div " + openClose },
+                    header,
+                    React.createElement(
+                        Button,
+                        { className: "collapse_button", onClick: function onClick() {
+                                return _this27.setState(function (state) {
+                                    return { open: !state.open };
+                                });
+                            } },
+                        React.createElement(ImgIcon, { className: "wrapper_div", small: 4, src: "src/Images/+-button-640x640.png" })
+                    )
+                );
+            }
+        }
+    }]);
+
+    return CollapsibleDiv;
+}(React.Component);
+
 // popup shell - props: "closeFunc" function to close the popup
 
 
-var PopUp = function (_React$Component18) {
-    _inherits(PopUp, _React$Component18);
+var PopUp = function (_React$Component19) {
+    _inherits(PopUp, _React$Component19);
 
     function PopUp() {
         _classCallCheck(this, PopUp);
@@ -992,33 +1068,33 @@ var PopUp = function (_React$Component18) {
 // vertically oriented carousel
 
 
-var VerticalCarousel = function (_React$Component19) {
-    _inherits(VerticalCarousel, _React$Component19);
+var VerticalCarousel = function (_React$Component20) {
+    _inherits(VerticalCarousel, _React$Component20);
 
     function VerticalCarousel(props) {
         _classCallCheck(this, VerticalCarousel);
 
-        var _this27 = _possibleConstructorReturn(this, (VerticalCarousel.__proto__ || Object.getPrototypeOf(VerticalCarousel)).call(this, props));
+        var _this29 = _possibleConstructorReturn(this, (VerticalCarousel.__proto__ || Object.getPrototypeOf(VerticalCarousel)).call(this, props));
 
-        _this27.state = {
+        _this29.state = {
             scroll: 0
         };
 
-        _this27.focusedRef = React.createRef();
-        _this27.wrapperRef = React.createRef();
-        _this27.buttonRef = React.createRef();
-        _this27.lastObjectRef = React.createRef();
+        _this29.focusedRef = React.createRef();
+        _this29.wrapperRef = React.createRef();
+        _this29.buttonRef = React.createRef();
+        _this29.lastObjectRef = React.createRef();
 
-        _this27.click = _this27.click.bind(_this27);
-        _this27.scroll = _this27.scroll.bind(_this27);
-        _this27.scrollToFocus = _this27.scrollToFocus.bind(_this27);
-        return _this27;
+        _this29.click = _this29.click.bind(_this29);
+        _this29.scroll = _this29.scroll.bind(_this29);
+        _this29.scrollToFocus = _this29.scrollToFocus.bind(_this29);
+        return _this29;
     }
 
     _createClass(VerticalCarousel, [{
         key: "render",
         value: function render() {
-            var _this28 = this;
+            var _this30 = this;
 
             // console.log("render");
 
@@ -1035,7 +1111,7 @@ var VerticalCarousel = function (_React$Component19) {
                 // first component is the one that scrolls
                 if (i === 0) {
                     style = {
-                        marginTop: -_this28.state.scroll + "px"
+                        marginTop: -_this30.state.scroll + "px"
                     };
                 }
 
@@ -1043,16 +1119,16 @@ var VerticalCarousel = function (_React$Component19) {
                 if (i === selected) {
                     return React.createElement(
                         "div",
-                        { className: "vertCarouselItem focused", style: style, ref: _this28.focusedRef, onClick: function onClick() {
-                                return _this28.click(i);
+                        { className: "vertCarouselItem focused", style: style, ref: _this30.focusedRef, onClick: function onClick() {
+                                return _this30.click(i);
                             } },
                         child
                     );
                 } else if (i === numChildren - 1) {
                     return React.createElement(
                         "div",
-                        { className: "vertCarouselItem", style: style, ref: _this28.lastObjectRef, onClick: function onClick() {
-                                return _this28.click(i);
+                        { className: "vertCarouselItem", style: style, ref: _this30.lastObjectRef, onClick: function onClick() {
+                                return _this30.click(i);
                             } },
                         child
                     );
@@ -1060,7 +1136,7 @@ var VerticalCarousel = function (_React$Component19) {
                     return React.createElement(
                         "div",
                         { className: "vertCarouselItem", style: style, onClick: function onClick() {
-                                return _this28.click(i);
+                                return _this30.click(i);
                             } },
                         child
                     );
@@ -1088,7 +1164,7 @@ var VerticalCarousel = function (_React$Component19) {
                         React.createElement(
                             Button,
                             { onClick: function onClick() {
-                                    _this28.scroll(-(_this28.wrapperRef.current.getBoundingClientRect().height - 2 * _this28.buttonRef.current.getBoundingClientRect().height));
+                                    _this30.scroll(-(_this30.wrapperRef.current.getBoundingClientRect().height - 2 * _this30.buttonRef.current.getBoundingClientRect().height));
                                 } },
                             React.createElement(ImgIcon, { className: "wrapper_div", small: 0, src: "src/Images/up-arrow-800x800.png" })
                         )
@@ -1105,7 +1181,7 @@ var VerticalCarousel = function (_React$Component19) {
                     React.createElement(
                         Button,
                         { onClick: function onClick() {
-                                _this28.scroll(_this28.wrapperRef.current.getBoundingClientRect().height - 2 * _this28.buttonRef.current.getBoundingClientRect().height);
+                                _this30.scroll(_this30.wrapperRef.current.getBoundingClientRect().height - 2 * _this30.buttonRef.current.getBoundingClientRect().height);
                             } },
                         React.createElement(ImgIcon, { className: "wrapper_div", small: 0, src: "src/Images/down-arrow-800x800.png" })
                     )
@@ -1147,11 +1223,11 @@ var VerticalCarousel = function (_React$Component19) {
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
-            var _this29 = this;
+            var _this31 = this;
 
             if (this.props.delayInitialScroll) {
                 setTimeout(function () {
-                    return _this29.scrollToFocus();
+                    return _this31.scrollToFocus();
                 }, this.props.delayInitialScroll * 50);
             } else {
                 this.scrollToFocus();

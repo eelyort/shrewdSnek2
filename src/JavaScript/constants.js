@@ -7,6 +7,11 @@ const buttonColor = "red";
 const defaultFPS = 30;
 const subCanvasInnerSize = 2400;
 
+// tick rate
+const defaultTickRate = 20;
+// how fast showcase snakes are run
+const showcaseTickRate = 80;
+
 // tick rate at which the evolving species are run
 const speciesRunnerTickRate = 600;
 // default scoring function, just returns score, no time sensitivity

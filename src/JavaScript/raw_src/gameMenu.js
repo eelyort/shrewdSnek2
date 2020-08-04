@@ -14,7 +14,7 @@ class GameMenu extends React.Component{
 
         this.state = {
             score: 0,
-            tickRate: 20,
+            tickRate: defaultTickRate,
             paused: false,
             playing: "???",
             selectedSnake: 0,
@@ -44,6 +44,7 @@ class GameMenu extends React.Component{
 
         this.callbackEndCurrent = this.callbackEndCurrent.bind(this);
         this.getSelectedSnake = this.getSelectedSnake.bind(this);
+        this.showcaseRandomEvolutionSnake = this.showcaseRandomEvolutionSnake.bind(this);
         this.startSnake = this.startSnake.bind(this);
         this.startRunner = this.startRunner.bind(this);
 
@@ -83,7 +84,7 @@ class GameMenu extends React.Component{
         this.fps = defaultFPS;
         this.drawing = false;
 
-        // popups: 0 - none, 1 - select snake, TODO:
+        this.showcase = true;
 
         // keyEvents: note that it is using keyDown instead of keyPress because keyPress doesn't register arrowKeys, shift, etc
         document.addEventListener("keydown", this.keyEventInDown, false);
@@ -187,7 +188,8 @@ class GameMenu extends React.Component{
 
     // button functions
     startSnakeButton(){
-        // console.log("start snake button");
+        this.showcase = false;
+
         this.startSnake(this.getSelectedSnake());
     }
     changeTickRate(val){
@@ -221,6 +223,8 @@ class GameMenu extends React.Component{
     // popup stuff
     // opens a popup
     openPopUp(i, info = null){
+        this.showcase = false;
+
         // console.log("open");
         this.setState(() => ({
             popupActive: i,
@@ -349,12 +353,38 @@ class GameMenu extends React.Component{
         this.runningInstanceOld = this.runningInstance;
         this.runningInstance = null;
 
-        if(this.evolutionShell && (this.evolutionShell.runningGen || this.evolutionShell.viewQueue.size > 0)){
+        if(this.showcase){
+            setTimeout(() => this.showcaseRandomEvolutionSnake(), 1000);
+        }
+        else if(this.evolutionShell && (this.evolutionShell.runningGen || this.evolutionShell.viewQueue.size > 0)){
             setTimeout(() => this.evolutionShell.runQueue(this.startSnake, this.startRunner), 1000);
         }
     }
     getSelectedSnake(){
         return loadedSnakes[this.state.selectedSnake].snakes[this.state.selectedSnakeGen].cloneMe();
+    }
+    showcaseRandomEvolutionSnake(){
+        let filtered = loadedSnakes.filter((value, index) => {
+            const snekBrain = value.snakes[value.getLength()-1].myBrain;
+
+            // only snakes which play by themselves
+            if(evolutionBrains.includes(snekBrain.componentID)){
+                // console.log(`startBias: ${snekBrain.startBias}, startWeight: ${snekBrain.startWeight}, 1: ${snekBrain.myMat[0][2][0]}, 2: ${snekBrain.myMat[0][1][0][0]}`);
+                // console.log(snekBrain.myMat);
+
+                // only previously evolved snakes
+                if(snekBrain.hasValues && (snekBrain.myMat[0][2][0] !== snekBrain.startBias || snekBrain.myMat[0][1][0][0] !== snekBrain.startWeight/Math.sqrt(snekBrain.myMat[0][0].length))){
+                    return true;
+                }
+            }
+            return false;
+        });
+
+        // console.log(filtered);
+        const snek = filtered[Math.floor(Math.random() * filtered.length)].cloneMe();
+        const timeOut = (length) => (snek.gridSize*6 + length*8);
+
+        this.startRunner(new SingleSnakeRunner(snek, ((this.state.tickRate === defaultTickRate) ? (showcaseTickRate) : (this.state.tickRate)), () => this.callbackEndCurrent(), timeOut));
     }
     startSnake(snake){
         // console.log("Game Menu startSnake, snake:");
@@ -365,8 +395,13 @@ class GameMenu extends React.Component{
         if(snake.uuid && snake.uuid === "Mother's Day!!!"){
             runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), null, pathAppleSpawn);
         }
-        else {
-            runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this));
+        else if(evolutionBrains.includes(snake.myBrain.componentID)) {
+            const timeOut = (length) => (snek.gridSize*6 + length*8);
+
+            runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), timeOut);
+        }
+        else{
+            runner = new SingleSnakeRunner(snake, this.state.tickRate, () => this.callbackEndCurrent());
         }
         this.startRunner(runner);
     }
@@ -440,7 +475,7 @@ class GameMenu extends React.Component{
         // console.log(this.subCanvasRef.current);
         this.subCanvasCTX = this.subCanvasRef.current.getContext("2d");
 
-        this.startSnakeButton();
+        this.showcaseRandomEvolutionSnake();
     }
     componentWillUnmount() {
         document.removeEventListener("keydown", () => this.keyEventInDown, false);

@@ -675,23 +675,31 @@ class SnakeDetails extends React.Component{
         return(
             <div className={"details snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
                 <h1>{snake.getComponentName()}</h1>
-                <p className={"category_text_title"}>Description</p>
-                <TypewriterText speed={speed}>
-                    <p className={"category_text"}>{snake.getComponentDescription()}</p>
-                </TypewriterText>
-                <p className={"category_text_title"}>Parameters</p>
-                <TypewriterText speed={speed}>
-                    <p className={"category_text"}>
-                        Starting Head Position (Row/Column): [{currR}, {currC}]{"\n"}
-                        Starting Length: {snake.startLength}{"\n"}
-                        Apple Value: {snake.appleVal}{"\n"}
-                        Grid Size: {snake.gridSize}{"\n"}
-                    </p>
-                </TypewriterText>
-                <p className={"category_text_title"}>Input</p>
-                <InputDetails input={snake.myInput} speed={speed} />
-                <p className={"category_text_title"}>Brain</p>
-                <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} />
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Description</p>
+                    <TypewriterText speed={speed}>
+                        <p className={"category_text"}>{snake.getComponentDescription()}</p>
+                    </TypewriterText>
+                </CollapsibleDiv>
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Parameters</p>
+                    <TypewriterText speed={speed}>
+                        <p className={"category_text"}>
+                            Starting Head Position (Row/Column): [{currR}, {currC}]{"\n"}
+                            Starting Length: {snake.startLength}{"\n"}
+                            Apple Value: {snake.appleVal}{"\n"}
+                            Grid Size: {snake.gridSize}{"\n"}
+                        </p>
+                    </TypewriterText>
+                </CollapsibleDiv>
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Input</p>
+                    <InputDetails input={snake.myInput} speed={speed} />
+                </CollapsibleDiv>
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Brain</p>
+                    <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} />
+                </CollapsibleDiv>
             </div>
         );
     }
@@ -839,116 +847,123 @@ class SnakeDetailsEdit extends React.Component{
                 }}>
                     <h1>{snake.getComponentName()}</h1>
                 </TextArea>
-                <p className={"category_text_title"}>Description</p>
-                <TextArea onChange={(val) => {
-                    snake.componentDescription = val;
-                    this.forceUpdate();
-                }}>
-                    <p className={"category_text"}>{snake.getComponentDescription()}</p>
-                </TextArea>
-                <p className={"category_text_title"}>Parameters</p>
-                <div className={"category_text"}>
-                    <div className={"start_head_pos"}>
-                        <p className={"category_text"}>Starting Head Position:</p>
-                        <label htmlFor={"head_pos_r"}>Row:</label>
-                        <NumberForm name={"head_pos_r"} initVal={currR} min={0} max={snake.gridSize-1} onChange={(val) => {
-                            snake.startHeadPos = (val * (snake.gridSize+2)) + 1 + currC;
-                            this.forceUpdate();
-                        }}/>
-                        <label htmlFor={"head_pos_c"}>Column:</label>
-                        <NumberForm name={"head_pos_c"} initVal={currC} min={0} max={snake.gridSize-1} onChange={(val) => {
-                            snake.startHeadPos = (currR * (snake.gridSize+2)) + 1 + val;
-                            this.forceUpdate();
-                        }}/>
-                    </div>
-                    <div>
-                        <label htmlFor={"start_length"}>Starting Length:</label>
-                        <NumberForm name={"start_length"} initVal={snake.startLength} min={1} max={snake.gridSize*snake.gridSize} onChange={(val) => {
-                            snake.startLength = val;
-                            snake.myLength = snake.startLength;
-                            this.forceUpdate();
-                        }} />
-                    </div>
-                    <div>
-                        <label htmlFor={"apple_val"}>Apple Value:</label>
-                        <NumberForm name={"apple_val"} initVal={snake.appleVal} min={1} max={99999} onChange={(val) => {
-                            snake.appleVal = val;
-                            this.forceUpdate();
-                        }} />
-                    </div>
-                    <div>
-                        <label htmlFor={"grid_size"}>Grid Size:</label>
-                        <NumberForm name={"grid_size"} initVal={snake.gridSize} min={1} max={250} onChange={(val) => {
-                            snake.gridSize = val;
-                            this.forceUpdate();
-                        }} />
-                    </div>
-                </div>
-
-                {/*Input*/}
-                <p className={"category_text_title"}>Input</p>
-                <InputDetails input={snake.myInput} speed={speed} edit={true} editFuncs={editFuncsInput} />
-                <div className={"edit_add_component"}>
-                    <label className={"category_text_title small"} htmlFor={"input_add_type"}>New Input Type</label>
-                    <Select initVal={this.inputs[this.inputActive].componentID} name={"input_add_type"} onSelect={(val) => {
-                        this.inputActive = val;
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Description</p>
+                    <TextArea onChange={(val) => {
+                        snake.componentDescription = val;
                         this.forceUpdate();
                     }}>
-                        {this.inputs.map(((value, index) => {
-                            // not multiple
-                            if(index > 0) {
-                                return (
-                                    <option value={index}>{value.getComponentName()}</option>
-                                );
-                            }
-                            else{
-                                return (
-                                    <option value={index}>None</option>
-                                );
-                            }
+                        <p className={"category_text"}>{snake.getComponentDescription()}</p>
+                    </TextArea>
+                </CollapsibleDiv>
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Parameters</p>
+                    <div className={"category_text"}>
+                        <div className={"start_head_pos"}>
+                            <p className={"category_text"}>Starting Head Position:</p>
+                            <label htmlFor={"head_pos_r"}>Row:</label>
+                            <NumberForm name={"head_pos_r"} initVal={currR} min={0} max={snake.gridSize-1} onChange={(val) => {
+                                snake.startHeadPos = (val * (snake.gridSize+2)) + 1 + currC;
+                                this.forceUpdate();
+                            }}/>
+                            <label htmlFor={"head_pos_c"}>Column:</label>
+                            <NumberForm name={"head_pos_c"} initVal={currC} min={0} max={snake.gridSize-1} onChange={(val) => {
+                                snake.startHeadPos = (currR * (snake.gridSize+2)) + 1 + val;
+                                this.forceUpdate();
+                            }}/>
+                        </div>
+                        <div>
+                            <label htmlFor={"start_length"}>Starting Length:</label>
+                            <NumberForm name={"start_length"} initVal={snake.startLength} min={1} max={snake.gridSize*snake.gridSize} onChange={(val) => {
+                                snake.startLength = val;
+                                snake.myLength = snake.startLength;
+                                this.forceUpdate();
+                            }} />
+                        </div>
+                        <div>
+                            <label htmlFor={"apple_val"}>Apple Value:</label>
+                            <NumberForm name={"apple_val"} initVal={snake.appleVal} min={1} max={99999} onChange={(val) => {
+                                snake.appleVal = val;
+                                this.forceUpdate();
+                            }} />
+                        </div>
+                        <div>
+                            <label htmlFor={"grid_size"}>Grid Size:</label>
+                            <NumberForm name={"grid_size"} initVal={snake.gridSize} min={1} max={250} onChange={(val) => {
+                                snake.gridSize = val;
+                                this.forceUpdate();
+                            }} />
+                        </div>
+                    </div>
+                </CollapsibleDiv>
+
+                {/*Input*/}
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Input</p>
+                    <InputDetails input={snake.myInput} speed={speed} edit={true} editFuncs={editFuncsInput} />
+                    <div className={"edit_add_component"}>
+                        <label className={"category_text_title small"} htmlFor={"input_add_type"}>New Input Type</label>
+                        <Select initVal={this.inputs[this.inputActive].componentID} name={"input_add_type"} onSelect={(val) => {
+                            this.inputActive = val;
                             this.forceUpdate();
-                        }))}
-                    </Select>
-                    <InputDetails className={"temp_input"} input={this.inputs[this.inputActive]} speed={speed} edit={true} editFuncs={editFuncsInput} noDelete={true} />
-                    {((this.inputActive > 0) ? (
-                        <p className={"category_text"}>(red input does nothing unless you hit the "+" button)</p>
-                    ) : null)}
-                </div>
+                        }}>
+                            {this.inputs.map(((value, index) => {
+                                // not multiple
+                                if(index > 0) {
+                                    return (
+                                        <option value={index}>{value.getComponentName()}</option>
+                                    );
+                                }
+                                else{
+                                    return (
+                                        <option value={index}>None</option>
+                                    );
+                                }
+                                this.forceUpdate();
+                            }))}
+                        </Select>
+                        <InputDetails className={"temp_input"} input={this.inputs[this.inputActive]} speed={speed} edit={true} editFuncs={editFuncsInput} noDelete={true} />
+                        {((this.inputActive > 0) ? (
+                            <p className={"category_text"}>(red input does nothing unless you hit the "+" button)</p>
+                        ) : null)}
+                    </div>
+                </CollapsibleDiv>
 
                 {/*Brain*/}
-                <p className={"category_text_title"}>Brain</p>
-                <div className={"wrapper_div inline_block_parent"}>
-                    <label htmlFor={"brain_type"}>Brain Type: </label>
-                    <Select initVal={snake.myBrain.componentID} name={"brain_type"} onSelect={(val) => {
-                        // target id
-                        const id = val;
-                        // console.log(`target id: ${id}`);
+                <CollapsibleDiv>
+                    <p className={"category_text_title"}>Brain</p>
+                    <div className={"wrapper_div inline_block_parent"}>
+                        <label htmlFor={"brain_type"}>Brain Type: </label>
+                        <Select initVal={snake.myBrain.componentID} name={"brain_type"} onSelect={(val) => {
+                            // target id
+                            const id = val;
 
-                        // ignore unnecessary switches
-                        if(id !== snake.myBrain.componentID) {
-                            // save old
-                            this.brains[snake.myBrain.componentID] = snake.myBrain;
+                            // ignore unnecessary switches
+                            if(id !== snake.myBrain.componentID) {
+                                // save old
+                                this.brains[snake.myBrain.componentID] = snake.myBrain;
 
-                            // change to new
-                            // this type exists already
-                            if (this.brains[id]) {
-                                snake.changeBrain(this.brains[id]);
+                                // change to new
+                                // this type exists already
+                                if (this.brains[id]) {
+                                    snake.changeBrain(this.brains[id]);
+                                }
+                                // first time this type
+                                else{
+                                    snake.changeBrain(blankBrains[id].cloneMe());
+                                }
+                                this.forceUpdate();
                             }
-                            // first time this type
-                            else{
-                                snake.changeBrain(blankBrains[id].cloneMe());
-                            }
-                            this.forceUpdate();
-                        }
-                    }}>
-                        {blankBrains.map((value, index) => {
-                            return(
-                                <option value={index}>{value.getComponentName()}</option>
-                            );
-                        })}
-                    </Select>
-                </div>
-                <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} edit={true} editFuncs={editFuncsBrain} />
+                        }}>
+                            {blankBrains.map((value, index) => {
+                                return(
+                                    <option value={index}>{value.getComponentName()}</option>
+                                );
+                            })}
+                        </Select>
+                    </div>
+                    <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} edit={true} editFuncs={editFuncsBrain} />
+                </CollapsibleDiv>
             </div>
         );
     }

@@ -1,33 +1,3 @@
-// TODO: depreciated, delete me
-class MainMenuShell extends React.Component{
-    constructor(props){
-        super(props);
-
-        // TODO: fix main menu and remove this stuff
-        this.runningMainMenu = null;
-        this.gamePanelRef = React.createRef();
-        // -----------------------------------------
-
-        this.change = this.change.bind(this);
-    }
-    render() {
-        setTimeout(() => {this.runningMainMenu = new MainMenu(document, this.gamePanelRef.current, (target) => this.change(target))}, 50);
-
-        return(
-            <div ref={this.gamePanelRef} id={"gamePanel-1"} className={"gamePanelContainer"}>
-            </div>
-        );
-    }
-
-    change(target){
-        if(this.runningMainMenu){
-            this.runningMainMenu.KILLME();
-            this.runningMainMenu = null;
-        }
-        this.props.change(target);
-    }
-}
-
 // top level shell which manages the game display
 class ShrewdSnek2Shell extends React.Component{
     constructor(props){
@@ -51,7 +21,6 @@ class ShrewdSnek2Shell extends React.Component{
         if(this.state.currentlyRunning === 1) {
             return (
                 <div ref={this.wrapperRef} className={"react_wrapper"}>
-                    <MainMenuShell change={this.change} />
                 </div>
             );
         }

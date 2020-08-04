@@ -1,4 +1,5 @@
 let blankBrains = [];
+let evolutionBrains = [];
 
 // Parent skeleton brain class
 // Specifications
@@ -563,5 +564,6 @@ class NeuralNetBrain extends Brain{
     }
 }
 blankBrains.push(new NeuralNetBrain(new TanhNormalizer(), 2, 6, 0.1, 0.1));
+evolutionBrains.push(2);
 
 const brainPrototypes = [PathBrain.prototype, PlayerControlledBrain.prototype, NeuralNetBrain.prototype];

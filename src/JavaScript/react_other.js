@@ -1053,59 +1053,75 @@ var SnakeDetails = function (_React$Component7) {
                     snake.getComponentName()
                 ),
                 React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Description"
-                ),
-                React.createElement(
-                    TypewriterText,
-                    { speed: speed },
+                    CollapsibleDiv,
+                    null,
                     React.createElement(
                         "p",
-                        { className: "category_text" },
-                        snake.getComponentDescription()
+                        { className: "category_text_title" },
+                        "Description"
+                    ),
+                    React.createElement(
+                        TypewriterText,
+                        { speed: speed },
+                        React.createElement(
+                            "p",
+                            { className: "category_text" },
+                            snake.getComponentDescription()
+                        )
                     )
                 ),
                 React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Parameters"
-                ),
-                React.createElement(
-                    TypewriterText,
-                    { speed: speed },
+                    CollapsibleDiv,
+                    null,
                     React.createElement(
                         "p",
-                        { className: "category_text" },
-                        "Starting Head Position (Row/Column): [",
-                        currR,
-                        ", ",
-                        currC,
-                        "]",
-                        "\n",
-                        "Starting Length: ",
-                        snake.startLength,
-                        "\n",
-                        "Apple Value: ",
-                        snake.appleVal,
-                        "\n",
-                        "Grid Size: ",
-                        snake.gridSize,
-                        "\n"
+                        { className: "category_text_title" },
+                        "Parameters"
+                    ),
+                    React.createElement(
+                        TypewriterText,
+                        { speed: speed },
+                        React.createElement(
+                            "p",
+                            { className: "category_text" },
+                            "Starting Head Position (Row/Column): [",
+                            currR,
+                            ", ",
+                            currC,
+                            "]",
+                            "\n",
+                            "Starting Length: ",
+                            snake.startLength,
+                            "\n",
+                            "Apple Value: ",
+                            snake.appleVal,
+                            "\n",
+                            "Grid Size: ",
+                            snake.gridSize,
+                            "\n"
+                        )
                     )
                 ),
                 React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Input"
+                    CollapsibleDiv,
+                    null,
+                    React.createElement(
+                        "p",
+                        { className: "category_text_title" },
+                        "Input"
+                    ),
+                    React.createElement(InputDetails, { input: snake.myInput, speed: speed })
                 ),
-                React.createElement(InputDetails, { input: snake.myInput, speed: speed }),
                 React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Brain"
-                ),
-                React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed })
+                    CollapsibleDiv,
+                    null,
+                    React.createElement(
+                        "p",
+                        { className: "category_text_title" },
+                        "Brain"
+                    ),
+                    React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed })
+                )
             );
         }
     }]);
@@ -1296,190 +1312,205 @@ var SnakeDetailsEdit = function (_React$Component8) {
                     )
                 ),
                 React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Description"
-                ),
-                React.createElement(
-                    TextArea,
-                    { onChange: function onChange(val) {
-                            snake.componentDescription = val;
-                            _this11.forceUpdate();
-                        } },
+                    CollapsibleDiv,
+                    null,
                     React.createElement(
                         "p",
-                        { className: "category_text" },
-                        snake.getComponentDescription()
-                    )
-                ),
-                React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Parameters"
-                ),
-                React.createElement(
-                    "div",
-                    { className: "category_text" },
+                        { className: "category_text_title" },
+                        "Description"
+                    ),
                     React.createElement(
-                        "div",
-                        { className: "start_head_pos" },
+                        TextArea,
+                        { onChange: function onChange(val) {
+                                snake.componentDescription = val;
+                                _this11.forceUpdate();
+                            } },
                         React.createElement(
                             "p",
                             { className: "category_text" },
-                            "Starting Head Position:"
-                        ),
-                        React.createElement(
-                            "label",
-                            { htmlFor: "head_pos_r" },
-                            "Row:"
-                        ),
-                        React.createElement(NumberForm, { name: "head_pos_r", initVal: currR, min: 0, max: snake.gridSize - 1, onChange: function onChange(val) {
-                                snake.startHeadPos = val * (snake.gridSize + 2) + 1 + currC;
-                                _this11.forceUpdate();
-                            } }),
-                        React.createElement(
-                            "label",
-                            { htmlFor: "head_pos_c" },
-                            "Column:"
-                        ),
-                        React.createElement(NumberForm, { name: "head_pos_c", initVal: currC, min: 0, max: snake.gridSize - 1, onChange: function onChange(val) {
-                                snake.startHeadPos = currR * (snake.gridSize + 2) + 1 + val;
-                                _this11.forceUpdate();
-                            } })
-                    ),
-                    React.createElement(
-                        "div",
-                        null,
-                        React.createElement(
-                            "label",
-                            { htmlFor: "start_length" },
-                            "Starting Length:"
-                        ),
-                        React.createElement(NumberForm, { name: "start_length", initVal: snake.startLength, min: 1, max: snake.gridSize * snake.gridSize, onChange: function onChange(val) {
-                                snake.startLength = val;
-                                snake.myLength = snake.startLength;
-                                _this11.forceUpdate();
-                            } })
-                    ),
-                    React.createElement(
-                        "div",
-                        null,
-                        React.createElement(
-                            "label",
-                            { htmlFor: "apple_val" },
-                            "Apple Value:"
-                        ),
-                        React.createElement(NumberForm, { name: "apple_val", initVal: snake.appleVal, min: 1, max: 99999, onChange: function onChange(val) {
-                                snake.appleVal = val;
-                                _this11.forceUpdate();
-                            } })
-                    ),
-                    React.createElement(
-                        "div",
-                        null,
-                        React.createElement(
-                            "label",
-                            { htmlFor: "grid_size" },
-                            "Grid Size:"
-                        ),
-                        React.createElement(NumberForm, { name: "grid_size", initVal: snake.gridSize, min: 1, max: 250, onChange: function onChange(val) {
-                                snake.gridSize = val;
-                                _this11.forceUpdate();
-                            } })
+                            snake.getComponentDescription()
+                        )
                     )
                 ),
                 React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Input"
-                ),
-                React.createElement(InputDetails, { input: snake.myInput, speed: speed, edit: true, editFuncs: editFuncsInput }),
-                React.createElement(
-                    "div",
-                    { className: "edit_add_component" },
+                    CollapsibleDiv,
+                    null,
                     React.createElement(
-                        "label",
-                        { className: "category_text_title small", htmlFor: "input_add_type" },
-                        "New Input Type"
+                        "p",
+                        { className: "category_text_title" },
+                        "Parameters"
                     ),
                     React.createElement(
-                        Select,
-                        { initVal: this.inputs[this.inputActive].componentID, name: "input_add_type", onSelect: function onSelect(val) {
-                                _this11.inputActive = val;
+                        "div",
+                        { className: "category_text" },
+                        React.createElement(
+                            "div",
+                            { className: "start_head_pos" },
+                            React.createElement(
+                                "p",
+                                { className: "category_text" },
+                                "Starting Head Position:"
+                            ),
+                            React.createElement(
+                                "label",
+                                { htmlFor: "head_pos_r" },
+                                "Row:"
+                            ),
+                            React.createElement(NumberForm, { name: "head_pos_r", initVal: currR, min: 0, max: snake.gridSize - 1, onChange: function onChange(val) {
+                                    snake.startHeadPos = val * (snake.gridSize + 2) + 1 + currC;
+                                    _this11.forceUpdate();
+                                } }),
+                            React.createElement(
+                                "label",
+                                { htmlFor: "head_pos_c" },
+                                "Column:"
+                            ),
+                            React.createElement(NumberForm, { name: "head_pos_c", initVal: currC, min: 0, max: snake.gridSize - 1, onChange: function onChange(val) {
+                                    snake.startHeadPos = currR * (snake.gridSize + 2) + 1 + val;
+                                    _this11.forceUpdate();
+                                } })
+                        ),
+                        React.createElement(
+                            "div",
+                            null,
+                            React.createElement(
+                                "label",
+                                { htmlFor: "start_length" },
+                                "Starting Length:"
+                            ),
+                            React.createElement(NumberForm, { name: "start_length", initVal: snake.startLength, min: 1, max: snake.gridSize * snake.gridSize, onChange: function onChange(val) {
+                                    snake.startLength = val;
+                                    snake.myLength = snake.startLength;
+                                    _this11.forceUpdate();
+                                } })
+                        ),
+                        React.createElement(
+                            "div",
+                            null,
+                            React.createElement(
+                                "label",
+                                { htmlFor: "apple_val" },
+                                "Apple Value:"
+                            ),
+                            React.createElement(NumberForm, { name: "apple_val", initVal: snake.appleVal, min: 1, max: 99999, onChange: function onChange(val) {
+                                    snake.appleVal = val;
+                                    _this11.forceUpdate();
+                                } })
+                        ),
+                        React.createElement(
+                            "div",
+                            null,
+                            React.createElement(
+                                "label",
+                                { htmlFor: "grid_size" },
+                                "Grid Size:"
+                            ),
+                            React.createElement(NumberForm, { name: "grid_size", initVal: snake.gridSize, min: 1, max: 250, onChange: function onChange(val) {
+                                    snake.gridSize = val;
+                                    _this11.forceUpdate();
+                                } })
+                        )
+                    )
+                ),
+                React.createElement(
+                    CollapsibleDiv,
+                    null,
+                    React.createElement(
+                        "p",
+                        { className: "category_text_title" },
+                        "Input"
+                    ),
+                    React.createElement(InputDetails, { input: snake.myInput, speed: speed, edit: true, editFuncs: editFuncsInput }),
+                    React.createElement(
+                        "div",
+                        { className: "edit_add_component" },
+                        React.createElement(
+                            "label",
+                            { className: "category_text_title small", htmlFor: "input_add_type" },
+                            "New Input Type"
+                        ),
+                        React.createElement(
+                            Select,
+                            { initVal: this.inputs[this.inputActive].componentID, name: "input_add_type", onSelect: function onSelect(val) {
+                                    _this11.inputActive = val;
+                                    _this11.forceUpdate();
+                                } },
+                            this.inputs.map(function (value, index) {
+                                // not multiple
+                                if (index > 0) {
+                                    return React.createElement(
+                                        "option",
+                                        { value: index },
+                                        value.getComponentName()
+                                    );
+                                } else {
+                                    return React.createElement(
+                                        "option",
+                                        { value: index },
+                                        "None"
+                                    );
+                                }
                                 _this11.forceUpdate();
-                            } },
-                        this.inputs.map(function (value, index) {
-                            // not multiple
-                            if (index > 0) {
+                            })
+                        ),
+                        React.createElement(InputDetails, { className: "temp_input", input: this.inputs[this.inputActive], speed: speed, edit: true, editFuncs: editFuncsInput, noDelete: true }),
+                        this.inputActive > 0 ? React.createElement(
+                            "p",
+                            { className: "category_text" },
+                            "(red input does nothing unless you hit the \"+\" button)"
+                        ) : null
+                    )
+                ),
+                React.createElement(
+                    CollapsibleDiv,
+                    null,
+                    React.createElement(
+                        "p",
+                        { className: "category_text_title" },
+                        "Brain"
+                    ),
+                    React.createElement(
+                        "div",
+                        { className: "wrapper_div inline_block_parent" },
+                        React.createElement(
+                            "label",
+                            { htmlFor: "brain_type" },
+                            "Brain Type: "
+                        ),
+                        React.createElement(
+                            Select,
+                            { initVal: snake.myBrain.componentID, name: "brain_type", onSelect: function onSelect(val) {
+                                    // target id
+                                    var id = val;
+
+                                    // ignore unnecessary switches
+                                    if (id !== snake.myBrain.componentID) {
+                                        // save old
+                                        _this11.brains[snake.myBrain.componentID] = snake.myBrain;
+
+                                        // change to new
+                                        // this type exists already
+                                        if (_this11.brains[id]) {
+                                            snake.changeBrain(_this11.brains[id]);
+                                        }
+                                        // first time this type
+                                        else {
+                                                snake.changeBrain(blankBrains[id].cloneMe());
+                                            }
+                                        _this11.forceUpdate();
+                                    }
+                                } },
+                            blankBrains.map(function (value, index) {
                                 return React.createElement(
                                     "option",
                                     { value: index },
                                     value.getComponentName()
                                 );
-                            } else {
-                                return React.createElement(
-                                    "option",
-                                    { value: index },
-                                    "None"
-                                );
-                            }
-                            _this11.forceUpdate();
-                        })
+                            })
+                        )
                     ),
-                    React.createElement(InputDetails, { className: "temp_input", input: this.inputs[this.inputActive], speed: speed, edit: true, editFuncs: editFuncsInput, noDelete: true }),
-                    this.inputActive > 0 ? React.createElement(
-                        "p",
-                        { className: "category_text" },
-                        "(red input does nothing unless you hit the \"+\" button)"
-                    ) : null
-                ),
-                React.createElement(
-                    "p",
-                    { className: "category_text_title" },
-                    "Brain"
-                ),
-                React.createElement(
-                    "div",
-                    { className: "wrapper_div inline_block_parent" },
-                    React.createElement(
-                        "label",
-                        { htmlFor: "brain_type" },
-                        "Brain Type: "
-                    ),
-                    React.createElement(
-                        Select,
-                        { initVal: snake.myBrain.componentID, name: "brain_type", onSelect: function onSelect(val) {
-                                // target id
-                                var id = val;
-                                // console.log(`target id: ${id}`);
-
-                                // ignore unnecessary switches
-                                if (id !== snake.myBrain.componentID) {
-                                    // save old
-                                    _this11.brains[snake.myBrain.componentID] = snake.myBrain;
-
-                                    // change to new
-                                    // this type exists already
-                                    if (_this11.brains[id]) {
-                                        snake.changeBrain(_this11.brains[id]);
-                                    }
-                                    // first time this type
-                                    else {
-                                            snake.changeBrain(blankBrains[id].cloneMe());
-                                        }
-                                    _this11.forceUpdate();
-                                }
-                            } },
-                        blankBrains.map(function (value, index) {
-                            return React.createElement(
-                                "option",
-                                { value: index },
-                                value.getComponentName()
-                            );
-                        })
-                    )
-                ),
-                React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed, edit: true, editFuncs: editFuncsBrain })
+                    React.createElement(BrainDetails, { brain: snake.myBrain, gridSize: snake.gridSize, speed: speed, edit: true, editFuncs: editFuncsBrain })
+                )
             );
         }
     }]);

@@ -595,6 +595,56 @@ class MouseFadeDiv extends React.Component{
     }
 }
 
+// div which can be collapsed
+class CollapsibleDiv extends React.Component{
+    constructor(props){
+        super(props);
+
+        const {startOpen: startOpen} = this.props;
+
+        this.state = {
+            open: ((startOpen !== undefined) ? (startOpen) : true)
+        };
+    }
+    render() {
+        let header = null;
+        const openClose = ((this.state.open) ? ("open") : ("close"));
+        let rest = React.Children.map(this.props.children, (val, index) => {
+            // console.log(`val: ${val}, index: ${index}`);
+            if(index === 0){
+                header = React.cloneElement(val, {
+                    className: "collapse_header " + openClose + ((val.props.className) ? (" " + val.props.className) : (""))
+                });
+            }
+            else{
+                return val;
+            }
+        });
+
+        if(this.state.open){
+            return(
+                <div className={"collapse_div " + openClose}>
+                    {header}
+                    <Button className={"collapse_button"} onClick={() => this.setState((state) => ({open: !state.open}))}>
+                        <ImgIcon className={"wrapper_div"} small={4} src={"src/Images/--button-640x640.png"} />
+                    </Button>
+                    {rest}
+                </div>
+            );
+        }
+        else{
+            return (
+                <div className={"collapse_div " + openClose}>
+                    {header}
+                    <Button className={"collapse_button"} onClick={() => this.setState((state) => ({open: !state.open}))}>
+                        <ImgIcon className={"wrapper_div"} small={4} src={"src/Images/+-button-640x640.png"} />
+                    </Button>
+                </div>
+            );
+        }
+    }
+}
+
 // popup shell - props: "closeFunc" function to close the popup
 class PopUp extends React.Component{
     render() {
