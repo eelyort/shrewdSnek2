@@ -80,7 +80,7 @@ class SelectSnakePopUpREACT extends React.Component{
                             ))}
                             <Button onClick={this.cloneButton}>Clone</Button>
                             <Button onClick={popUpFuncs.close}>Finish</Button>
-                            <Button onClick={this.saveButton}>Save</Button>
+                            <Button className={"faded"} onClick={() => null}>Save</Button>
                         </div>
                     </div>
                 </div>
@@ -141,7 +141,7 @@ class SelectSnakePopUpREACT extends React.Component{
         // save a snake
         // create a text area with the snake
         const el = document.createElement('textarea');
-        el.value = loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen].stringify();
+        el.value = loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen].cloneMe().stringify();
         document.body.appendChild(el);
         // select it
         el.select();

@@ -188,7 +188,9 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                             ),
                             React.createElement(
                                 Button,
-                                { onClick: this.saveButton },
+                                { className: "faded", onClick: function onClick() {
+                                        return null;
+                                    } },
                                 "Save"
                             )
                         )
@@ -266,7 +268,7 @@ var SelectSnakePopUpREACT = function (_React$Component) {
             // save a snake
             // create a text area with the snake
             var el = document.createElement('textarea');
-            el.value = loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen].stringify();
+            el.value = loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen].cloneMe().stringify();
             document.body.appendChild(el);
             // select it
             el.select();
