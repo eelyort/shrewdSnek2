@@ -156,5 +156,3 @@ class UnitVectorNormalization extends Normalizer{
     }
 }
 blankNormalizers.push(new UnitVectorNormalization());
-
-const normalizerPrototypes = [TanhNormalizer.prototype, ZNormalizer.prototype, MinMaxLinearNormalization.prototype, UnitVectorNormalization.prototype];

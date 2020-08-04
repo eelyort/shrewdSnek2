@@ -164,5 +164,3 @@ class LayerSwapReproduction extends Reproduction{
     }
 }
 blankReproductions.push(new LayerSwapReproduction());
-
-const reproductionPrototypes = [SingleWeightSwapReproduction.prototype, NodeSwapReproduction.prototype, LayerSwapReproduction.prototype];

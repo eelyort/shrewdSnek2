@@ -228,5 +228,3 @@ class SwapMutation extends Mutation{
     }
 }
 blankMutations.push(new SwapMutation());
-
-const mutationPrototypes = [PercentMutation.prototype, ReplaceMutation.prototype, AddMutation.prototype, NegateMutation.prototype, SwapMutation.prototype];

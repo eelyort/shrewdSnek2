@@ -420,5 +420,3 @@ class LengthInput extends Input{
     }
 }
 blankInputs.push(new LengthInput());
-
-const inputPrototypes = [MultipleInput.prototype, PlayerControlledInput.prototype, DirectionalInput.prototype, SimpleInput.prototype, LengthInput.prototype];
