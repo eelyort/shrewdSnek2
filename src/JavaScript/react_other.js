@@ -1054,7 +1054,9 @@ var SnakeDetails = function (_React$Component7) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[0], changePref: function changePref(val) {
+                            return collapsePrefSnek[0] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },
@@ -1072,7 +1074,9 @@ var SnakeDetails = function (_React$Component7) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[1], changePref: function changePref(val) {
+                            return collapsePrefSnek[1] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },
@@ -1104,7 +1108,9 @@ var SnakeDetails = function (_React$Component7) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[2], changePref: function changePref(val) {
+                            return collapsePrefSnek[2] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },
@@ -1114,7 +1120,9 @@ var SnakeDetails = function (_React$Component7) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[3], changePref: function changePref(val) {
+                            return collapsePrefSnek[3] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },
@@ -1313,7 +1321,9 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[0], changePref: function changePref(val) {
+                            return collapsePrefSnek[0] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },
@@ -1334,7 +1344,9 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[1], changePref: function changePref(val) {
+                            return collapsePrefSnek[1] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },
@@ -1414,7 +1426,9 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[2], changePref: function changePref(val) {
+                            return collapsePrefSnek[2] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },
@@ -1463,7 +1477,9 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 ),
                 React.createElement(
                     CollapsibleDiv,
-                    null,
+                    { startOpen: collapsePrefSnek[3], changePref: function changePref(val) {
+                            return collapsePrefSnek[3] = val;
+                        } },
                     React.createElement(
                         "p",
                         { className: "category_text_title" },

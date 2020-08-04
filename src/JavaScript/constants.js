@@ -61,3 +61,6 @@ const weightLineWidth = 10;
 // big number: darker, small: lighter
 const weightLineOpacityMultiplier = 1.3;
 const weightLineMinOpacity = 0.04;
+
+let collapsePrefSnek = [true, true, true, true];
+let collapsePrefEvolution = [true, true, true, true, true];

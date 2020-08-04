@@ -722,7 +722,10 @@ select, input{
 }
 .collapse_div.close{
     position: relative;
-    margin: 0.5em 0;
+    margin: 0.7em 0;
+}
+.collapse_div .collapse_header, .collapse_div .collapse_header *{
+    margin: 0.2em 0;
 }
 .collapse_div .collapse_button{
     position: absolute;

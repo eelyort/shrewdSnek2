@@ -958,7 +958,7 @@ var MouseFadeDiv = function (_React$Component17) {
     return MouseFadeDiv;
 }(React.Component);
 
-// div which can be collapsed
+// div which can be collapsed || changePref (optional): (newPref) => ...
 
 
 var CollapsibleDiv = function (_React$Component18) {
@@ -969,20 +969,22 @@ var CollapsibleDiv = function (_React$Component18) {
 
         var _this26 = _possibleConstructorReturn(this, (CollapsibleDiv.__proto__ || Object.getPrototypeOf(CollapsibleDiv)).call(this, props));
 
-        var startOpen = _this26.props.startOpen;
+        var _this26$props = _this26.props,
+            startOpen = _this26$props.startOpen,
+            changePref = _this26$props.changePref;
 
 
         _this26.state = {
             open: startOpen !== undefined ? startOpen : true
         };
+
+        _this26.change = _this26.change.bind(_this26);
         return _this26;
     }
 
     _createClass(CollapsibleDiv, [{
         key: "render",
         value: function render() {
-            var _this27 = this;
-
             var header = null;
             var openClose = this.state.open ? "open" : "close";
             var rest = React.Children.map(this.props.children, function (val, index) {
@@ -999,15 +1001,11 @@ var CollapsibleDiv = function (_React$Component18) {
             if (this.state.open) {
                 return React.createElement(
                     "div",
-                    { className: "collapse_div " + openClose },
+                    { className: "collapse_div " + openClose + (this.props.className ? " " + this.props.className : "") },
                     header,
                     React.createElement(
                         Button,
-                        { className: "collapse_button", onClick: function onClick() {
-                                return _this27.setState(function (state) {
-                                    return { open: !state.open };
-                                });
-                            } },
+                        { className: "collapse_button", onClick: this.change },
                         React.createElement(ImgIcon, { className: "wrapper_div", small: 4, src: "src/Images/--button-640x640.png" })
                     ),
                     rest
@@ -1015,19 +1013,33 @@ var CollapsibleDiv = function (_React$Component18) {
             } else {
                 return React.createElement(
                     "div",
-                    { className: "collapse_div " + openClose },
+                    { className: "collapse_div " + openClose + (this.props.className ? " " + this.props.className : "") },
                     header,
                     React.createElement(
                         Button,
-                        { className: "collapse_button", onClick: function onClick() {
-                                return _this27.setState(function (state) {
-                                    return { open: !state.open };
-                                });
-                            } },
+                        { className: "collapse_button", onClick: this.change },
                         React.createElement(ImgIcon, { className: "wrapper_div", small: 4, src: "src/Images/+-button-640x640.png" })
                     )
                 );
             }
+        }
+    }, {
+        key: "change",
+        value: function change() {
+            var _this27 = this;
+
+            var _props4 = this.props,
+                startOpen = _props4.startOpen,
+                changePref = _props4.changePref;
+
+
+            this.setState(function (state) {
+                return { open: !state.open };
+            }, function () {
+                if (changePref) {
+                    changePref(_this27.state.open);
+                }
+            });
         }
     }]);
 
@@ -1098,10 +1110,10 @@ var VerticalCarousel = function (_React$Component20) {
 
             // console.log("render");
 
-            var _props4 = this.props,
-                selected = _props4.selected,
-                select = _props4.select,
-                delayInitialScroll = _props4.delayInitialScroll;
+            var _props5 = this.props,
+                selected = _props5.selected,
+                select = _props5.select,
+                delayInitialScroll = _props5.delayInitialScroll;
 
 
             var numChildren = React.Children.count(this.props.children);

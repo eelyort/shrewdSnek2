@@ -475,7 +475,7 @@ class EditEvolutionPopUp extends React.Component{
                                 <h1>{evolution.getComponentName()}</h1>
                             </TextArea>
 
-                            <CollapsibleDiv>
+                            <CollapsibleDiv startOpen={collapsePrefEvolution[0]} changePref={(val) => (collapsePrefEvolution[0] = val)}>
                                 <p className={"category_text_title"}>Description</p>
                                 <TextArea onChange={(val) => {
                                     evolution.componentDescription = val;
@@ -486,7 +486,7 @@ class EditEvolutionPopUp extends React.Component{
                             </CollapsibleDiv>
 
                             {/*parameters*/}
-                            <CollapsibleDiv>
+                            <CollapsibleDiv startOpen={collapsePrefEvolution[1]} changePref={(val) => (collapsePrefEvolution[1] = val)}>
                                 <p className={"category_text_title"}>Parameters</p>
                                 {evolution.parameters.map((val, index) => {
                                     const [name, defaultVal, desc, min, max, step] = defaultEvolutionParams[index];
@@ -524,13 +524,13 @@ class EditEvolutionPopUp extends React.Component{
                             </CollapsibleDiv>
 
                             {/*mutations | parameters[2]=[mutation, likelyhood]*/}
-                            <CollapsibleDiv>
+                            <CollapsibleDiv startOpen={collapsePrefEvolution[2]} changePref={(val) => (collapsePrefEvolution[2] = val)}>
                                 <p className={"category_text_title"}>Mutation Methods</p>
                                 {evolution.parameters[2].map((arr, mutationIndex) => {
                                     const [mutation, relativeProb] = arr;
                                     const htmlNameMutation = `mutation_${mutationIndex}`;
                                     return(
-                                        <CollapsibleDiv>
+                                        <div className={"component_block"}>
                                             <div className={"wrapper_div inline_block_parent"}>
                                                 <select className={"category_text_title small"} value={mutation.componentID} name={htmlNameMutation} onChange={(val) => {
                                                     val = val.target.value;
@@ -617,7 +617,7 @@ class EditEvolutionPopUp extends React.Component{
                                                     <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/+-button-640x640.png"} />
                                                 </Button>
                                             </div>
-                                        </CollapsibleDiv>
+                                        </div>
                                     );
                                 })}
                                 <div className={"inline_block_parent inline_buttons edit_add_component"}>
@@ -636,13 +636,13 @@ class EditEvolutionPopUp extends React.Component{
                             </CollapsibleDiv>
 
                             {/*reproductions | parameters[1]=[reproduction, likelyhood]*/}
-                            <CollapsibleDiv>
+                            <CollapsibleDiv startOpen={collapsePrefEvolution[3]} changePref={(val) => (collapsePrefEvolution[3] = val)}>
                                 <p className={"category_text_title"}>Reproduction Methods</p>
                                 {evolution.parameters[1].map((arr, reproductionIndex) => {
                                     const [reproduction, relativeProb] = arr;
                                     const htmlNameReproduction = `reproduction_${reproductionIndex}`;
                                     return(
-                                        <CollapsibleDiv>
+                                        <div className={"component_block"}>
                                             <div className={"wrapper_div inline_block_parent"}>
                                                 <select className={"category_text_title small"} value={reproduction.componentID} name={htmlNameReproduction} onChange={(val) => {
                                                     val = val.target.value;
@@ -729,7 +729,7 @@ class EditEvolutionPopUp extends React.Component{
                                                     <ImgIcon className={"wrapper_div"} small={3} src={"src/Images/+-button-640x640.png"} />
                                                 </Button>
                                             </div>
-                                        </CollapsibleDiv>
+                                        </div>
                                     );
                                 })}
                                 <div className={"inline_block_parent inline_buttons edit_add_component"}>
@@ -748,7 +748,7 @@ class EditEvolutionPopUp extends React.Component{
                             </CollapsibleDiv>
 
                             {/*snake*/}
-                            <CollapsibleDiv>
+                            <CollapsibleDiv startOpen={collapsePrefEvolution[4]} changePref={(val) => (collapsePrefEvolution[4] = val)}>
                                 <div className={"inline_block_parent"}>
                                     <label className={"category_text_title"} htmlFor={"snake_select"}>Snake</label>
                                     <Select initVal={-1} name={"snake_select"} onSelect={(val) => {

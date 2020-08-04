@@ -595,16 +595,18 @@ class MouseFadeDiv extends React.Component{
     }
 }
 
-// div which can be collapsed
+// div which can be collapsed || changePref (optional): (newPref) => ...
 class CollapsibleDiv extends React.Component{
     constructor(props){
         super(props);
 
-        const {startOpen: startOpen} = this.props;
+        const {startOpen: startOpen, changePref: changePref} = this.props;
 
         this.state = {
             open: ((startOpen !== undefined) ? (startOpen) : true)
         };
+
+        this.change = this.change.bind(this);
     }
     render() {
         let header = null;
@@ -623,9 +625,9 @@ class CollapsibleDiv extends React.Component{
 
         if(this.state.open){
             return(
-                <div className={"collapse_div " + openClose}>
+                <div className={"collapse_div " + openClose + ((this.props.className) ? (" " + this.props.className) : (""))}>
                     {header}
-                    <Button className={"collapse_button"} onClick={() => this.setState((state) => ({open: !state.open}))}>
+                    <Button className={"collapse_button"} onClick={this.change}>
                         <ImgIcon className={"wrapper_div"} small={4} src={"src/Images/--button-640x640.png"} />
                     </Button>
                     {rest}
@@ -634,14 +636,23 @@ class CollapsibleDiv extends React.Component{
         }
         else{
             return (
-                <div className={"collapse_div " + openClose}>
+                <div className={"collapse_div " + openClose + ((this.props.className) ? (" " + this.props.className) : (""))}>
                     {header}
-                    <Button className={"collapse_button"} onClick={() => this.setState((state) => ({open: !state.open}))}>
+                    <Button className={"collapse_button"} onClick={this.change}>
                         <ImgIcon className={"wrapper_div"} small={4} src={"src/Images/+-button-640x640.png"} />
                     </Button>
                 </div>
             );
         }
+    }
+    change(){
+        const {startOpen: startOpen, changePref: changePref} = this.props;
+
+        this.setState((state) => ({open: !state.open}), () => {
+            if(changePref){
+                changePref(this.state.open);
+            }
+        });
     }
 }
 

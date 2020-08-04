@@ -675,13 +675,13 @@ class SnakeDetails extends React.Component{
         return(
             <div className={"details snake_details" + ((this.props.className) ? (" " + this.props.className) : (""))}>
                 <h1>{snake.getComponentName()}</h1>
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[0]} changePref={(val) => (collapsePrefSnek[0] = val)}>
                     <p className={"category_text_title"}>Description</p>
                     <TypewriterText speed={speed}>
                         <p className={"category_text"}>{snake.getComponentDescription()}</p>
                     </TypewriterText>
                 </CollapsibleDiv>
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[1]} changePref={(val) => (collapsePrefSnek[1] = val)}>
                     <p className={"category_text_title"}>Parameters</p>
                     <TypewriterText speed={speed}>
                         <p className={"category_text"}>
@@ -692,11 +692,11 @@ class SnakeDetails extends React.Component{
                         </p>
                     </TypewriterText>
                 </CollapsibleDiv>
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[2]} changePref={(val) => (collapsePrefSnek[2] = val)}>
                     <p className={"category_text_title"}>Input</p>
                     <InputDetails input={snake.myInput} speed={speed} />
                 </CollapsibleDiv>
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[3]} changePref={(val) => (collapsePrefSnek[3] = val)}>
                     <p className={"category_text_title"}>Brain</p>
                     <BrainDetails brain={snake.myBrain} gridSize={snake.gridSize} speed={speed} />
                 </CollapsibleDiv>
@@ -847,7 +847,7 @@ class SnakeDetailsEdit extends React.Component{
                 }}>
                     <h1>{snake.getComponentName()}</h1>
                 </TextArea>
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[0]} changePref={(val) => (collapsePrefSnek[0] = val)}>
                     <p className={"category_text_title"}>Description</p>
                     <TextArea onChange={(val) => {
                         snake.componentDescription = val;
@@ -856,7 +856,7 @@ class SnakeDetailsEdit extends React.Component{
                         <p className={"category_text"}>{snake.getComponentDescription()}</p>
                     </TextArea>
                 </CollapsibleDiv>
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[1]} changePref={(val) => (collapsePrefSnek[1] = val)}>
                     <p className={"category_text_title"}>Parameters</p>
                     <div className={"category_text"}>
                         <div className={"start_head_pos"}>
@@ -898,7 +898,7 @@ class SnakeDetailsEdit extends React.Component{
                 </CollapsibleDiv>
 
                 {/*Input*/}
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[2]} changePref={(val) => (collapsePrefSnek[2] = val)}>
                     <p className={"category_text_title"}>Input</p>
                     <InputDetails input={snake.myInput} speed={speed} edit={true} editFuncs={editFuncsInput} />
                     <div className={"edit_add_component"}>
@@ -930,7 +930,7 @@ class SnakeDetailsEdit extends React.Component{
                 </CollapsibleDiv>
 
                 {/*Brain*/}
-                <CollapsibleDiv>
+                <CollapsibleDiv startOpen={collapsePrefSnek[3]} changePref={(val) => (collapsePrefSnek[3] = val)}>
                     <p className={"category_text_title"}>Brain</p>
                     <div className={"wrapper_div inline_block_parent"}>
                         <label htmlFor={"brain_type"}>Brain Type: </label>

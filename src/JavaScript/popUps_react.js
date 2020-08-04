@@ -871,7 +871,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
                             ),
                             React.createElement(
                                 CollapsibleDiv,
-                                null,
+                                { startOpen: collapsePrefEvolution[0], changePref: function changePref(val) {
+                                        return collapsePrefEvolution[0] = val;
+                                    } },
                                 React.createElement(
                                     "p",
                                     { className: "category_text_title" },
@@ -892,7 +894,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
                             ),
                             React.createElement(
                                 CollapsibleDiv,
-                                null,
+                                { startOpen: collapsePrefEvolution[1], changePref: function changePref(val) {
+                                        return collapsePrefEvolution[1] = val;
+                                    } },
                                 React.createElement(
                                     "p",
                                     { className: "category_text_title" },
@@ -960,7 +964,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
                             ),
                             React.createElement(
                                 CollapsibleDiv,
-                                null,
+                                { startOpen: collapsePrefEvolution[2], changePref: function changePref(val) {
+                                        return collapsePrefEvolution[2] = val;
+                                    } },
                                 React.createElement(
                                     "p",
                                     { className: "category_text_title" },
@@ -973,8 +979,8 @@ var EditEvolutionPopUp = function (_React$Component3) {
 
                                     var htmlNameMutation = "mutation_" + mutationIndex;
                                     return React.createElement(
-                                        CollapsibleDiv,
-                                        null,
+                                        "div",
+                                        { className: "component_block" },
                                         React.createElement(
                                             "div",
                                             { className: "wrapper_div inline_block_parent" },
@@ -1148,7 +1154,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
                             ),
                             React.createElement(
                                 CollapsibleDiv,
-                                null,
+                                { startOpen: collapsePrefEvolution[3], changePref: function changePref(val) {
+                                        return collapsePrefEvolution[3] = val;
+                                    } },
                                 React.createElement(
                                     "p",
                                     { className: "category_text_title" },
@@ -1161,8 +1169,8 @@ var EditEvolutionPopUp = function (_React$Component3) {
 
                                     var htmlNameReproduction = "reproduction_" + reproductionIndex;
                                     return React.createElement(
-                                        CollapsibleDiv,
-                                        null,
+                                        "div",
+                                        { className: "component_block" },
                                         React.createElement(
                                             "div",
                                             { className: "wrapper_div inline_block_parent" },
@@ -1336,7 +1344,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
                             ),
                             React.createElement(
                                 CollapsibleDiv,
-                                null,
+                                { startOpen: collapsePrefEvolution[4], changePref: function changePref(val) {
+                                        return collapsePrefEvolution[4] = val;
+                                    } },
                                 React.createElement(
                                     "div",
                                     { className: "inline_block_parent" },
