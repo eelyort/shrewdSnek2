@@ -420,3 +420,34 @@ class LengthInput extends Input{
     }
 }
 blankInputs.push(new LengthInput());
+
+// vector [x, y] to apple
+class AppleVectorInput extends Input{
+    constructor(){
+        super(5, 2);
+
+        this.componentName = "Apple Vector Input";
+        this.componentDescription = "This input returns a vector in the form [x, y] from the snake's head to the apple.";
+    }
+    getInput(keyEvent, array, offset = 0) {
+        // helper vars
+        const head = this.mySnake.myHeadPos;
+        const grid = this.mySnake.mySingleSnakeRunner.grid;
+        const gridSize = this.mySnake.gridSize;
+        const applePosition = this.mySnake.mySingleSnakeRunner.applePosition;
+
+        // apple isn't spawned or other problem
+        if(!applePosition || applePosition <= 0 || !grid || !head){
+            console.log("cannot find apple at appleVectorInput");
+            array[offset] = 0;
+            array[offset+1] = 0;
+            return;
+        }
+
+        // deconstruct r/c
+        const [appleR, appleC] = deconstructRC(applePosition, gridSize);
+        const [headR, headC] = deconstructRC(head, gridSize);
+        array[offset] = appleR - headR;
+        array[offset + 1] = appleC - appleC;
+    }
+}

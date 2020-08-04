@@ -160,8 +160,7 @@ class SingleSnakeRunner{
             // draw apple
             ctx.fillStyle = appleColor;
 
-            let r = Math.floor(this.applePosition / (this.gridSize+2));
-            let c = this.applePosition % (this.gridSize+2) - 1;
+            let [r, c] = deconstructRC(this.applePosition, this.gridSize);
             let step = ctx.canvas.width/this.gridSize;
 
             ctx.beginPath();

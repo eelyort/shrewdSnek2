@@ -207,9 +207,7 @@ class Snake extends Component{
                 let currVal = this.bodySegsToErase.poll();
 
                 if(this.mySingleSnakeRunner.grid[currVal] !== 1) {
-                    let r = Math.floor(currVal / (this.gridSize + 2));
-                    // minus one to account for the padding
-                    let c = currVal % (this.gridSize + 2) - 1;
+                    let [r, c] = deconstructRC(currVal, this.gridSize);
 
                     ctx.clearRect(c * step, r * step, step, step);
                 }
@@ -231,9 +229,7 @@ class Snake extends Component{
 
     // draws one segment
     drawSquare(ctx, val, step){
-        let r = Math.floor(val / (this.gridSize+2));
-        // minus one to account for the padding
-        let c = val % (this.gridSize+2) - 1;
+        let [r, c] = deconstructRC(val, this.gridSize);
 
         ctx.beginPath();
         ctx.rect(c*step, r*step, step, step);

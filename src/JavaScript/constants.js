@@ -62,5 +62,13 @@ const weightLineWidth = 10;
 const weightLineOpacityMultiplier = 1.3;
 const weightLineMinOpacity = 0.04;
 
+const deconstructRC = function(val, gridSize){
+    let r = Math.floor(val / (gridSize+2));
+    // minus one to account for the padding
+    let c = val % (gridSize+2) - 1;
+
+    return [r, c];
+};
+
 let collapsePrefSnek = [true, true, true, true];
 let collapsePrefEvolution = [true, true, true, true, true];
