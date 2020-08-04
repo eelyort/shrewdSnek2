@@ -60,7 +60,7 @@ class SelectSnakePopUpREACT extends React.Component{
                             <Select initVal={selectedSnakeGen} name={"generation_number"} onSelect={popUpFuncs.changeSelectedGen}>
                                 {loadedSnakesIn[selectedSnake].snakes.map((value, index) => {
                                     return(
-                                        <option value={index}>{index}</option>
+                                        <option value={index}>{((value.generationNumber) ? (value.generationNumber) : (index))}</option>
                                     );
                                 })}
                             </Select>
@@ -123,21 +123,35 @@ class SelectSnakePopUpREACT extends React.Component{
         const {metaInfo: metaInfo, selectedSnake: selectedSnake, selectedSnakeGen: selectedSnakeGen, loadedSnakesIn: loadedSnakesIn} = this.props;
 
         console.log("todo save button - generation");
+        console.log("todo save button - snake species");
+        // console.log("todo save button - snake individual");
 
-        // save a snakeSpecies
+        // // save a snakeSpecies - doesn't work on mobile
+        // // create a text area with the snake
+        // const el = document.createElement('textarea');
+        // el.value = loadedSnakesIn[selectedSnake].stringify();
+        // document.body.appendChild(el);
+        // // select it
+        // el.select();
+        // // copy
+        // document.execCommand("copy");
+        // // remove
+        // document.body.removeChild(el);
+
+        // save a snake
         // create a text area with the snake
         const el = document.createElement('textarea');
-        el.value = loadedSnakesIn[selectedSnake].stringify();
+        el.value = loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen].stringify();
         document.body.appendChild(el);
         // select it
         el.select();
-        el.setSelectionRange(0, 99999); /*For mobile devices*/
+        el.setSelectionRange(0, 9999999999); /*For mobile devices*/
         // copy
         document.execCommand("copy");
         // remove
         document.body.removeChild(el);
 
-        this.changeErrorText("(Snake(s) copied to clipboard)");
+        this.changeErrorText("(Snake copied to clipboard)");
     }
     changeErrorText(text, callback = (() => null)){
         if(!this.state.errorText){
@@ -211,16 +225,41 @@ class CreateSnakePopUpREACT extends React.Component{
                                     Lastly, to load a snake you previously saved, paste the result into this box.
                                 </p>
                                 <TextArea onChange={(val) => {
+                                    let snek = null;
+
                                     try {
-                                        const snek = SnakeSpecies.parse(val);
-                                        popUpFuncs.spliceLoaded(loadedSnakesIn.length, 1, snek);
-                                        popUpFuncs.changeSelected(loadedSnakesIn.length-1);
-                                        this.changeErrorText("Snake loaded successfully, opening...");
-                                        popUpFuncs.close();
-                                        setTimeout(() => popUpFuncs.close(2, loadedSnakesIn.length-1), 1);
+                                        // console.log("try one");
+                                        const temp = new SnakeSpecies(Snake.parse(val));
+                                        // console.log("success species");
+                                        snek = temp;
+                                    } catch (e) {
+
                                     }
-                                    catch (e) {
-                                        this.changeErrorText("Invalid snake");
+                                    finally {
+                                        // console.log("finally 1");
+                                        try {
+                                            // console.log("try two");
+                                            const temp = SnakeSpecies.parse(val);
+                                            // console.log("success snek");
+                                            snek = temp;
+                                        } catch(e){
+
+                                        }
+                                        finally {
+                                            // console.log("finally");
+                                            if(snek) {
+                                                // console.log("saving");
+                                                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 1, snek);
+                                                popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                                                this.changeErrorText("Snake loaded successfully, opening...");
+                                                popUpFuncs.close();
+                                                setTimeout(() => popUpFuncs.close(2, loadedSnakesIn.length - 1), 1);
+                                            }
+                                            else{
+                                                // console.log("invalid");
+                                                this.changeErrorText("Invalid Snake");
+                                            }
+                                        }
                                     }
                                 }}>
                                     <p className={"paste_saved"} />

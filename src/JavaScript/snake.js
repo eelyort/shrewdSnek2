@@ -331,10 +331,10 @@ class SnakeSpecies{
         return this.snakes.length;
     }
     static parse(json){
-        console.log(json);
+        // console.log(json);
         let a = JSON.parse(json);
-        console.log("a:");
-        console.log(a);
+        // console.log("a:");
+        // console.log(a);
         return new SnakeSpecies(a.map((val) => {return Snake.parse(val)}));
     }
 }

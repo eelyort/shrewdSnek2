@@ -136,7 +136,7 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                                     return React.createElement(
                                         "option",
                                         { value: index },
-                                        index
+                                        value.generationNumber ? value.generationNumber : index
                                     );
                                 })
                             )
@@ -248,21 +248,35 @@ var SelectSnakePopUpREACT = function (_React$Component) {
 
 
             console.log("todo save button - generation");
+            console.log("todo save button - snake species");
+            // console.log("todo save button - snake individual");
 
-            // save a snakeSpecies
+            // // save a snakeSpecies - doesn't work on mobile
+            // // create a text area with the snake
+            // const el = document.createElement('textarea');
+            // el.value = loadedSnakesIn[selectedSnake].stringify();
+            // document.body.appendChild(el);
+            // // select it
+            // el.select();
+            // // copy
+            // document.execCommand("copy");
+            // // remove
+            // document.body.removeChild(el);
+
+            // save a snake
             // create a text area with the snake
             var el = document.createElement('textarea');
-            el.value = loadedSnakesIn[selectedSnake].stringify();
+            el.value = loadedSnakesIn[selectedSnake].snakes[selectedSnakeGen].stringify();
             document.body.appendChild(el);
             // select it
             el.select();
-            el.setSelectionRange(0, 99999); /*For mobile devices*/
+            el.setSelectionRange(0, 9999999999); /*For mobile devices*/
             // copy
             document.execCommand("copy");
             // remove
             document.body.removeChild(el);
 
-            this.changeErrorText("(Snake(s) copied to clipboard)");
+            this.changeErrorText("(Snake copied to clipboard)");
         }
     }, {
         key: "changeErrorText",
@@ -404,17 +418,36 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                                 React.createElement(
                                     TextArea,
                                     { onChange: function onChange(val) {
+                                            var snek = null;
+
                                             try {
-                                                var snek = SnakeSpecies.parse(val);
-                                                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 1, snek);
-                                                popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
-                                                _this4.changeErrorText("Snake loaded successfully, opening...");
-                                                popUpFuncs.close();
-                                                setTimeout(function () {
-                                                    return popUpFuncs.close(2, loadedSnakesIn.length - 1);
-                                                }, 1);
-                                            } catch (e) {
-                                                _this4.changeErrorText("Invalid snake");
+                                                // console.log("try one");
+                                                var temp = new SnakeSpecies(Snake.parse(val));
+                                                // console.log("success species");
+                                                snek = temp;
+                                            } catch (e) {} finally {
+                                                // console.log("finally 1");
+                                                try {
+                                                    // console.log("try two");
+                                                    var _temp = SnakeSpecies.parse(val);
+                                                    // console.log("success snek");
+                                                    snek = _temp;
+                                                } catch (e) {} finally {
+                                                    // console.log("finally");
+                                                    if (snek) {
+                                                        // console.log("saving");
+                                                        popUpFuncs.spliceLoaded(loadedSnakesIn.length, 1, snek);
+                                                        popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                                                        _this4.changeErrorText("Snake loaded successfully, opening...");
+                                                        popUpFuncs.close();
+                                                        setTimeout(function () {
+                                                            return popUpFuncs.close(2, loadedSnakesIn.length - 1);
+                                                        }, 1);
+                                                    } else {
+                                                        // console.log("invalid");
+                                                        _this4.changeErrorText("Invalid Snake");
+                                                    }
+                                                }
                                             }
                                         } },
                                     React.createElement("p", { className: "paste_saved" })
