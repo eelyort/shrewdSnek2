@@ -64,7 +64,7 @@ class Mutation extends Component{
         return clone;
     }
     static parse(str){
-        return super.parse(str, mutationPrototypes);
+        return super.parse(str, blankMutations);
     }
 }
 

@@ -396,8 +396,10 @@ var GameMenu = function (_React$Component2) {
             var items = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
 
             // console.log(`spliceLoadedSnakes(${start}, ${deleteCount}, ${items})`);
-            if (items) {
+            if (items && items instanceof SnakeSpecies) {
                 // console.log(1);
+                loadedSnakes.splice(start, deleteCount, items);
+            } else if (items) {
                 loadedSnakes.splice(start, deleteCount, new SnakeSpecies(items));
             } else if (deleteCount) {
                 // console.log(2);
@@ -587,7 +589,7 @@ var GameMenu = function (_React$Component2) {
                 runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), null, pathAppleSpawn);
             } else if (evolutionBrains.includes(snake.myBrain.componentID)) {
                 var timeOut = function timeOut(length) {
-                    return snek.gridSize * 6 + length * 8;
+                    return snake.gridSize * 6 + length * 8;
                 };
 
                 runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), timeOut);

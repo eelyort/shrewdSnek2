@@ -44,7 +44,7 @@ class Reproduction extends Component{
         return clone;
     }
     static parse(str){
-        return super.parse(str, reproductionPrototypes);
+        return super.parse(str, blankReproductions);
     }
 }
 

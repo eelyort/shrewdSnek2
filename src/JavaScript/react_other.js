@@ -1158,8 +1158,7 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 snake = _props9.snake,
                 tellChange = _props9.tellChange;
 
-
-            console.log(snake.getComponentName());
+            // console.log(snake.getComponentName());
 
             if (tellChange) {
                 tellChange();

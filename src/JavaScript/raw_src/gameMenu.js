@@ -247,8 +247,11 @@ class GameMenu extends React.Component{
     }
     spliceLoadedSnakes(start, deleteCount = 0, items = null){
         // console.log(`spliceLoadedSnakes(${start}, ${deleteCount}, ${items})`);
-        if(items){
+        if(items && items instanceof SnakeSpecies){
             // console.log(1);
+            loadedSnakes.splice(start, deleteCount, items);
+        }
+        else if(items){
             loadedSnakes.splice(start, deleteCount, new SnakeSpecies(items));
         }
         else if(deleteCount){
@@ -396,7 +399,7 @@ class GameMenu extends React.Component{
             runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), null, pathAppleSpawn);
         }
         else if(evolutionBrains.includes(snake.myBrain.componentID)) {
-            const timeOut = (length) => (snek.gridSize*6 + length*8);
+            const timeOut = (length) => (snake.gridSize*6 + length*8);
 
             runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), timeOut);
         }

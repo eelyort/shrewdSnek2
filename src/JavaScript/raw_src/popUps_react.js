@@ -37,6 +37,11 @@ class SelectSnakePopUpREACT extends React.Component{
             );
         }
 
+        if(selectedSnakeGen >= loadedSnakesIn[selectedSnake].getLength()){
+            popUpFuncs.changeSelectedGen(loadedSnakesIn[selectedSnake].getLength()-1);
+            return null;
+        }
+
         return (
             <PopUp className={"background selectSnake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => popUpFuncs.close()}>
                 <FadeDiv speed={.75} className={"error_text"} shouldReset={true}>
@@ -80,7 +85,8 @@ class SelectSnakePopUpREACT extends React.Component{
                             ))}
                             <Button onClick={this.cloneButton}>Clone</Button>
                             <Button onClick={popUpFuncs.close}>Finish</Button>
-                            <Button className={"faded"} onClick={() => null}>Save</Button>
+                            {/*<Button className={"faded"} onClick={() => null}>Save</Button>*/}
+                            <Button onClick={this.saveButton}>Save</Button>
                         </div>
                     </div>
                 </div>
@@ -190,6 +196,7 @@ class CreateSnakePopUpREACT extends React.Component{
         this.saveResults = this.saveResults.bind(this);
         this.saveAsNew = this.saveAsNew.bind(this);
         this.changeErrorText = this.changeErrorText.bind(this);
+        this.loadFromString = this.loadFromString.bind(this);
     }
     render() {
         const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
@@ -224,44 +231,7 @@ class CreateSnakePopUpREACT extends React.Component{
                                 <p>
                                     Lastly, to load a snake you previously saved, paste the result into this box.
                                 </p>
-                                <TextArea onChange={(val) => {
-                                    let snek = null;
-
-                                    try {
-                                        // console.log("try one");
-                                        const temp = new SnakeSpecies(Snake.parse(val));
-                                        // console.log("success species");
-                                        snek = temp;
-                                    } catch (e) {
-
-                                    }
-                                    finally {
-                                        // console.log("finally 1");
-                                        try {
-                                            // console.log("try two");
-                                            const temp = SnakeSpecies.parse(val);
-                                            // console.log("success snek");
-                                            snek = temp;
-                                        } catch(e){
-
-                                        }
-                                        finally {
-                                            // console.log("finally");
-                                            if(snek) {
-                                                // console.log("saving");
-                                                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 1, snek);
-                                                popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
-                                                this.changeErrorText("Snake loaded successfully, opening...");
-                                                popUpFuncs.close();
-                                                setTimeout(() => popUpFuncs.close(2, loadedSnakesIn.length - 1), 1);
-                                            }
-                                            else{
-                                                // console.log("invalid");
-                                                this.changeErrorText("Invalid Snake");
-                                            }
-                                        }
-                                    }
-                                }}>
+                                <TextArea onChange={this.loadFromString}>
                                     <p className={"paste_saved"} />
                                 </TextArea>
                             </div>
@@ -317,7 +287,7 @@ class CreateSnakePopUpREACT extends React.Component{
                     {quitConfirmation}
                     <div className={"text_card background"}>
                         <SnakeDetailsEdit snake={this.state.snake} tellChange={() => {
-                            console.log("unsave");
+                            // console.log("unsave");
                             if(this.saved){
                                 this.saved = false;
                             }
@@ -346,8 +316,6 @@ class CreateSnakePopUpREACT extends React.Component{
     }
     saveResults(){
         const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
-
-        // TODO: snake validation
 
         // bundle of functions for the popup to interact with the main menu
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
@@ -410,6 +378,50 @@ class CreateSnakePopUpREACT extends React.Component{
             }
             else{
                 this.setState((state) => ({errorText: text}), callback);
+            }
+        }
+    }
+    loadFromString(str){
+        const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
+
+        // bundle of functions for the popup to interact with the main menu
+        //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
+        const popUpFuncs = this.props.popUpFuncs;
+
+        let snek = null;
+
+        try {
+            // console.log("try one");
+            // console.log("success species");
+            snek = new SnakeSpecies(Snake.parse(str));
+        } catch (e) {
+
+        }
+        finally {
+            // console.log("finally 1");
+            try {
+                // console.log("try two");
+                // console.log("success snek");
+                snek = SnakeSpecies.parse(str);
+            } catch(e){
+
+            }
+            finally {
+                // console.log("finally");
+                if(snek) {
+                    // console.log("saving");
+                    // console.log(snek);
+                    popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, snek);
+                    popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
+                    this.changeErrorText("Snake loaded successfully, opening...");
+                    popUpFuncs.close();
+                    // console.log(loadedSnakesIn);
+                    // setTimeout(() => popUpFuncs.close(2, loadedSnakesIn.length - 1), 1);
+                }
+                else{
+                    // console.log("invalid");
+                    this.changeErrorText("Invalid Snake");
+                }
             }
         }
     }

@@ -49,8 +49,11 @@ class Brain extends Component{
     updateWithInput(input){
         // do nothing
     }
+    stringify() {
+        return super.stringify();
+    }
     static parse(str){
-        let ans = super.parse(str, brainPrototypes);
+        let ans = super.parse(str, blankBrains);
         if(ans.componentID === 2){
             ans.helperParse();
         }
@@ -59,8 +62,8 @@ class Brain extends Component{
     }
     // made to parse the first evolutions and no more
     static OLDPARSE(str){
-        console.log("OLDPARSE:");
-        let ans = super.parse(str, brainPrototypes);
+        // console.log("OLDPARSE:");
+        let ans = super.OLDPARSE(str, brainPrototypes);
         Object.setPrototypeOf(ans.myNormalizer, TanhNormalizer.prototype);
         return ans;
     }
@@ -553,10 +556,12 @@ class NeuralNetBrain extends Brain{
         let tempNormalizer = this.myNormalizer;
         this.myNormalizer = tempNormalizer.stringify();
 
-        let ans = JSON.stringify(this);
+        let ans = super.stringify();
 
         // put it back
         this.myNormalizer = tempNormalizer;
+
+        return ans;
     }
     helperParse(){
         // get normalizer back

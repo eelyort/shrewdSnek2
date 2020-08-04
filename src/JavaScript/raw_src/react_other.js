@@ -710,7 +710,7 @@ class SnakeDetailsEdit extends React.Component{
     render(){
         const {snake: snake, tellChange: tellChange} = this.props;
 
-        console.log(snake.getComponentName());
+        // console.log(snake.getComponentName());
 
         if(tellChange){
             tellChange();

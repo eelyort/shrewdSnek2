@@ -38,6 +38,12 @@ class Component{
     // override by children
     static parse(str, arr){
         let ans = JSON.parse(str);
+        return Object.assign(arr[ans.componentID].cloneMe(), ans);
+        // Object.setPrototypeOf(ans, arr[ans.componentID]);
+        // return ans;
+    }
+    static OLDPARSE(str, arr){
+        let ans = JSON.parse(str);
         Object.setPrototypeOf(ans, arr[ans.componentID]);
         return ans;
     }

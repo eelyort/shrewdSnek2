@@ -17,7 +17,7 @@ class Normalizer extends Component{
         return new Normalizer();
     }
     static parse(str){
-        return super.parse(str, normalizerPrototypes);
+        return super.parse(str, blankNormalizers);
     }
 }
 

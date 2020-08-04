@@ -52,7 +52,7 @@ class Input extends Component{
     }
     // parse
     static parse(str){
-        let ans = super.parse(str, inputPrototypes);
+        let ans = super.parse(str, blankInputs);
 
         // special for multiple input
         if(ans.componentID === 0){

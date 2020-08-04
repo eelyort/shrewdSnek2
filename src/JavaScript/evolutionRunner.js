@@ -69,13 +69,13 @@ class Evolution extends Component{
     setParams(){
         // defaults
         if(arguments.length === 0 && this.parameters == null){
-            console.log("Evolution setParams called with no arguments, adding default values");
+            // console.log("Evolution setParams called with no arguments, adding default values");
             this.parameters = defaultEvolutionParams.map((arr, i) => arr[1]);
         }
 
         // mismatch
         else if(arguments.length && arguments.length !== this.parameters.length){
-            console.log("Warning, Evolution setParams() called with incorrect number of arguments, exiting");
+            // console.log("Warning, Evolution setParams() called with incorrect number of arguments, exiting");
             return false;
         }
 

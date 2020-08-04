@@ -261,6 +261,7 @@ class Snake extends Component{
         // objects
         let tempInput = this.myInput;
         let tempBrain = this.myBrain;
+        let tempRunner = this.mySingleSnakeRunner;
 
         // replace the problematic objects with working versions
         // queue's
@@ -270,6 +271,7 @@ class Snake extends Component{
         // objects
         this.myInput = tempInput.stringify();
         this.myBrain = tempBrain.stringify();
+        this.mySingleSnakeRunner = null;
 
         let ans = JSON.stringify(this);
 
@@ -281,6 +283,7 @@ class Snake extends Component{
         // objects
         this.myInput = tempInput;
         this.myBrain = tempBrain;
+        this.mySingleSnakeRunner = tempRunner;
 
         return ans;
     }
@@ -317,10 +320,6 @@ class SnakeSpecies{
     getComponentDescription(){
         return this.snakes[0].getComponentName();
     }
-    stringify(){
-        let a = this.snakes.map((value, index) => {return value.stringify()});
-        return JSON.stringify(a);
-    }
     cloneMe(generation = (this.snakes.length - 1)){
         return this.snakes[generation].cloneMe();
     }
@@ -330,11 +329,13 @@ class SnakeSpecies{
     getLength(){
         return this.snakes.length;
     }
+    stringify(){
+        let a = this.snakes.map((value, index) => {return value.stringify()});
+        return JSON.stringify(a);
+    }
     static parse(json){
         // console.log(json);
         let a = JSON.parse(json);
-        // console.log("a:");
-        // console.log(a);
         return new SnakeSpecies(a.map((val) => {return Snake.parse(val)}));
     }
 }

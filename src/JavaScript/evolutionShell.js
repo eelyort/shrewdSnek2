@@ -14,27 +14,21 @@ class EvolutionShell{
     }
     createEvolution(input){
         if(input instanceof Evolution){
-            console.log("evolution from evolution");
+            // console.log("evolution from evolution");
             this.evolution = input;
             this.evolution.myCallback2 = this.callback.bind(this);
         }
         else if(input instanceof Snake){
-            console.log("evolution from snake");
+            // console.log("evolution from snake");
             let snake = input.cloneMe();
 
             this.evolution = new Evolution(snake, this.callback.bind(this));
         }
         else{
-            console.log("!!! Unknown input !!!");
+            // console.log("!!! Unknown input !!!");
         }
     }
     runGen(){
-        if(!this.evolution){
-            // TODO
-            console.log("Running default gen cuz no input");
-
-            this.createEvolution(testBasicNeuralNetSnake.cloneMe());
-        }
         // run
         if(!this.runningGen){
             this.runningGen = true;
@@ -45,7 +39,7 @@ class EvolutionShell{
             // }
         }
         else{
-            console.log("Already running");
+            // console.log("Already running");
         }
     }
     // called from mainMenu - runs next ready snake/loading screen
