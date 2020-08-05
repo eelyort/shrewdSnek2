@@ -218,6 +218,8 @@ select, input{
     bottom: 0;
 
     margin: 14px;
+
+    z-index: 5;
 }
 
 .menu_position{
@@ -434,6 +436,8 @@ select, input{
 /*load screen*/
 .loading_screen{
     text-align: center;
+
+    z-index: 1;
 }
 .loading_screen .progress_container{
     background-color: black;

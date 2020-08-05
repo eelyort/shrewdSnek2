@@ -188,10 +188,10 @@ class GameMenu extends React.Component{
 
         return(
             <SquareFill parentRef={this.props.parentRef}>
-                {popUp}
                 {((this.state.evolutionLoading) ? (
                     <LoadScreen evolution={this.evolutionShell.evolution} />
                 ) : null)}
+                {popUp}
                 <SubCanvas refIn={this.subCanvasRef} />
                 <div className={"ui_layer"}>
                     <div className={"inline_block_parent wrapper_div"}>
