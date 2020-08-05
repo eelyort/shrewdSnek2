@@ -20,13 +20,13 @@ const defaultScoreFunc = function (score, timeSinceLastApple) {
 };
 
 // color of the snake
-const snakeColor = "#ff00f2";
+const snakeColor = "#66FCF1";
 
 // color of the ded snake
-const snakeDedColor = "#ff0000";
+const snakeDedColor = "#FF3A00";
 
 // color of the apple
-const appleColor = "#000fff";
+const appleColor = "#FFD800";
 
 // id of the "gamePanel"
 const gamePanelID = "gamePanel-1";
@@ -64,6 +64,9 @@ const weightLineWidth = 10;
 // big number: darker, small: lighter
 const weightLineOpacityMultiplier = 1.3;
 const weightLineMinOpacity = 0.04;
+
+// typewriter speed
+const typeWriteSpeed = 3.5;
 
 const deconstructRC = function(val, gridSize){
     let r = Math.floor(val / (gridSize+2));

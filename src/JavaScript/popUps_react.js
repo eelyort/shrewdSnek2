@@ -788,7 +788,7 @@ var EditEvolutionPopUp = function (_React$Component3) {
                 return null;
             }
 
-            var speed = 3.5;
+            var speed = typeWriteSpeed;
 
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
@@ -1474,6 +1474,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
             if (!this.saved) {
                 if (this.state.confirmationBox) {
                     // save
+                    this.setState(function () {
+                        return { confirmationBox: false };
+                    });
                     var ans = this.state.evolution.cloneMe();
                     ans.currentGeneration = [[this.state.currSnake.cloneMe(), 1]];
                     this.props.popUpFuncs.changeEvolution(ans);

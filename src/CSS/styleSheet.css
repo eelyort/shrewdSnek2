@@ -573,10 +573,10 @@ select, input{
     font-size: 1.1em;
 }
 .info_text.main{
-    margin-top: 2em;
+    margin-top: 2.2em;
 }
 .info_text span.title{
-    font-size: 1.6em;
+    font-size: 1.8em;
     font-weight: bold;
 
     /*border-image: url("../Images/custom-underline-760x60.png") 60 stretch;*/
@@ -590,7 +590,7 @@ select, input{
     background-size: 100% auto;
 }
 .info_text span.title.small{
-    font-size: 1em;
+    font-size: 1.1em;
 }
 .info_text.main span.title{
     font-size: 2em;

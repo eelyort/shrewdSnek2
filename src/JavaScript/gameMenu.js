@@ -317,8 +317,8 @@ var GameMenu = function (_React$Component3) {
             return React.createElement(
                 SquareFill,
                 { parentRef: this.props.parentRef },
-                popUp,
                 this.state.evolutionLoading ? React.createElement(LoadScreen, { evolution: this.evolutionShell.evolution }) : null,
+                popUp,
                 React.createElement(SubCanvas, { refIn: this.subCanvasRef }),
                 React.createElement(
                     "div",
@@ -352,7 +352,7 @@ var GameMenu = function (_React$Component3) {
                                 { className: "gameButton", onClick: function onClick() {
                                         return _this5.openPopUp(2);
                                     } },
-                                "Create Snake"
+                                "New Snake"
                             ),
                             React.createElement(
                                 "h3",

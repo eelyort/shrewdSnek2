@@ -668,7 +668,7 @@ class SnakeDetails extends React.Component{
     render(){
         const {snake: snake} = this.props;
 
-        const speed = 3.5;
+        const speed = typeWriteSpeed;
 
         const [currR, currC] = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(((value, index) => Math.floor(value)));
 
@@ -716,7 +716,7 @@ class SnakeDetailsEdit extends React.Component{
             tellChange();
         }
 
-        const speed = 3.5;
+        const speed = typeWriteSpeed;
 
         const [currR, currC] = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(((value, index) => Math.floor(value)));
 

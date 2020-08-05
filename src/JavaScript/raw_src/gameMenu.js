@@ -204,7 +204,7 @@ class GameMenu extends React.Component{
                                 Load
                             </Button>
                             <Button className={"gameButton"} onClick={() => this.openPopUp(2)}>
-                                Create Snake
+                                New Snake
                             </Button>
                             <h3>Generation: {((this.evolutionShell.evolution) ? (this.evolutionShell.evolution.generationNumber) : (0))}</h3>
                             <Button className={"gameButton"} onClick={() => this.evolveButton()}>

@@ -464,7 +464,7 @@ class EditEvolutionPopUp extends React.Component{
             return null;
         }
 
-        const speed = 3.5;
+        const speed = typeWriteSpeed;
 
         // bundle of functions for the popup to interact with the main menu
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
@@ -849,6 +849,7 @@ class EditEvolutionPopUp extends React.Component{
         if(!this.saved) {
             if (this.state.confirmationBox) {
                 // save
+                this.setState(() => ({confirmationBox: false}));
                 let ans = this.state.evolution.cloneMe();
                 ans.currentGeneration = [[this.state.currSnake.cloneMe(), 1]];
                 this.props.popUpFuncs.changeEvolution(ans);
