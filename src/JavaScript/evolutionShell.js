@@ -78,7 +78,7 @@ class EvolutionShell{
             const lastSpecies = loadedSnakes[loadedSnakes.length - 1];
             if(lastSpecies.snakes[lastSpecies.getLength() - 1].generationNumber !== snake.generationNumber){
                 loadedSnakes[loadedSnakes.length - 1].push(snake);
-                this.popUpFuncs.changeSelectedGen(snake.generationNumber);
+                this.popUpFuncs.changeSelectedGen(loadedSnakes[loadedSnakes.length - 1].getLength() - 1);
             }
         }
         else{

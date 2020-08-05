@@ -295,6 +295,12 @@ select, input{
 
     z-index: 11;
 }
+.popUp-card.small{
+    margin: 16%;
+
+    width: 68%;
+    height: 68%;
+}
 .popUp-card > div.container{
     padding: 0;
     margin: 3%;
@@ -424,6 +430,35 @@ select, input{
     background-color: white;
 
     border-radius: 10px;
+}
+/*load screen*/
+.loading_screen{
+    text-align: center;
+}
+.loading_screen .progress_container{
+    background-color: black;
+
+    width: 80%;
+    height: 30px;
+    margin: 1em calc(10% - 8px);
+    padding: 0;
+
+    border-color: #7c7c7d;
+    border-width: 4px;
+    border-style: solid;
+}
+.loading_screen .progress_container > .fill{
+    background-color: #66FCF1;
+
+    height: 100%;
+
+    transition: width 400ms ease-in-out;
+}
+.loading_screen .title{
+    margin-right: 1em;
+}
+.loading_screen .delta_stats{
+    margin-left: 0.6em;
 }
 
 .vertCarouselItem{

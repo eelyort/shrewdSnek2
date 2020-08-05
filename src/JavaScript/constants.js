@@ -40,7 +40,10 @@ const snakeNameChars = 32;
 const maxNumThreads = 500;
 
 // number of times per second the display for evolution updates
-const evolutionUpdatePerSec = 1;
+const evolutionUpdatePerSec = 2;
+
+// amount of decimal points to show for generation stats
+const scoreDisplayPrecision = 3;
 
 // details
 // grid val to string

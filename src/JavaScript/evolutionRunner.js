@@ -45,6 +45,9 @@ class Evolution extends Component{
 
         this.generationNumber = 0;
 
+        // best, mean, median
+        this.statistics = [];
+
         if(Array.isArray(snakes)) {
             // this stores the snakes in the current generation, it should always be ONLY snake objects
             //  each i: [snake, index]
@@ -301,7 +304,7 @@ class Evolution extends Component{
 
         // start the generation
         this.generationNumber++;
-        this.myInterval = setInterval(this.update.bind(this), 1000 / evolutionUpdatePerSec);
+        this.myInterval = setInterval(this.update.bind(this), Math.ceil(1000 / evolutionUpdatePerSec));
     }
 
     // function called every once in a while, begins new snakes when needed, updates visible parameters
@@ -347,10 +350,26 @@ class Evolution extends Component{
         // console.log(`Old generation being deleted at EvolutionRunner finish(), old gen: ${JSON.stringify(this.currentGeneration)}`);
         this.currentGeneration = this.runningResults;
 
-        // log
-        // console.log("evolutionRunner finish(), runningResults:");
-        // console.log(this.currentGeneration);
-        // console.log(`Best: ${this.currentGeneration[0][0].stringify()}`);
+        // statistics
+        const precision = Math.pow(10, scoreDisplayPrecision);
+        const numPerGen = this.parameters[0];
+        const even = numPerGen % 2 === 0;
+        const half = Math.floor(numPerGen/2);
+        let sum = 0;
+        let medSum = 0;
+        this.currentGeneration.map(((value, index) => {
+            sum += value[1];
+            if(even && (index === half || index === half-1)){
+                medSum += value[1];
+            }
+            else if(!even && index === half){
+                medSum += value[1];
+            }
+        }));
+        const best = this.currentGeneration[0][1];
+        const mean = (sum/numPerGen);
+        const median = ((even) ? (medSum/2) : (medSum));
+        this.statistics.push([best, mean, median]);
 
         if(this.myCallback2){
             this.myCallback2(this.currentGeneration[0][0]);

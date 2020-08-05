@@ -8,6 +8,73 @@ class SubCanvas extends React.Component{
     }
 }
 
+class LoadScreen extends React.Component{
+    render() {
+        const {evolution: evolution} = this.props;
+
+        const precision = Math.pow(10, scoreDisplayPrecision);
+
+        const finished = evolution.runningProgress/evolution.parameters[0];
+        // console.log(`finished: ${finished}`);
+        const styleBar = {
+            width: `${Math.floor(finished * 100)}%`
+        };
+
+        let lastStats = ((evolution.statistics && evolution.statistics.length >= 1) ? (evolution.statistics[evolution.statistics.length-1]) : ([0, 0, 0]));
+
+        let lastLastStats = ((evolution.statistics && evolution.statistics.length >= 2) ? (evolution.statistics[evolution.statistics.length-2]) : (lastStats));
+        let deltaStats = lastStats.map(((value, index) => value-lastLastStats[index]));
+
+        lastStats = lastStats.map(((value, index) => Math.round(value * precision)/precision));
+        deltaStats = deltaStats.map(((value, index) => Math.round(value * precision)/precision));
+
+        const [best, mean, median] = lastStats;
+        const [dBest, dMean, dMedian] = deltaStats;
+
+        return(
+            <div className={"popUp-card small loading_screen background"}>
+                <div className={"container"}>
+                    <div className={"background text_card"}>
+                        <h3>Currently Running: Generation {evolution.generationNumber}</h3>
+                        <h4>Progress:</h4>
+                        <div className={"progress_container"}>
+                            <div style={styleBar} className={"fill"} />
+                        </div>
+                        {((evolution.statistics && evolution.statistics.length >= 1) ? (
+                            <Fragment>
+                                <h3>{"\n"}Last Generation:</h3>
+                                <p>
+                                    <span className={"title"}>Best Score:</span>
+                                    {((best) ? (best) : ("???"))}
+                                    <span className={"delta_stats"}>({((dBest > 0) ? (`+${dBest}`) : (`${dBest}`))})</span>
+                                </p>
+                                <p>
+                                    <span className={"title"}>Mean:</span>
+                                    {((mean) ? (mean) : ("???"))}
+                                    <span className={"delta_stats"}>({((dMean > 0) ? (`+${dMean}`) : (`${dMean}`))})</span>
+                                </p>
+                                <p>
+                                    <span className={"title"}>Median:</span>
+                                    {((median) ? (median) : ("???"))}
+                                    <span className={"delta_stats"}>({((dMedian > 0) ? (`+${dMedian}`) : (`${dMedian}`))})</span>
+                                </p>
+                            </Fragment>
+                        ) : (
+                            <h3>No Past Generation To Show</h3>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+    componentDidMount() {
+        this.interval = setInterval(() => this.forceUpdate(), 100);
+    }
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+}
+
 class GameMenu extends React.Component{
     constructor(props){
         super(props);
@@ -21,7 +88,8 @@ class GameMenu extends React.Component{
             selectedSnakeGen: 0,
             popupActive: 0,
             popupMetaInfo: null,
-            infiniteEvolve: false
+            infiniteEvolve: false,
+            evolutionLoading: false
         };
 
         // bind functions
@@ -121,6 +189,9 @@ class GameMenu extends React.Component{
         return(
             <SquareFill parentRef={this.props.parentRef}>
                 {popUp}
+                {((this.state.evolutionLoading) ? (
+                    <LoadScreen evolution={this.evolutionShell.evolution} />
+                ) : null)}
                 <SubCanvas refIn={this.subCanvasRef} />
                 <div className={"ui_layer"}>
                     <div className={"inline_block_parent wrapper_div"}>
@@ -409,12 +480,14 @@ class GameMenu extends React.Component{
         this.startRunner(runner);
     }
     startRunner(runner){
-        // console.log("Game Menu startRunner");
+        if(runner instanceof EvolutionLoadScreen){
+            this.setState((state) => ({evolutionLoading: true}));
+        }
 
         // clear canvas
         if(this.runningInstance){
-            if(!(this.runningInstance instanceof EvolutionLoadScreen)) {
-                console.log("new runner called at startRunner() while old one still ongoing");
+            if(this.runningInstance instanceof EvolutionLoadScreen){
+                this.setState((state) => ({evolutionLoading: false}));
             }
 
             this.runningInstance.kill();
@@ -460,6 +533,7 @@ class GameMenu extends React.Component{
         }
     }
     evolveButton(){
+        this.showcase = false;
         this.evolutionShell.runGen();
         this.evolutionShell.runQueue(this.startSnake, this.startRunner);
     }
