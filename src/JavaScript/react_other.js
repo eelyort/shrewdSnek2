@@ -1035,7 +1035,7 @@ var SnakeDetails = function (_React$Component7) {
             var snake = this.props.snake;
 
 
-            var speed = 3.5;
+            var speed = typeWriteSpeed;
 
             var _map = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(function (value, index) {
                 return Math.floor(value);
@@ -1164,7 +1164,7 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 tellChange();
             }
 
-            var speed = 3.5;
+            var speed = typeWriteSpeed;
 
             var _map3 = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(function (value, index) {
                 return Math.floor(value);
