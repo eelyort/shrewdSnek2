@@ -26,7 +26,7 @@ const snakeColor = "#66FCF1";
 const snakeDedColor = "#FF3A00";
 
 // color of the apple
-const appleColor = "#FFD800";
+const appleColor = "#c3ff00";
 
 // id of the "gamePanel"
 const gamePanelID = "gamePanel-1";
