@@ -238,9 +238,9 @@ class Snake extends Component{
     }
     // returns a copy of this snake
     cloneMe(){
-        if(!this.myBrain.cloneMe){
-            console.log(this);
-        }
+        // if(!this.myBrain.cloneMe){
+        //     console.log(this);
+        // }
         let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal, this.gridSize);
         clone.uuid = this.uuid;
         clone.componentName = this.componentName;

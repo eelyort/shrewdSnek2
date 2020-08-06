@@ -438,7 +438,7 @@ class AppleVectorInput extends Input{
 
         // apple isn't spawned or other problem
         if(!applePosition || applePosition <= 0 || !grid || !head){
-            console.log("cannot find apple at appleVectorInput");
+            // console.log("cannot find apple at appleVectorInput");
             array[offset] = 0;
             array[offset+1] = 0;
             return;
@@ -447,8 +447,8 @@ class AppleVectorInput extends Input{
         // deconstruct r/c
         const [appleR, appleC] = deconstructRC(applePosition, gridSize);
         const [headR, headC] = deconstructRC(head, gridSize);
-        array[offset] = appleR - headR;
-        array[offset + 1] = appleC - appleC;
+        array[offset] = appleC - headC;
+        array[offset + 1] = appleR - headR;
     }
 }
 blankInputs.push(new AppleVectorInput());

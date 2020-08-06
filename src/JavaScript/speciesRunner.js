@@ -71,7 +71,7 @@ class SpeciesRunner{
             let mid = Math.floor(this.scores.length/2);
 
             // odd number
-            if(this.scores.length % 2 == 1){
+            if(this.scores.length % 2 === 1){
                 ans = this.scores[mid];
             }
             // even
