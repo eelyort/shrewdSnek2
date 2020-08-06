@@ -25,7 +25,7 @@
 <div class="info_text main">
     <span class="title">ShrewdSnek2</span>
     <p>
-        ShrewdSnek2 is an interactive evolution simulator. It allows someone without specialized knowledge to train their own ai's to play the classic arcade game "Snake."
+        ShrewdSnek2 is an interactive evolution simulator. It allows someone without specialized knowledge to train their own AI's to play the classic arcade game "Snake."
         For more information, please scroll past the game window.
     </p>
 </div>
@@ -39,7 +39,6 @@
     </p>
 </div>
 
-<!--<div id="gamePanel-1" class="gamePanelContainer"></div>-->
 <div id="app_container"></div>
 
 <div class="info_text">
@@ -47,9 +46,9 @@
     <p>
         This program works through the process of "neuro-evolution," which is a technique based off Darwinian Evolution.
         To put it simply, 1600~ snakes are generated randomly and play through the game in the background.
-        Then, the snakes are ordered based off of their scores, and the best are selected as "parents."
+        Then, the snakes are ordered based off their scores, and the best are selected as "parents."
         The parents are then randomly mutated and produce "children" by having some of their "genes" crossed with another parent.
-        Rinse and repeat for a few generations, and you have ai that gets better through a combination of random chance and survival of the fittest.
+        Rinse and repeat for a few generations, and you have an AI that gets better through a combination of random chance and survival of the fittest.
     </p>
 </div>
 
@@ -58,12 +57,13 @@
     <p>
         As you can probably tell from the project name, this is the second version of ShrewdSnek. The first version was created by me and a classmate in high school, and can be seen on my <a href="https://github.com/eelyort">github</a>.
         The first version was made in Java and while it did work, it had many problems. One, it was pretty inefficient, taking 6+ hours on a powerful computer to train anything which could even slightly play the game.
-        Two, it was very inflexible, you could only train one type of snake in one type of way. Three, the code itself was an absolute mess and difficult to maintain.
+        Two, it was very inflexible, it only supported one type of snake with one set of inputs.
+        Three, the code itself was an absolute mess and difficult to maintain.
         Thus, I decided to create a second version with the following goals in mind:
     </p>
     <span class="title small">Flexibility</span>
     <p>
-        In order to make it so that ShrewdSnek2 could support any type of snake, I ended up creating a modular system where inputs, brains, mutations, and reproductions could all be easily swapped in and out.
+        To make ShrewdSnek2 support any type of snake, I ended up creating a modular system where inputs, brains, mutations, and reproductions could all be easily swapped in and out.
         As a result, brains work with all inputs, and whenever I learn about and wish to add a new algorithm I only need to mess around in one file.
     </p>
     <span class="title small">Accessibility</span>
@@ -104,13 +104,13 @@
         Originally, I was going for a highly compact and clean look for the program itself.
         However, I've realized that for a program meant to be an evolution simulator, there is too much focus on the actual playing grid.
         Thus, I am planning on eventually moving the menu and information displays to the side so that the user can play with settings while watching the snakes.
-        Frankly, since most of the ui is simply re-usable, general components, doing so should take a week at most.
+        Frankly, since most of the ui are re-usable, general components, doing so should take a week at most.
     </p>
     <span class="title small">Snake Components</span>
     <p>
         I would like to keep adding new inputs/brains/mutations as I learn them.
         In the near future I would like to add an input which simply contains the grid, perhaps centered on the head.
-        I am also planning on adding recurrent brains, which are the same as the current ones but have a limited memory.
+        I am also planning on adding recurrent brains, which have the added ability of memory.
     </p>
     <span class="title small">Features</span>
     <p>
@@ -123,8 +123,7 @@
         Unlike the other improvements, I am on the fence about this one.
         I do believe that having a type of hub where you can upload your own snakes and view other people's snakes would be a good improvement.
         In addition, I would like to have the capability of saving snakes/settings through a login as that would be much easier to use than the current text saving.
-        That said, there aren't really enough users to justify the server costs for either of the options.
-        Not to mention the "hub" wouldn't really be populated with snakes.
+        That said, there aren't really enough users neither to justify the server costs nor populate the hub.
     </p>
 </div>
 
