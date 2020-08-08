@@ -734,7 +734,7 @@ var GameMenu = function (_React$Component3) {
             // console.log(filtered);
             var snek = filtered[Math.floor(Math.random() * filtered.length)].cloneMe();
             var timeOut = function timeOut(length) {
-                return snek.gridSize * 6 + length * 8;
+                return snek.gridSize * timeoutInitMultiplier + snek.gridSize * length * timeoutInitMultiplier2;
             };
 
             this.startRunner(new SingleSnakeRunner(snek, this.state.tickRate === defaultTickRate ? showcaseTickRate : this.state.tickRate, function () {
@@ -755,7 +755,7 @@ var GameMenu = function (_React$Component3) {
                 runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), null, pathAppleSpawn);
             } else if (evolutionBrains.includes(snake.myBrain.componentID)) {
                 var timeOut = function timeOut(length) {
-                    return snake.gridSize * 6 + length * 8;
+                    return snake.gridSize * timeoutInitMultiplier + snake.gridSize * length * timeoutInitMultiplier2;
                 };
 
                 runner = new SingleSnakeRunner(snake, this.state.tickRate, this.callbackEndCurrent.bind(this), timeOut);
