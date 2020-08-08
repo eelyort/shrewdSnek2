@@ -19,7 +19,7 @@ const defaultScoreFunc = function (score, timeSinceLastApple) {
 
 // showcase
 // how fast showcase snakes are run
-const showcaseTickRate = 90;
+const showcaseTickRate = 100;
 // timeout(len) = (gridSize * this + gridsize * length * this2)
 const timeoutInitMultiplier = 10;
 const timeoutInitMultiplier2 = 0.4;
