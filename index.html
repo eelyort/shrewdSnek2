@@ -41,6 +41,7 @@
         Currently, the game is in showcase mode, where it plays randomly selected snakes that I trained previously. Floating your mouse over the top-left corner of the window should bring up a menu to begin.
         To begin evolving your very own snake, simply hit the "evolve" button and watch the magic happen. If you would like to customize/create the snake hit the "load" button.
         Doing so also allows you to browse all previous snakes and edit them at will. Lastly, the "edit evolution" button allows you to customize the evolution parameters.
+        To replay a snake, you can either hit the "play" button or the un-pause button at the bottom of the window.
     </p>
 </div>
 
@@ -129,6 +130,14 @@
         I do believe that having a type of hub where you can upload your own snakes and view other people's snakes would be a good improvement.
         In addition, I would like to have the capability of saving snakes/settings through a login as that would be much easier to use than the current text saving.
         That said, there aren't really enough users neither to justify the server costs nor populate the hub.
+    </p>
+    <span class="title small">Performance</span>
+    <p>
+        The main disadvantage of choosing JavaScript as the language is it's relatively slow speed.
+        Not only is it slower than compiled languages, it's cpu and memory use is capped by the browser itself.
+        To remedy this I have two plans.
+        First, I will soon get true multithreading working, the reason it is currently only pseudo-multithreaded is because JavaScript web workers have stringent requirements.
+        Secondly, I would eventually like to use libraries such as ccall to enable training in C++, which is much faster.
     </p>
 </div>
 
