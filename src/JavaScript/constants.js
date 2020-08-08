@@ -9,8 +9,6 @@ const subCanvasInnerSize = 2400;
 
 // tick rate
 const defaultTickRate = 20;
-// how fast showcase snakes are run
-const showcaseTickRate = 80;
 
 // tick rate at which the evolving species are run
 const speciesRunnerTickRate = 600;
@@ -19,9 +17,14 @@ const defaultScoreFunc = function (score, timeSinceLastApple) {
     return score;
 };
 
+// showcase
+// how fast showcase snakes are run
+const showcaseTickRate = 90;
 // timeout(len) = (gridSize * this + gridsize * length * this2)
-const timeoutInitMultiplier = 8;
+const timeoutInitMultiplier = 10;
 const timeoutInitMultiplier2 = 0.4;
+// "normal" gridsize, larger and tick rate up
+const showcaseGridSize = 40;
 
 // color of the snake
 const snakeColor = "#66FCF1";

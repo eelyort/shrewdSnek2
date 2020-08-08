@@ -458,7 +458,7 @@ class GameMenu extends React.Component{
         const snek = filtered[Math.floor(Math.random() * filtered.length)].cloneMe();
         const timeOut = (length) => (snek.gridSize*timeoutInitMultiplier + snek.gridSize*length*timeoutInitMultiplier2);
 
-        this.startRunner(new SingleSnakeRunner(snek, ((this.state.tickRate === defaultTickRate) ? (showcaseTickRate) : (this.state.tickRate)), () => this.callbackEndCurrent(), timeOut));
+        this.startRunner(new SingleSnakeRunner(snek, ((this.state.tickRate === defaultTickRate) ? (showcaseTickRate * snek.gridSize/showcaseGridSize) : (this.state.tickRate)), () => this.callbackEndCurrent(), timeOut));
     }
     startSnake(snake){
         // console.log("Game Menu startSnake, snake:");

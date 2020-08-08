@@ -737,7 +737,7 @@ var GameMenu = function (_React$Component3) {
                 return snek.gridSize * timeoutInitMultiplier + snek.gridSize * length * timeoutInitMultiplier2;
             };
 
-            this.startRunner(new SingleSnakeRunner(snek, this.state.tickRate === defaultTickRate ? showcaseTickRate : this.state.tickRate, function () {
+            this.startRunner(new SingleSnakeRunner(snek, this.state.tickRate === defaultTickRate ? showcaseTickRate * snek.gridSize / showcaseGridSize : this.state.tickRate, function () {
                 return _this11.callbackEndCurrent();
             }, timeOut));
         }
