@@ -19,6 +19,9 @@ const defaultScoreFunc = function (score, timeSinceLastApple) {
     return score;
 };
 
+// timeout(len) = (gridSize * this + gridsize * length)
+const timeoutInitMultiplier = 8;
+
 // color of the snake
 const snakeColor = "#66FCF1";
 

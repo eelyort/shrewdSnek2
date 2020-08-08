@@ -59,10 +59,10 @@ class EvolutionShell{
         this.save(best);
         this.viewQueue.enqueue(best);
         this.runningGen = false;
-        this.tellReady();
         if(this.infiniteRun){
             this.runGen();
         }
+        this.tellReady();
     }
     save(snake){
         // bundle of functions for the popup to interact with the main menu
@@ -70,7 +70,7 @@ class EvolutionShell{
 
         // save old
         snake = snake.cloneMe();
-        snake.generationNumber = this.evolution.generationNumber;
+        snake.generationNumber = ((snake.generationNumber) ? (snake.generationNumber + 1) : (0));
         // console.log(`evolutionShell save, snake.gen: ${snake.generationNumber}`);
         if(snake.getComponentName() === loadedSnakes[loadedSnakes.length - 1].getComponentName()){
             // console.log(`save, loadedSnakes:`);
