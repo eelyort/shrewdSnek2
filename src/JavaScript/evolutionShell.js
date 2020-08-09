@@ -70,7 +70,6 @@ class EvolutionShell{
 
         // save old
         snake = snake.cloneMe();
-        console.log(`evolutionShell save, snake.gen: ${snake.generationNumber}`);
         if(snake.getComponentName() === loadedSnakes[loadedSnakes.length - 1].getComponentName()){
             // console.log(`save, loadedSnakes:`);
             // console.log(loadedSnakes);
