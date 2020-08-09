@@ -70,15 +70,14 @@ class EvolutionShell{
 
         // save old
         snake = snake.cloneMe();
-        snake.generationNumber = ((snake.generationNumber) ? (snake.generationNumber + 1) : (0));
-        // console.log(`evolutionShell save, snake.gen: ${snake.generationNumber}`);
+        console.log(`evolutionShell save, snake.gen: ${snake.generationNumber}`);
         if(snake.getComponentName() === loadedSnakes[loadedSnakes.length - 1].getComponentName()){
             // console.log(`save, loadedSnakes:`);
             // console.log(loadedSnakes);
             const lastSpecies = loadedSnakes[loadedSnakes.length - 1];
             if(lastSpecies.snakes[lastSpecies.getLength() - 1].generationNumber !== snake.generationNumber){
-                loadedSnakes[loadedSnakes.length - 1].push(snake);
-                this.popUpFuncs.changeSelectedGen(loadedSnakes[loadedSnakes.length - 1].getLength() - 1);
+                lastSpecies.push(snake);
+                this.popUpFuncs.changeSelectedGen(lastSpecies.getLength() - 1);
             }
         }
         else{

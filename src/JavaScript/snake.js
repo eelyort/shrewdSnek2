@@ -238,13 +238,14 @@ class Snake extends Component{
     }
     // returns a copy of this snake
     cloneMe(){
-        // if(!this.myBrain.cloneMe){
-        //     console.log(this);
-        // }
         let clone = new Snake(this.myInput.cloneMe(), this.myBrain.cloneMe(), this.startHeadPos, this.startLength, this.appleVal, this.gridSize);
         clone.uuid = this.uuid;
         clone.componentName = this.componentName;
         clone.componentDescription = this.componentDescription;
+        clone.generationNumber = this.generationNumber;
+
+        // console.log(`snake cloneMe(): this.#: ${this.generationNumber}, clone.#: ${clone.generationNumber}`);
+
         return clone;
     }
     // stringify a snake for storage

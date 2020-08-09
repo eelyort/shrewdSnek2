@@ -43,8 +43,6 @@ class Evolution extends Component{
 
         this.myCallback2 = callback;
 
-        this.generationNumber = 0;
-
         // best, mean, median
         this.statistics = [];
 
@@ -59,6 +57,8 @@ class Evolution extends Component{
         else{
             this.currentGeneration = [[snakes, 1]];
         }
+
+        this.generationNumber = ((this.currentGeneration[0][0] && this.currentGeneration[0][0].generationNumber) ? (this.currentGeneration[0][0].generationNumber) : (0));
 
         // the snakes of the next generation, will be run on next run call
         this.nextGeneration = null;
@@ -170,6 +170,13 @@ class Evolution extends Component{
     // creates the next generation from the current generation and its scores
     //  handles the mutations, reproductions, and whatnot
     createNextGeneration(){
+        if(!this.generationNumber){
+            // console.log("create next !this.generationNumber");
+            this.generationNumber = ((this.currentGeneration[0][0] && this.currentGeneration[0][0].generationNumber) ? (this.currentGeneration[0][0].generationNumber) : (0));
+        }
+        this.generationNumber++;
+        // console.log("create next, this.generationNUmber: " + this.generationNumber);
+
         let numPerGen = this.parameters[0];
 
         // create next gen
@@ -184,6 +191,7 @@ class Evolution extends Component{
 
             // input snake
             let originator = this.currentGeneration[0][0].cloneMe();
+            originator.generationNumber = this.generationNumber;
 
             if(!originator.myBrain.hasValues){
                 originator.myBrain.initRandom();
@@ -223,9 +231,11 @@ class Evolution extends Component{
         // the best snakes survive and continue on into the next generation unchanged
         let numSurvive = Math.floor(numPerGen * this.parameters[10]);
         for (; idx < numSurvive; idx++) {
-            this.nextGeneration[idx] = new SpeciesRunner(this.currentGeneration[idx][0].cloneMe(), this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
-            // this.nextGeneration[idx] = this.currentGeneration[idx][0].cloneMe();
-        }
+            let snek = this.currentGeneration[idx][0].cloneMe();
+            snek.generationNumber = this.generationNumber;
+            // console.log(`this.gen: ${this.generationNumber}, snek.gen: ${snek.generationNumber}`);
+            this.nextGeneration[idx] = new SpeciesRunner(snek, this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
+    }
         // console.log(`numSurvive: ${numSurvive}, idx: ${idx}`);
 
         // get the proportions of which snakes should be chosen as parents by their scores
@@ -267,10 +277,11 @@ class Evolution extends Component{
 
             // create offspring
             let offspring = this.reproducePrivate(p1, p2);
+            offspring.map((val, i) => val.generationNumber = this.generationNumber);
+            // console.log("hi");
 
             // chuck the offspring into a siblingRunner for next generation
             this.nextGeneration[idx] = new SiblingRunner(offspring, 1, this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
-            // this.nextGeneration[idx] = offspring;
 
             idx++;
         }
@@ -303,7 +314,6 @@ class Evolution extends Component{
         }
 
         // start the generation
-        this.generationNumber++;
         this.myInterval = setInterval(this.update.bind(this), Math.ceil(1000 / evolutionUpdatePerSec));
     }
 
