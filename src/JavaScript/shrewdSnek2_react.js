@@ -14,7 +14,6 @@ var ShrewdSnek2Shell = function (_React$Component) {
         _classCallCheck(this, ShrewdSnek2Shell);
 
         // 0 - nothing
-        // 1 - main menu TODO: become REACT
         // 2 - game menu
         // 3 - empty wrapper
         var _this = _possibleConstructorReturn(this, (ShrewdSnek2Shell.__proto__ || Object.getPrototypeOf(ShrewdSnek2Shell)).call(this, props));

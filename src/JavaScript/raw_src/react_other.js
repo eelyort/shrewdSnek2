@@ -22,8 +22,6 @@ function DrawInput(ctx, brain, width, height, xOffset = 0, yOffset = 0, outlineC
     const leftPadding = Math.round((width - sideLength)/2);
     const borderWidth = Math.max(minOutlineWidth, Math.floor(sideLength * outlinePercent));
 
-    // console.log(`width: ${width}, height: ${height}, myInputWidth: ${brain.myInputWidth}, sideLength: ${sideLength}, leftPadding: ${leftPadding}, borderWidth: ${borderWidth}, borderWidth2: ${Math.floor(sideLength * 0.18)}`);
-
     const halfSide = sideLength/2;
 
     let centers = [];
@@ -48,8 +46,6 @@ function DrawBrain(ctx, brain, width, height, xOffset = 0, yOffset = 0, outlineC
     const extraHorzSpace = (width - sideLength*(brain.myDepth*2 + 1))/(brain.myDepth + 1);
     const extraVertSpace = (height - sideLength*(brain.myWidth*2 + 1))/(brain.myWidth + 1);
     const borderWidth = Math.max(minOutlineWidth, Math.floor(sideLength * outlinePercent));
-
-    // console.log(`width: ${width}, height: ${height}, myWidth: ${brain.myWidth}, sideLength: ${sideLength}, extraHorzSpace: ${extraHorzSpace}, extraVertSpace: ${extraVertSpace}, borderWidth: ${borderWidth}, borderWidth2: ${Math.floor(sideLength * 0.18)}`);
 
     const halfSide = sideLength/2;
 
@@ -81,7 +77,6 @@ function DrawBrain(ctx, brain, width, height, xOffset = 0, yOffset = 0, outlineC
                 else{
                     ctx.fillStyle = `rgba(255, 0, 0, ${opacity})`;
                 }
-                // console.log(`curr: ${curr}, opacity: ${opacity}, fillStyle: ${ctx.fillStyle}`);
                 ctx.beginPath();
                 ctx.rect(x + borderWidth, y + borderWidth, sideLength - (2*borderWidth), sideLength - (2*borderWidth));
                 ctx.fill();
@@ -96,8 +91,6 @@ function DrawOutput(ctx, brain, width, height, xOffset = 0, yOffset = 0, outline
     const sideLength = Math.floor(Math.min(width/3, height/((4 * 2) + 1)));
     const leftPadding = Math.round((width - sideLength)/2);
     const borderWidth = Math.max(minOutlineWidth, Math.floor(sideLength * outlinePercent));
-
-    // console.log(`width: ${width}, height: ${height}, 4: ${4}, sideLength: ${sideLength}, leftPadding: ${leftPadding}, borderWidth: ${borderWidth}, borderWidth2: ${Math.floor(sideLength * 0.18)}`);
 
     const halfSide = sideLength/2;
 
@@ -125,7 +118,6 @@ function DrawOutput(ctx, brain, width, height, xOffset = 0, yOffset = 0, outline
             else{
                 ctx.fillStyle = `rgba(255, 0, 0, ${opacity})`;
             }
-            // console.log(`curr: ${curr}, opacity: ${opacity}, fillStyle: ${ctx.fillStyle}`);
             ctx.beginPath();
             ctx.rect(x + borderWidth, y + borderWidth, sideLength - (2*borderWidth), sideLength - (2*borderWidth));
             ctx.fill();
@@ -152,8 +144,6 @@ class InputDetailsDirectional extends React.Component{
     render() {
         const {input: input, speed: speed, edit: edit, editFuncs: editFuncs, multipleIndex: multipleIndex} = this.props;
 
-        // console.log("InputDetailsDirectional render()");
-
         // decode targets
         let targets = ["Walls"];
         if(input.vals){
@@ -176,8 +166,6 @@ class InputDetailsDirectional extends React.Component{
         // editable
         else{
             const changeFunc = (index, e, isTarget) => {
-                // console.log(`changeFunc(${index}, ${e}, ${isTarget})`);
-                // console.log(`start, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
                 const newVal = ((isNaN(e.target.value)) ? (e.target.value) : (parseInt(e.target.value)));
 
                 // handle both targets and directions
@@ -185,23 +173,13 @@ class InputDetailsDirectional extends React.Component{
 
                 // newVal = -1? delete, otherwise add
                 if(newVal === -1){
-                    // console.log("delete");
                     arr.splice(index, 1);
                 }
                 // modify
                 else {
                     arr.splice(index, 1, newVal);
                 }
-                // console.log(`end, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
                 editFuncs.update();
-
-                // // don't allow duplicates - Moved to the actual option lists
-                // const occurrences = arr.filter((value, i) => (value === newVal && i !== index)).length;
-                // if(occurrences === 0){
-                //     // modify
-                //     arr.splice(index, 1, newVal);
-                // }
-                // editFuncs.update();
             };
             return(
                 <Fragment>
@@ -564,25 +542,18 @@ class BrainDetailsNet extends React.Component{
                 }
             }
         }
-        // console.log(`biasScale: ${biasScale}, weightScale: ${weightScale}`);
 
         let widthUsed = Math.floor(ctx.canvas.width/4);
 
         // draw inputs
         let centers = [DrawInput(ctx, brain, widthUsed, ctx.canvas.height, 0, 0, "#000000")];
-        // console.log("input:");
-        // console.log(centers);
 
         // draw brain
         centers = centers.concat(DrawBrain(ctx, brain, Math.floor(ctx.canvas.width/2), ctx.canvas.height, widthUsed, 0, "#000000", biasScale));
         widthUsed += Math.floor(ctx.canvas.width/2);
-        // console.log("brain:");
-        // console.log(centers);
 
         // draw outputs
         centers.push(DrawOutput(ctx, brain, Math.floor(ctx.canvas.width/4), ctx.canvas.height, widthUsed, 0, "#000000", biasScale));
-        // console.log("output:");
-        // console.log(centers);
 
         // weights
         ctx.lineWidth = weightLineWidth;
@@ -596,8 +567,6 @@ class BrainDetailsNet extends React.Component{
                     const currVal = mat[layer][1][targetNode][srcNode];
                     const [srcX, srcY] = centers[layer][srcNode];
                     const [targetX, targetY] = centers[layer + 1][targetNode];
-
-                    // console.log(`layer: ${layer}, target: ${targetNode}, src: ${srcNode}, currVal: ${currVal}, srcCoord: ${[srcX, srcY]}, targetCoord: ${[targetX, targetY]}`);
 
                     // values: red/blue
                     if(brain.hasValues) {
@@ -709,8 +678,6 @@ class SnakeDetails extends React.Component{
 class SnakeDetailsEdit extends React.Component{
     render(){
         const {snake: snake, tellChange: tellChange} = this.props;
-
-        // console.log(snake.getComponentName());
 
         if(tellChange){
             tellChange();

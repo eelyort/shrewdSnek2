@@ -72,13 +72,11 @@ class Evolution extends Component{
     setParams(){
         // defaults
         if(arguments.length === 0 && this.parameters == null){
-            // console.log("Evolution setParams called with no arguments, adding default values");
             this.parameters = defaultEvolutionParams.map((arr, i) => arr[1]);
         }
 
         // mismatch
         else if(arguments.length && arguments.length !== this.parameters.length){
-            // console.log("Warning, Evolution setParams() called with incorrect number of arguments, exiting");
             return false;
         }
 
@@ -171,11 +169,9 @@ class Evolution extends Component{
     //  handles the mutations, reproductions, and whatnot
     createNextGeneration(){
         if(!this.generationNumber){
-            // console.log("create next !this.generationNumber");
             this.generationNumber = ((this.currentGeneration[0][0] && this.currentGeneration[0][0].generationNumber) ? (this.currentGeneration[0][0].generationNumber) : (0));
         }
         this.generationNumber++;
-        // console.log("create next, this.generationNUmber: " + this.generationNumber);
 
         let numPerGen = this.parameters[0];
 
@@ -187,8 +183,6 @@ class Evolution extends Component{
 
         // edge case: first generation
         if(this.currentGeneration.length === 1){
-            // console.log("createNextGeneration() spawning mutated clones due to only one input snake");
-
             // input snake
             let originator = this.currentGeneration[0][0].cloneMe();
             originator.generationNumber = this.generationNumber;
@@ -218,13 +212,10 @@ class Evolution extends Component{
                 // this.nextGeneration[i] = snake;
             }
 
-            // console.log(this.nextGeneration);
-
             return;
         }
 
         // regular
-        // console.log("Regular Create Next Generation:");
         // number of snakes in next generation
         let idx = 0;
 
@@ -233,10 +224,8 @@ class Evolution extends Component{
         for (; idx < numSurvive; idx++) {
             let snek = this.currentGeneration[idx][0].cloneMe();
             snek.generationNumber = this.generationNumber;
-            // console.log(`this.gen: ${this.generationNumber}, snek.gen: ${snek.generationNumber}`);
             this.nextGeneration[idx] = new SpeciesRunner(snek, this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
-    }
-        // console.log(`numSurvive: ${numSurvive}, idx: ${idx}`);
+        }
 
         // get the proportions of which snakes should be chosen as parents by their scores
         //  the function here is: arg12^x
@@ -278,23 +267,17 @@ class Evolution extends Component{
             // create offspring
             let offspring = this.reproducePrivate(p1, p2);
             offspring.map((val, i) => val.generationNumber = this.generationNumber);
-            // console.log("hi");
 
             // chuck the offspring into a siblingRunner for next generation
             this.nextGeneration[idx] = new SiblingRunner(offspring, 1, this.parameters[4], this.myCallback.bind(this), this.scoreFunc.bind(this), this.timeOutFunc.bind(this), this.parameters[5][1], idx);
 
             idx++;
         }
-
-        // console.log(this.nextGeneration);
     }
 
     // --------------------------- Running Generation Methods ----------------------------------------------------------
     // main method to run a generation, call from outside
     runGeneration(){
-        // console.log("runGeneration, nextGeneration: ");
-        // console.log(this);
-        // console.log(this.nextGeneration);
         // check if ready
         if(!this.nextGeneration){
             console.log("!!!!! Cannot Run Non-Existent Generation !!!!!");
@@ -346,18 +329,12 @@ class Evolution extends Component{
             clearInterval(this.myInterval);
         }
 
-        // console.log(`running vars: [${Atomics.load(this.runningVars, 0)}, ${Atomics.load(this.runningVars, 1)}, ${Atomics.load(this.runningVars, 2)}]`);
-
-        // console.log("finish, before sort, results:");
-        // console.log(this.runningResults);
-
         // sort
         this.runningResults.sort(function (a, b) {
             return b[1] - a[1];
         });
 
         // delete and TODO save? last generation
-        // console.log(`Old generation being deleted at EvolutionRunner finish(), old gen: ${JSON.stringify(this.currentGeneration)}`);
         this.currentGeneration = this.runningResults;
 
         // statistics
@@ -400,7 +377,6 @@ class Evolution extends Component{
         let runner = this.nextGeneration[idx];
         // species runner
         if(runner instanceof SpeciesRunner){
-            // console.log("speciesRunner");
             let old = Atomics.add(this.runningVars, 0, 1);
             // test to make sure the same snake isn't run multiple times
             if(old !== idx){
@@ -413,8 +389,6 @@ class Evolution extends Component{
         }
         // sibling runner
         else{
-            // console.log("sibling runner");
-            // console.log(runner);
             let num = runner.numReturn;
             let old = Atomics.add(this.runningVars, 0, num);
             // test to make sure the same snake isn't run multiple times
@@ -432,8 +406,6 @@ class Evolution extends Component{
 
     // callback method
     myCallback(index, snakeScoresMatrix){
-        // console.log(`callback, index: ${index}, snakeScores: ${snakeScoresMatrix}`);
-
         let origIndex = index;
 
         // update the info

@@ -482,7 +482,6 @@ var SquareFill = function (_React$Component9) {
     }, {
         key: "updateState",
         value: function updateState() {
-            // console.log("SquareFill updateState()");
             var rect = this.props.parentRef.current.getBoundingClientRect();
             var _ref = [rect.width, rect.height],
                 width = _ref[0],
@@ -948,7 +947,6 @@ var MouseFadeDiv = function (_React$Component17) {
     }, {
         key: "mouseLeave",
         value: function mouseLeave(e) {
-            // console.log("leave");
             this.setState(function () {
                 return { hidden: true };
             });
@@ -988,7 +986,6 @@ var CollapsibleDiv = function (_React$Component18) {
             var header = null;
             var openClose = this.state.open ? "open" : "close";
             var rest = React.Children.map(this.props.children, function (val, index) {
-                // console.log(`val: ${val}, index: ${index}`);
                 if (index === 0) {
                     header = React.cloneElement(val, {
                         className: "collapse_header " + openClose + (val.props.className ? " " + val.props.className : "")
@@ -1108,8 +1105,6 @@ var VerticalCarousel = function (_React$Component20) {
         value: function render() {
             var _this30 = this;
 
-            // console.log("render");
-
             var _props5 = this.props,
                 selected = _props5.selected,
                 select = _props5.select,
@@ -1203,7 +1198,6 @@ var VerticalCarousel = function (_React$Component20) {
     }, {
         key: "click",
         value: function click(i) {
-            // console.log(`click(${i})`);
             if (i !== this.props.selected) {
                 this.props.select(i);
             } else {
@@ -1213,23 +1207,18 @@ var VerticalCarousel = function (_React$Component20) {
     }, {
         key: "scroll",
         value: function scroll(amount) {
-            // console.log(`scroll(${amount})`);
             var minScroll = 0;
             // const maxScroll = 100;
             var maxScroll = this.lastObjectRef.current ? this.lastObjectRef.current.offsetTop : this.focusedRef.current.offsetTop;
-            // console.log(`min: ${minScroll}, top: ${this.lastObjectRef.current.offsetTop}, max: ${maxScroll}, target: ${Math.min(Math.max(this.state.scroll + amount, minScroll), maxScroll)}`);
             if (amount !== 0) {
                 this.setState(function (state) {
                     return { scroll: Math.min(Math.max(state.scroll + amount, minScroll), maxScroll) };
-                }, function () {
-                    // console.log(`after: scroll: ${this.state.scroll}`);
-                });
+                }, function () {});
             }
         }
     }, {
         key: "scrollToFocus",
         value: function scrollToFocus() {
-            // console.log(`scroll: ${this.state.scroll}, this.focusedRef.current.offsetTop: ${this.focusedRef.current.offsetTop}`);
             this.scroll(this.focusedRef.current.offsetTop - this.state.scroll);
         }
     }, {

@@ -308,7 +308,6 @@ class SquareFill extends React.Component{
         );
     }
     updateState(){
-        // console.log("SquareFill updateState()");
         let rect = this.props.parentRef.current.getBoundingClientRect();
         const [width, height] = [rect.width, rect.height];
         if(width !== this.state.parentWidth || height !== this.state.parentHeight){
@@ -590,7 +589,6 @@ class MouseFadeDiv extends React.Component{
         this.setState(() => ({hidden: false}))
     }
     mouseLeave(e){
-        // console.log("leave");
         this.setState(() => ({hidden: true}))
     }
 }
@@ -612,7 +610,6 @@ class CollapsibleDiv extends React.Component{
         let header = null;
         const openClose = ((this.state.open) ? ("open") : ("close"));
         let rest = React.Children.map(this.props.children, (val, index) => {
-            // console.log(`val: ${val}, index: ${index}`);
             if(index === 0){
                 header = React.cloneElement(val, {
                     className: "collapse_header " + openClose + ((val.props.className) ? (" " + val.props.className) : (""))
@@ -689,8 +686,6 @@ class VerticalCarousel extends React.Component{
         this.scrollToFocus = this.scrollToFocus.bind(this);
     }
     render() {
-        // console.log("render");
-
         const {selected: selected, select: select, delayInitialScroll: delayInitialScroll} = this.props;
 
         const numChildren = React.Children.count(this.props.children);
@@ -758,7 +753,6 @@ class VerticalCarousel extends React.Component{
         );
     }
     click(i){
-        // console.log(`click(${i})`);
         if(i !== this.props.selected){
             this.props.select(i);
         }
@@ -767,19 +761,15 @@ class VerticalCarousel extends React.Component{
         }
     }
     scroll(amount){
-        // console.log(`scroll(${amount})`);
         const minScroll = 0;
         // const maxScroll = 100;
         const maxScroll = ((this.lastObjectRef.current) ? (this.lastObjectRef.current.offsetTop) : (this.focusedRef.current.offsetTop));
-        // console.log(`min: ${minScroll}, top: ${this.lastObjectRef.current.offsetTop}, max: ${maxScroll}, target: ${Math.min(Math.max(this.state.scroll + amount, minScroll), maxScroll)}`);
         if(amount !== 0) {
             this.setState((state) => ({scroll: Math.min(Math.max(state.scroll + amount, minScroll), maxScroll)}),() => {
-                // console.log(`after: scroll: ${this.state.scroll}`);
             });
         }
     }
     scrollToFocus(){
-        // console.log(`scroll: ${this.state.scroll}, this.focusedRef.current.offsetTop: ${this.focusedRef.current.offsetTop}`);
         this.scroll(this.focusedRef.current.offsetTop - this.state.scroll);
     }
     componentDidMount() {

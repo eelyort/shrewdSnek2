@@ -287,7 +287,6 @@ class CreateSnakePopUpREACT extends React.Component{
                     {quitConfirmation}
                     <div className={"text_card background"}>
                         <SnakeDetailsEdit snake={this.state.snake} tellChange={() => {
-                            // console.log("unsave");
                             if(this.saved){
                                 this.saved = false;
                             }
@@ -329,7 +328,6 @@ class CreateSnakePopUpREACT extends React.Component{
                     popUpFuncs.changeSelected(metaInfo);
                     this.changeErrorText("(Save Successful)", () => {
                         this.saved = true;
-                        console.log("saved");
                     });
                 });
             }
@@ -346,8 +344,6 @@ class CreateSnakePopUpREACT extends React.Component{
     saveAsNew(){
         const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
 
-        // TODO: snake validation
-
         // bundle of functions for the popup to interact with the main menu
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
         const popUpFuncs = this.props.popUpFuncs;
@@ -359,10 +355,6 @@ class CreateSnakePopUpREACT extends React.Component{
             popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, this.state.snake.cloneMe());
             popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
             popUpFuncs.close(1);
-            // setTimeout(() => {
-            //     this.saved=true;
-            //     console.log("saved");
-            // }, 1);
         });
     }
     changeErrorText(text, callback = (() => null)){
@@ -457,9 +449,6 @@ class EditEvolutionPopUp extends React.Component{
         const {metaInfo: metaInfo, evolutionIn: evolutionIn} = this.props;
         const {evolution: evolution, currSnake: currSnake} = this.state;
 
-        // console.log("render");
-        // console.log(evolution);
-
         if(!evolution){
             return null;
         }
@@ -469,11 +458,6 @@ class EditEvolutionPopUp extends React.Component{
         // bundle of functions for the popup to interact with the main menu
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
         const popUpFuncs = this.props.popUpFuncs;
-
-        // // set snake of evolution with metaInfo
-        // if(metaInfo instanceof Snake){
-        //     this.state.evolution.currentGeneration = [[metaInfo.cloneMe(), 1]];
-        // }
 
         let confirmation = null;
         if(this.state.confirmationBox){
@@ -823,7 +807,12 @@ class EditEvolutionPopUp extends React.Component{
                                         })}
                                     </Select>
                                 </div>
-                                <h4>(Snakes Must Have One Of The Following Brains: "Neural Network Brain")</h4>
+                                <h4>(Snakes Must Have One Of The Following Brains:{" "}
+                                    {((blankBrains.filter(((value, index) => {
+                                        return evolutionBrains.includes(value.componentID);
+                                    }))).map((value, index) => {
+                                        return `"${value.getComponentName()}${((index === evolutionBrains.length-1) ? (".") : (","))}"`;
+                                    })).join(" ")})</h4>
                                 {((currSnake) ? (
                                     <SnakeDetails snake={currSnake} />
                                 ) : null)}
@@ -881,7 +870,6 @@ class EditEvolutionPopUp extends React.Component{
     }
     changed(){
         this.saved = false;
-        // console.log(this.state.evolution);
         this.forceUpdate();
     }
     componentDidMount() {

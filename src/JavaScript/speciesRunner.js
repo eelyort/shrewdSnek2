@@ -56,8 +56,6 @@ class SpeciesRunner{
     }
     // process scores and return ans
     finish(){
-        // console.log(`SpeciesRunner finish(), scores: ${this.scores}`);
-
         let ans = -1;
 
         // median
@@ -96,8 +94,6 @@ class SpeciesRunner{
             this.runningInstance.kill();
         }
 
-        // "return"
-        // console.log("SpeciesRunner finish() returning: " + ans);
         this.myCallback(this.index, [[this.origSnake, ans]]);
     }
 }

@@ -14,18 +14,16 @@ class EvolutionShell{
     }
     createEvolution(input){
         if(input instanceof Evolution){
-            // console.log("evolution from evolution");
             this.evolution = input;
             this.evolution.myCallback2 = this.callback.bind(this);
         }
         else if(input instanceof Snake){
-            // console.log("evolution from snake");
             let snake = input.cloneMe();
 
             this.evolution = new Evolution(snake, this.callback.bind(this));
         }
         else{
-            // console.log("!!! Unknown input !!!");
+            console.log("!!! Unknown input !!!");
         }
     }
     runGen(){
@@ -34,18 +32,13 @@ class EvolutionShell{
             this.runningGen = true;
             this.evolution.createNextGeneration();
             this.evolution.runGeneration();
-            // if(!this.mainMenu.isRunning){
-            //     this.mainMenu.startRunner(new EvolutionLoadScreen(this.evolution, this.mainMenu));
-            // }
         }
         else{
-            // console.log("Already running");
+            // nothing
         }
     }
     // called from mainMenu - runs next ready snake/loading screen
     runQueue(startSnake, startRunner){
-        // console.log("evolutionShell runQueue");
-
         if(this.viewQueue.size > 0){
             startSnake(this.viewQueue.poll());
         }
@@ -54,8 +47,6 @@ class EvolutionShell{
         }
     }
     callback(best){
-        // console.log("shell callback, best: ");
-        // console.log(best);
         this.save(best);
         this.viewQueue.enqueue(best);
         this.runningGen = false;
@@ -71,8 +62,6 @@ class EvolutionShell{
         // save old
         snake = snake.cloneMe();
         if(snake.getComponentName() === loadedSnakes[loadedSnakes.length - 1].getComponentName()){
-            // console.log(`save, loadedSnakes:`);
-            // console.log(loadedSnakes);
             const lastSpecies = loadedSnakes[loadedSnakes.length - 1];
             if(lastSpecies.snakes[lastSpecies.getLength() - 1].generationNumber !== snake.generationNumber){
                 lastSpecies.push(snake);
@@ -83,6 +72,5 @@ class EvolutionShell{
             this.popUpFuncs.spliceLoaded(loadedSnakes.length, 0, snake);
             this.popUpFuncs.changeSelected(loadedSnakes.length-1);
         }
-        // console.log(loadedSnakes);
     }
 }

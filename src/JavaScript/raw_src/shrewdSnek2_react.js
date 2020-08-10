@@ -3,7 +3,6 @@ class ShrewdSnek2Shell extends React.Component{
     constructor(props){
         super(props);
         // 0 - nothing
-        // 1 - main menu TODO: become REACT
         // 2 - game menu
         // 3 - empty wrapper
         this.state = {currentlyRunning: 0};

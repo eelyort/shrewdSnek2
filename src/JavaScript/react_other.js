@@ -39,8 +39,6 @@ function DrawInput(ctx, brain, width, height) {
     var leftPadding = Math.round((width - sideLength) / 2);
     var borderWidth = Math.max(minOutlineWidth, Math.floor(sideLength * outlinePercent));
 
-    // console.log(`width: ${width}, height: ${height}, myInputWidth: ${brain.myInputWidth}, sideLength: ${sideLength}, leftPadding: ${leftPadding}, borderWidth: ${borderWidth}, borderWidth2: ${Math.floor(sideLength * 0.18)}`);
-
     var halfSide = sideLength / 2;
 
     var centers = [];
@@ -73,8 +71,6 @@ function DrawBrain(ctx, brain, width, height) {
     var extraVertSpace = (height - sideLength * (brain.myWidth * 2 + 1)) / (brain.myWidth + 1);
     var borderWidth = Math.max(minOutlineWidth, Math.floor(sideLength * outlinePercent));
 
-    // console.log(`width: ${width}, height: ${height}, myWidth: ${brain.myWidth}, sideLength: ${sideLength}, extraHorzSpace: ${extraHorzSpace}, extraVertSpace: ${extraVertSpace}, borderWidth: ${borderWidth}, borderWidth2: ${Math.floor(sideLength * 0.18)}`);
-
     var halfSide = sideLength / 2;
 
     var centers = [];
@@ -106,7 +102,6 @@ function DrawBrain(ctx, brain, width, height) {
                 } else {
                     ctx.fillStyle = "rgba(255, 0, 0, " + opacity + ")";
                 }
-                // console.log(`curr: ${curr}, opacity: ${opacity}, fillStyle: ${ctx.fillStyle}`);
                 ctx.beginPath();
                 ctx.rect(x + borderWidth, y + borderWidth, sideLength - 2 * borderWidth, sideLength - 2 * borderWidth);
                 ctx.fill();
@@ -126,8 +121,6 @@ function DrawOutput(ctx, brain, width, height) {
     var sideLength = Math.floor(Math.min(width / 3, height / (4 * 2 + 1)));
     var leftPadding = Math.round((width - sideLength) / 2);
     var borderWidth = Math.max(minOutlineWidth, Math.floor(sideLength * outlinePercent));
-
-    // console.log(`width: ${width}, height: ${height}, 4: ${4}, sideLength: ${sideLength}, leftPadding: ${leftPadding}, borderWidth: ${borderWidth}, borderWidth2: ${Math.floor(sideLength * 0.18)}`);
 
     var halfSide = sideLength / 2;
 
@@ -156,7 +149,6 @@ function DrawOutput(ctx, brain, width, height) {
             } else {
                 ctx.fillStyle = "rgba(255, 0, 0, " + opacity + ")";
             }
-            // console.log(`curr: ${curr}, opacity: ${opacity}, fillStyle: ${ctx.fillStyle}`);
             ctx.beginPath();
             ctx.rect(x + borderWidth, y + borderWidth, sideLength - 2 * borderWidth, sideLength - 2 * borderWidth);
             ctx.fill();
@@ -216,8 +208,6 @@ var InputDetailsDirectional = function (_React$Component2) {
                 editFuncs = _props2.editFuncs,
                 multipleIndex = _props2.multipleIndex;
 
-            // console.log("InputDetailsDirectional render()");
-
             // decode targets
 
             var targets = ["Walls"];
@@ -247,8 +237,6 @@ var InputDetailsDirectional = function (_React$Component2) {
             // editable
             else {
                     var changeFunc = function changeFunc(index, e, isTarget) {
-                        // console.log(`changeFunc(${index}, ${e}, ${isTarget})`);
-                        // console.log(`start, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
                         var newVal = isNaN(e.target.value) ? e.target.value : parseInt(e.target.value);
 
                         // handle both targets and directions
@@ -256,23 +244,13 @@ var InputDetailsDirectional = function (_React$Component2) {
 
                         // newVal = -1? delete, otherwise add
                         if (newVal === -1) {
-                            // console.log("delete");
                             arr.splice(index, 1);
                         }
                         // modify
                         else {
                                 arr.splice(index, 1, newVal);
                             }
-                        // console.log(`end, vals: ${input.vals}, adj: ${input.originalAdjacents}`);
                         editFuncs.update();
-
-                        // // don't allow duplicates - Moved to the actual option lists
-                        // const occurrences = arr.filter((value, i) => (value === newVal && i !== index)).length;
-                        // if(occurrences === 0){
-                        //     // modify
-                        //     arr.splice(index, 1, newVal);
-                        // }
-                        // editFuncs.update();
                     };
                     return React.createElement(
                         Fragment,
@@ -875,25 +853,18 @@ var BrainDetailsNet = function (_React$Component5) {
                     }
                 }
             }
-            // console.log(`biasScale: ${biasScale}, weightScale: ${weightScale}`);
 
             var widthUsed = Math.floor(ctx.canvas.width / 4);
 
             // draw inputs
             var centers = [DrawInput(ctx, brain, widthUsed, ctx.canvas.height, 0, 0, "#000000")];
-            // console.log("input:");
-            // console.log(centers);
 
             // draw brain
             centers = centers.concat(DrawBrain(ctx, brain, Math.floor(ctx.canvas.width / 2), ctx.canvas.height, widthUsed, 0, "#000000", biasScale));
             widthUsed += Math.floor(ctx.canvas.width / 2);
-            // console.log("brain:");
-            // console.log(centers);
 
             // draw outputs
             centers.push(DrawOutput(ctx, brain, Math.floor(ctx.canvas.width / 4), ctx.canvas.height, widthUsed, 0, "#000000", biasScale));
-            // console.log("output:");
-            // console.log(centers);
 
             // weights
             ctx.lineWidth = weightLineWidth;
@@ -913,8 +884,6 @@ var BrainDetailsNet = function (_React$Component5) {
                         var _centers$targetNode = _slicedToArray(centers[_layer2 + 1][targetNode], 2),
                             targetX = _centers$targetNode[0],
                             targetY = _centers$targetNode[1];
-
-                        // console.log(`layer: ${layer}, target: ${targetNode}, src: ${srcNode}, currVal: ${currVal}, srcCoord: ${[srcX, srcY]}, targetCoord: ${[targetX, targetY]}`);
 
                         // values: red/blue
 
@@ -1158,7 +1127,6 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 snake = _props9.snake,
                 tellChange = _props9.tellChange;
 
-            // console.log(snake.getComponentName());
 
             if (tellChange) {
                 tellChange();

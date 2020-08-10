@@ -2,7 +2,6 @@ let blankMutations = [];
 
 // class which represents a single possible mutation
 //  pass it a brain - mutates a random weight/bias/node
-//  IMPORTANT: destructive, doesn't make a clone TODO: make clones in evolutionRunner
 class Mutation extends Component{
     constructor(id, mutationParameters){
         super(id);
@@ -13,16 +12,6 @@ class Mutation extends Component{
 
         this.componentName = "Empty Mutation";
     }
-    // sets parameters
-    setParams(){
-        if(arguments.length !== this.mutationParameters.length){
-            console.log("Mutation setParams() argument length mismatch");
-        }
-
-        for (let i = 0; i < arguments.length; i++) {
-            this.mutationParameters[i][1] = arguments[i];
-        }
-    }
     // given a brain mutates it
     mutateBrain(brain){
         // select a random weight
@@ -31,8 +20,6 @@ class Mutation extends Component{
         let sType = select[1];
         let sNode = select[2];
         let sJ = select[3];
-
-        // console.log(`mutateBrain: select: ${select}`);
 
         // mutate the weight
         if(sType === 1){
@@ -83,8 +70,6 @@ class PercentMutation extends Mutation{
         let max = this.mutationParameters[1][1];
         let min = this.mutationParameters[0][1];
         let ran = (Math.random() * (max - min)) + min;
-
-        // console.log(`PercentMutate, ran: ${ran}`);
 
         return valIn * ran;
     }

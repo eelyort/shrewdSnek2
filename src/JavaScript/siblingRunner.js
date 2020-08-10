@@ -20,9 +20,6 @@ class SiblingRunner{
     }
     start(){
         if(this.currIndex === 0) {
-            // // single run
-            // this.runners[0][0].runNext();
-            // multi thread
             for (this.currIndex; this.currIndex < this.runners.length; this.currIndex++) {
                 this.runners[this.currIndex][0].runNext();
             }
@@ -33,11 +30,6 @@ class SiblingRunner{
     }
     // callback function
     callback(index, snakeScores){
-        // // single thread
-        // this.runners[this.currIndex][1] = snakeScores[0][1];
-        //
-        // this.currIndex++;
-
         // multi thread
         this.runners[index][1] = snakeScores[0][1];
         Atomics.add(this.numFinished, 0, 1);
@@ -56,8 +48,5 @@ class SiblingRunner{
             }
             this.myCallback(this.index, ans);
         }
-        // else{
-        //     this.runners[this.currIndex][0].runNext();
-        // }
     }
 }

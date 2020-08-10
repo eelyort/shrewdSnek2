@@ -37,8 +37,6 @@ class SingleSnakeRunner{
 
         // tick rate and throttling
         this.tickRate = tickRateStart;
-        // this.then = Date.now();
-        // this.now = this.then;
         // tick interval holder
         this.intervalID = null;
 
@@ -117,9 +115,7 @@ class SingleSnakeRunner{
 
     // keyEvent, called from outside
     keyEventIn(keyEvent){
-        // alert("Runner keyEvent: " + keyEvent);
         this.mySnake.updateDecision(keyEvent);
-        // alert("Runner keyEvent2: " + keyEvent);
     }
 
     // called from snake, processes the logic of apple eating

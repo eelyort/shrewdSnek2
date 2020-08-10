@@ -17,16 +17,6 @@ class Reproduction extends Component{
         console.log("ALERT: empty reproduction called");
         return [parent1.cloneMe(), parent2.cloneMe()];
     }
-    // sets parameters
-    setParams(){
-        if(arguments.length !== this.mutationParameters.length){
-            console.log("Reproduction setParams() argument length mismatch");
-        }
-
-        for (let i = 0; i < arguments.length; i++) {
-            this.reproductionParameters[i][1] = arguments[i];
-        }
-    }
     // clones this Mutation, object type decays but otherwise all functionality is preserved
     cloneMe(){
         let clone = new Reproduction(null);

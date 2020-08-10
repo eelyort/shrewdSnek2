@@ -24,9 +24,7 @@ class Input extends Component{
     }
     // where all the actual code logic should be
     getInput(keyEvent, array, offset = 0){
-        // do nothing
         console.log("!!! Empty getInput Called !!!");
-        // return array;
     }
     // returns a copy of this input
     cloneMe(){
@@ -78,10 +76,6 @@ class MultipleInput extends Input{
         for (let i = 0; i < arguments.length; i++) {
             this.addInput(arguments[i]);
         }
-
-        // console.log(`inputLength: ${this.inputLength}, myInputs: ${this.myInputs.logQueue()}`);
-
-        // console.log("Multiple Input, myInputs: \n" + this.myInputs.logQueue());
     }
     addInput(inputToAdd){
         this.inputLength += inputToAdd.inputLength;
@@ -128,7 +122,6 @@ class MultipleInput extends Input{
 
         let curr = this.myInputs.startNode;
         while(curr){
-            // console.log(`updateParentSnake, curr: ${curr}, curr.myVal: ${curr.myVal}`);
             curr.myVal.updateParentSnake(snake);
             curr = curr.myNext;
         }
@@ -166,9 +159,6 @@ class MultipleInput extends Input{
 
     // helper parse
     helperParse(){
-        // console.log("Helper parse, this.strInputs: ");
-        // console.log(this.strInputs);
-
         let saved = this.myInputs;
 
         this.myInputs = new CustomQueue();
@@ -227,8 +217,6 @@ class DirectionalInput extends Input{
         this.myAdjacents = null;
         this.vals = vals;
 
-        // console.log(`Directional Input, adjacents: ${this.myAdjacents} | vals: ${this.vals}`);
-
         this.componentName = "Directional Input";
         this.componentDescription = "This input effectively looks in every specified direction and returns the minimum distance to the target values.";
     }
@@ -252,7 +240,6 @@ class DirectionalInput extends Input{
             let dist = 1;
             let newPos = head + adj;
             let curr = ((newPos < 0 || newPos >= grid.length) ? (-1) : (grid[newPos]));
-            // console.log(`adj: ${adj}, head: ${head}, newPos: ${newPos}, curr: ${curr}`);
 
             while(curr !== -1 && !this.vals.includes(curr)){
                 newPos += adj;
@@ -262,8 +249,6 @@ class DirectionalInput extends Input{
 
             array[i + offset] = dist;
         }
-
-        // console.log(array);
     }
     cloneMe(){
         let adj = Array.apply(null, {length: this.originalAdjacents.length});
@@ -337,16 +322,6 @@ class CardinalDirectionalInput extends DirectionalInput{
         this.componentName = "Cardinal Direction Input";
         this.componentDescription = "This input effectively looks in every cardinal direction and returns the minimum distance to the target values.";
     }
-    // // grab grid size and use to calculate adjacents
-    // updateParentSnake(snake) {
-    //     super.updateParentSnake(snake);
-    //
-    //     let gridSize = this.mySnake.gridSize;
-    //     // N, E, S, W
-    //     this.myAdjacents = [-(gridSize+2), 1, (gridSize + 2), -1];
-    //
-    //     // console.log(`updateParentSnake, adj: ${this.myAdjacents} | vals: ${this.vals}`);
-    // }
 }
 // intercardinal directions
 class InterCardinalDirectionalInput extends DirectionalInput{
@@ -356,14 +331,6 @@ class InterCardinalDirectionalInput extends DirectionalInput{
         this.componentName = "Inter-cardinal Direction Input";
         this.componentDescription = "This input effectively looks in every inter-cardinal direction and returns the minimum distance to the target values.";
     }
-    // // grab grid size and use to calculate adjacents
-    // updateParentSnake(snake) {
-    //     super.updateParentSnake(snake);
-    //
-    //     let gridSize = this.mySnake.gridSize;
-    //     // NE, SE, SW, NW
-    //     this.myAdjacents = [-(gridSize+2) + 1, (gridSize + 2) + 1, (gridSize + 2) - 1, -(gridSize + 2) - 1];
-    // }
 }
 // combines cardinal and intercardinal directions
 class CardinalIntercardinalDirectionalInput extends DirectionalInput{
@@ -374,12 +341,6 @@ class CardinalIntercardinalDirectionalInput extends DirectionalInput{
         this.componentName = "All Direction Input";
         this.componentDescription = "This input effectively looks in every inter-cardinal direction and every cardinal direction and returns the minimum distance to the target values.";
     }
-    // updateParentSnake(snake) {
-    //     super.updateParentSnake(snake);
-    //
-    //     let gridSize = this.mySnake.gridSize;
-    //     this.myAdjacents = [-(gridSize+2), -(gridSize+2) + 1, 1, (gridSize + 2) + 1, (gridSize + 2), (gridSize + 2) - 1, -1, -(gridSize + 2) - 1];
-    // }
 }
 
 // Simple input, made for Mother's Day
@@ -438,7 +399,6 @@ class AppleVectorInput extends Input{
 
         // apple isn't spawned or other problem
         if(!applePosition || applePosition <= 0 || !grid || !head){
-            // console.log("cannot find apple at appleVectorInput");
             array[offset] = 0;
             array[offset+1] = 0;
             return;

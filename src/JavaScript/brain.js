@@ -62,7 +62,6 @@ class Brain extends Component{
     }
     // made to parse the first evolutions and no more
     static OLDPARSE(str){
-        // console.log("OLDPARSE:");
         let ans = super.OLDPARSE(str, brainPrototypes);
         Object.setPrototypeOf(ans.myNormalizer, TanhNormalizer.prototype);
         return ans;
@@ -103,16 +102,9 @@ class PathBrain extends Brain{
         for (let i = 0; i < this.myRawPath.length; i++) {
             let curr = this.myRawPath[i];
 
-            // console.log(`curr: ${curr}`);
-
             // need to decompile
             if(Array.isArray(curr)){
-                // console.log("Is array");
-
-                let r = curr[0];
-                let c = curr[1];
-
-                // console.log(`r: ${r}, c: ${c}`);
+                let [r, c] = curr;
 
                 this.myDecompiledPath[i] = (r * (gridSize + 2)) + c + 1;
             }
@@ -132,7 +124,6 @@ class PathBrain extends Brain{
         // decompile
         if(this.myDecompiledPath == null){
             this.decompile(brainInput[1]);
-            // console.log("Decompiled to: " + this.myDecompiledPath);
         }
 
         // pull input
@@ -159,7 +150,6 @@ class PathBrain extends Brain{
             // get positions
             let nextPos = headPos + adjacents[Math.abs(curr)];
             let nextPath = this.myDecompiledPath[((this.currIdx === this.myDecompiledPath.length - 1) ? (0) : (this.currIdx + 1))];
-            // console.log(`headPos: ${headPos}, nextPos: ${nextPos}, nextPath: ${nextPath}`);
 
             // deconstruct
             let r = Math.floor(nextPos / (gridSize + 2));
@@ -202,9 +192,6 @@ class PathBrain extends Brain{
                 this.currIdx = 0;
             }
 
-            // console.log(`curr: ${curr}, headPos: ${headPos}`);
-
-            // return this.getOutput([curr === headPos - 1, curr === headPos + 1, curr === headPos - (gridSize +2 ), curr === headPos + (gridSize + 2)]);
             // left
             if(curr === headPos - 1){
                 return 3;
@@ -364,17 +351,13 @@ class NeuralNetBrain extends Brain{
     }
     // forward propagation
     getDecision(brainInput) {
-        // console.log("getDecision, brainInput: " + brainInput);
         // input to first hidden layer
         // pre-activation
         for (let node = 0; node < this.myWidth; node++) {
-            // console.log(`node: ${node}, dotting: ${this.myMat[0][1][node]}, bias: ${this.myMat[0][2][node]}`);
             this.myMat[0][0][node] = math.dot(brainInput, this.myMat[0][1][node]) + this.myMat[0][2][node];
         }
         // activation
         this.myNormalizer.normalizeCol(this.myMat[0][0]);
-
-        // console.log("first col: " +  this.myMat[0][0]);
 
         // everything else
         for (let layer = 1; layer < this.myMat.length; layer++) {
@@ -386,16 +369,12 @@ class NeuralNetBrain extends Brain{
             this.myNormalizer.normalizeCol(this.myMat[layer][0]);
         }
 
-        // console.log("Brain output:");
-        // console.log(this.myMat[this.myMat.length - 1][0]);
-
         // output
         return this.getOutput(this.myMat[this.myMat.length - 1][0]);
     }
 
     // called in snake.js to update the brain with the length of the inputs
     updateWithInput(input){
-        // console.log(`updateWithInput, hasValues: ${this.hasValues}, inputLength: ${typeof input.inputLength} ${input.inputLength}, myInputWidth: ${this.myInputWidth}`);
         if(this.hasValues && input.inputLength === this.myInputWidth){
             return;
         }
@@ -446,11 +425,9 @@ class NeuralNetBrain extends Brain{
             thresholds[i] = this.myMat[i][0].length * (1 + ((i === 0) ? (this.myInputWidth) : (this.myMat[i-1][0].length)));
             total += thresholds[i];
         }
-        // console.log(`selectRandom(), thresholds: ${thresholds}`);
 
         // random number
         let selected = Math.floor(Math.random() * total);
-        // console.log(`selectRandom(), selected: ${selected}`);
 
         // deconstruct into correct indexes
         let sLayer, sType, sNode, sJ;
@@ -493,45 +470,17 @@ class NeuralNetBrain extends Brain{
     cloneMe() {
         let clone = new NeuralNetBrain(this.myNormalizer.cloneMe(), this.myDepth, this.myWidth, this.startWeight, this.startBias);
 
-        // console.log(`this.myMat: ${this.myMat}`);
-        // console.log("stringifyied: " + JSON.stringify(this.myMat));
-
         // deepcopy everything
         clone.myMat = JSON.parse(JSON.stringify(this.myMat));
         clone.hasValues = this.hasValues;
         clone.myInputWidth = this.myInputWidth;
 
-        // console.log("brain clone:");
-        // console.log(clone);
-
-        // if(!(clone instanceof NeuralNetBrain)){
-        //     console.log("cloned brain not brain...");
-        //     console.log(this);
-        // }
-
         return clone;
-    }
-    // IMPORTANT: loads all the needed parameters given a string
-    //  assumes that input size is correct
-    //  string:
-    //   pure json.stringify
-    loadParams(str){
-        // json map
-        let map = JSON.parse(str);
-
-        // set map
-        this.myMat = map.get("matrix");
-
-        // track
-        this.hasValues = true;
-
-        console.log("loadParams() called: this.myMat: " + this.myMat);
     }
     // init all values with random numbers
     initRandom(){
         if(this.hasValues){
             console.log("!!! InitRandom called on a this that already had values, overriding... !!!");
-            alert("!!! InitRandom called on a brain that already had values, overriding... !!!");
         }
 
         for (let layer = 0; layer < this.myMat.length; layer++) {
@@ -547,8 +496,6 @@ class NeuralNetBrain extends Brain{
         }
 
         this.hasValues = true;
-
-        // console.log(`initRandom() success: this.myMat: ${this.myMat}`);
     }
     // save/load methods
     stringify() {

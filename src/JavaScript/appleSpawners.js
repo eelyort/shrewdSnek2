@@ -24,8 +24,6 @@ function pathAppleSpawn() {
             // random select a point on path
             let pos = this.mySnake.myBrain.myDecompiledPath[ran];
 
-            // console.log(`hi, ran: ${ran}, pos: ${pos}`);
-
             // ignore negatives
             if(pos >= 0){
                 // let r = Math.floor(pos / (this.gridSize + 2));

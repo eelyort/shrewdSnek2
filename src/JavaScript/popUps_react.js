@@ -547,7 +547,6 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                         "div",
                         { className: "text_card background" },
                         React.createElement(SnakeDetailsEdit, { snake: this.state.snake, tellChange: function tellChange() {
-                                // console.log("unsave");
                                 if (_this4.saved) {
                                     _this4.saved = false;
                                 }
@@ -611,7 +610,6 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                         popUpFuncs.changeSelected(metaInfo);
                         _this5.changeErrorText("(Save Successful)", function () {
                             _this5.saved = true;
-                            console.log("saved");
                         });
                     });
                 } else {
@@ -635,8 +633,6 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                 metaInfo = _props6.metaInfo,
                 loadedSnakesIn = _props6.loadedSnakesIn;
 
-            // TODO: snake validation
-
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
 
@@ -651,10 +647,6 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                 popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, _this6.state.snake.cloneMe());
                 popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
                 popUpFuncs.close(1);
-                // setTimeout(() => {
-                //     this.saved=true;
-                //     console.log("saved");
-                // }, 1);
             });
         }
     }, {
@@ -781,8 +773,6 @@ var EditEvolutionPopUp = function (_React$Component3) {
                 evolution = _state.evolution,
                 currSnake = _state.currSnake;
 
-            // console.log("render");
-            // console.log(evolution);
 
             if (!evolution) {
                 return null;
@@ -793,11 +783,6 @@ var EditEvolutionPopUp = function (_React$Component3) {
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s)), changeEvolution(newEvolution)
             var popUpFuncs = this.props.popUpFuncs;
-
-            // // set snake of evolution with metaInfo
-            // if(metaInfo instanceof Snake){
-            //     this.state.evolution.currentGeneration = [[metaInfo.cloneMe(), 1]];
-            // }
 
             var confirmation = null;
             if (this.state.confirmationBox) {
@@ -1435,7 +1420,14 @@ var EditEvolutionPopUp = function (_React$Component3) {
                                 React.createElement(
                                     "h4",
                                     null,
-                                    "(Snakes Must Have One Of The Following Brains: \"Neural Network Brain\")"
+                                    "(Snakes Must Have One Of The Following Brains:",
+                                    " ",
+                                    blankBrains.filter(function (value, index) {
+                                        return evolutionBrains.includes(value.componentID);
+                                    }).map(function (value, index) {
+                                        return "\"" + value.getComponentName() + (index === evolutionBrains.length - 1 ? "." : ",") + "\"";
+                                    }).join(" "),
+                                    ")"
                                 ),
                                 currSnake ? React.createElement(SnakeDetails, { snake: currSnake }) : null
                             )
@@ -1522,7 +1514,6 @@ var EditEvolutionPopUp = function (_React$Component3) {
         key: "changed",
         value: function changed() {
             this.saved = false;
-            // console.log(this.state.evolution);
             this.forceUpdate();
         }
     }, {

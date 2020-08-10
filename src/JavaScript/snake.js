@@ -5,7 +5,6 @@ class Snake extends Component{
         super(0, "", descriptionIn);
         this.setName(nameIn);
         // set variables
-        // MOVED TO SINGLESNAKERUNNER CONSTRUCTOR
         this.mySingleSnakeRunner = null;
         // let these be ints of range: [0, gridSize^2)
         this.startHeadPos = headPosIn;
@@ -31,9 +30,6 @@ class Snake extends Component{
         this.bodySegsToErase = new CustomQueue();
         this.bodySegsToDraw = new CustomQueue();
         this.bodySegsToDraw.enqueue(this.startHeadPos);
-
-        // // weird glitches happen cuz of timing of the first draw
-        // this.firstDrawn = false;
 
         this.uuid = "normal";
 
@@ -244,8 +240,6 @@ class Snake extends Component{
         clone.componentDescription = this.componentDescription;
         clone.generationNumber = this.generationNumber;
 
-        // console.log(`snake cloneMe(): this.#: ${this.generationNumber}, clone.#: ${clone.generationNumber}`);
-
         return clone;
     }
     // stringify a snake for storage
@@ -331,7 +325,6 @@ class SnakeSpecies{
         return JSON.stringify(a);
     }
     static parse(json){
-        // console.log(json);
         let a = JSON.parse(json);
         return new SnakeSpecies(a.map((val) => {return Snake.parse(val)}));
     }
