@@ -182,7 +182,10 @@ class CreateSnakePopUpREACT extends React.Component{
     constructor(props){
         super(props);
 
-        this.saved=false;
+        // snake saved
+        this.saved = true;
+        // change in inputs or brain
+        this.deepchange = false;
 
         this.state={
             snake: null,
@@ -200,6 +203,8 @@ class CreateSnakePopUpREACT extends React.Component{
     }
     render() {
         const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
+
+        console.log(`render(), saved: ${this.saved}`);
 
         // bundle of functions for the popup to interact with the main menu
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
@@ -272,6 +277,7 @@ class CreateSnakePopUpREACT extends React.Component{
 
         return (
             <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => {
+                console.log(`closefunc, saved: ${this.saved}`);
                 if(!this.saved) {
                     this.setState(() => ({quitConfirmation: true}))
                 }
@@ -287,9 +293,8 @@ class CreateSnakePopUpREACT extends React.Component{
                     {quitConfirmation}
                     <div className={"text_card background"}>
                         <SnakeDetailsEdit snake={this.state.snake} tellChange={() => {
-                            if(this.saved){
-                                this.saved = false;
-                            }
+                            console.log("tellChange");
+                            this.saved = false;
                         }}/>
                         <div className={"button_div"}>
                             <Button onClick={this.saveResults}>Save</Button>

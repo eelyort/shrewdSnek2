@@ -679,10 +679,6 @@ class SnakeDetailsEdit extends React.Component{
     render(){
         const {snake: snake, tellChange: tellChange} = this.props;
 
-        if(tellChange){
-            tellChange();
-        }
-
         const speed = typeWriteSpeed;
 
         const [currR, currC] = [snake.startHeadPos / (snake.gridSize + 2), snake.startHeadPos % (snake.gridSize + 2) - 1].map(((value, index) => Math.floor(value)));
@@ -886,7 +882,6 @@ class SnakeDetailsEdit extends React.Component{
                                         <option value={index}>None</option>
                                     );
                                 }
-                                this.forceUpdate();
                             }))}
                         </Select>
                         <InputDetails className={"temp_input"} input={this.inputs[this.inputActive]} speed={speed} edit={true} editFuncs={editFuncsInput} noDelete={true} />
@@ -933,5 +928,16 @@ class SnakeDetailsEdit extends React.Component{
                 </CollapsibleDiv>
             </div>
         );
+    }
+    forceUpdate(callback) {
+        const {snake: snake, tellChange: tellChange} = this.props;
+
+        console.log("snake edit forceUpdate");
+
+        if(tellChange){
+            tellChange();
+        }
+
+        super.forceUpdate(callback);
     }
 }

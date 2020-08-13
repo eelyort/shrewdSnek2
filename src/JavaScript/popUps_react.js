@@ -324,9 +324,12 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
     function CreateSnakePopUpREACT(props) {
         _classCallCheck(this, CreateSnakePopUpREACT);
 
+        // snake saved
         var _this3 = _possibleConstructorReturn(this, (CreateSnakePopUpREACT.__proto__ || Object.getPrototypeOf(CreateSnakePopUpREACT)).call(this, props));
 
-        _this3.saved = false;
+        _this3.saved = true;
+        // change in inputs or brain
+        _this3.deepchange = false;
 
         _this3.state = {
             snake: null,
@@ -353,9 +356,11 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                 metaInfo = _props3.metaInfo,
                 loadedSnakesIn = _props3.loadedSnakesIn;
 
+
+            console.log("render(), saved: " + this.saved);
+
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
-
             var popUpFuncs = this.props.popUpFuncs;
 
             // nothing to display
@@ -521,6 +526,7 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
             return React.createElement(
                 PopUp,
                 { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: function closeFunc() {
+                        console.log("closefunc, saved: " + _this4.saved);
                         if (!_this4.saved) {
                             _this4.setState(function () {
                                 return { quitConfirmation: true };
@@ -547,9 +553,8 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                         "div",
                         { className: "text_card background" },
                         React.createElement(SnakeDetailsEdit, { snake: this.state.snake, tellChange: function tellChange() {
-                                if (_this4.saved) {
-                                    _this4.saved = false;
-                                }
+                                console.log("tellChange");
+                                _this4.saved = false;
                             } }),
                         React.createElement(
                             "div",
