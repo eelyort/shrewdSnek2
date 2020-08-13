@@ -205,8 +205,6 @@ class CreateSnakePopUpREACT extends React.Component{
     render() {
         const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
 
-        console.log(`render(), saved: ${this.saved}`);
-
         // bundle of functions for the popup to interact with the main menu
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
         const popUpFuncs = this.props.popUpFuncs;
@@ -278,7 +276,6 @@ class CreateSnakePopUpREACT extends React.Component{
 
         return (
             <PopUp className={"background create_snake" + ((this.props.className) ? (" " + this.props.className) : (""))} closeFunc={() => {
-                console.log(`closefunc, saved: ${this.saved}`);
                 if(!this.saved) {
                     this.setState(() => ({quitConfirmation: true}))
                 }
@@ -294,17 +291,14 @@ class CreateSnakePopUpREACT extends React.Component{
                     {quitConfirmation}
                     <div className={"text_card background"}>
                         <SnakeDetailsEdit snake={this.state.snake} tellChange={() => {
-                            console.log("tellChange");
                             this.saved = false;
                         }} tellDeepChange={(revertAmount) => {
-                            console.log(`tell deep change, revert: ${revertAmount}`);
                             if(revertAmount){
                                 this.deepChanges -= revertAmount;
                             }
                             else{
                                 this.deepChanges++;
                             }
-                            console.log(`deepChanges: ${this.deepChanges}`);
                         }}/>
                         <div className={"button_div"}>
                             <Button onClick={this.saveResults}>Save</Button>
@@ -395,7 +389,7 @@ class CreateSnakePopUpREACT extends React.Component{
 
         const newSnek = this.state.snake;
         const oldSpecies = loadedSnakesIn[metaInfo];
-        let ans = oldSpecies.snakes.map(((value, index) => {
+        return oldSpecies.snakes.map(((value, index) => {
             value = value.cloneMe();
             value.setName(newSnek.componentName);
             value.componentDescription = newSnek.componentDescription;
@@ -405,16 +399,6 @@ class CreateSnakePopUpREACT extends React.Component{
             value.gridSize = newSnek.gridSize;
             return value;
         }));
-        console.log(`modifySpecies(): ans: ${ans}`);
-        return ans;
-        // return oldSpecies.snakes.map(((value, index) => {
-        //     value.setName(newSnek.componentName);
-        //     value.componentDescription = newSnek.componentDescription;
-        //     value.startHeadPos = newSnek.startHeadPos;
-        //     value.startLength = newSnek.startLength;
-        //     value.appleVal = newSnek.appleVal;
-        //     value.gridSize = newSnek.gridSize;
-        // }));
     }
     changeErrorText(text, callback = (() => null)){
         if(!this.state.errorText){

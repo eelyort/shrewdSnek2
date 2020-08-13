@@ -53,9 +53,6 @@ class SingleSnakeRunner{
         // apple spawner function
         this.appleSpawn = ((appleSpawnIn == null) ? (defaultAppleSpawn.bind(this)) : (appleSpawnIn.bind(this)));
 
-        if(!this.mySnake.updateParentRunner) {
-            console.log(this.mySnake);
-        }
         this.mySnake.updateParentRunner(this);
     }
     // sets the interval to call

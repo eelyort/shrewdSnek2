@@ -813,7 +813,6 @@ class SnakeDetailsEdit extends React.Component{
         }
         if(tellDeepChange && this.origBrainID === undefined){
             this.origBrainID = snake.myBrain.componentID;
-            console.log(`init, origBrainID: ${this.origBrainID}`);
             this.brainChanges = 0;
         }
         this.brains[snake.myBrain.componentID] = snake.myBrain;
@@ -939,7 +938,6 @@ class SnakeDetailsEdit extends React.Component{
                                 // change to new
                                 // this type exists already
                                 if (this.brains[id]) {
-                                    console.log(`!!tellDeepChange: ${!!tellDeepChange}, origID: ${typeof this.origBrainID} ${this.origBrainID}, id: ${typeof id} ${id}`);
                                     if(tellDeepChange && this.origBrainID === id){
                                         tellDeepChange(this.brainChanges);
                                         this.brainChanges = 0;
@@ -968,8 +966,6 @@ class SnakeDetailsEdit extends React.Component{
     }
     forceUpdate(callback) {
         const {snake: snake, tellChange: tellChange} = this.props;
-
-        console.log("snake edit forceUpdate");
 
         if(tellChange){
             tellChange();
