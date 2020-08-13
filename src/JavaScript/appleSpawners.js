@@ -26,9 +26,6 @@ function pathAppleSpawn() {
 
             // ignore negatives
             if(pos >= 0){
-                // let r = Math.floor(pos / (this.gridSize + 2));
-                // let c = Math.floor(pos % (this.gridSize + 2)) - 1;
-
                 // if open spawn
                 if(this.grid[pos] === 0){
                     this.appleSpawned = true;

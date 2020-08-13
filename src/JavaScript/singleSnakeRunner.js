@@ -25,6 +25,7 @@ class SingleSnakeRunner{
         this.appleSpawned = false;
         this.applePosition = -1;
         this.appleDrawn = false;
+        this.appleSpawning = false;
 
         // ticks so far
         this.timeTicks = 0;
@@ -100,15 +101,18 @@ class SingleSnakeRunner{
                 return;
             }
 
-            // run the snake
-            if (!this.mySnake.makeMove()) {
-                this.finish();
-                return;
-            }
             // spawn apple
-            if (!this.appleSpawned) {
+            if (!this.appleSpawned && !this.appleSpawning) {
+                this.appleSpawning = true;
                 this.appleSpawn();
                 this.ticksSinceApple = 0;
+                this.appleSpawning = false;
+            }
+
+            // run the snake
+            if (this.appleSpawned && !this.mySnake.makeMove()) {
+                this.finish();
+                return;
             }
         }
     }
