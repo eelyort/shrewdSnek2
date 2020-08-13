@@ -677,7 +677,7 @@ class SnakeDetails extends React.Component{
 // editable snake details || props: snake = snake to display/edit | tellChange: a function which should b called on snake change
 class SnakeDetailsEdit extends React.Component{
     render(){
-        const {snake: snake, tellChange: tellChange} = this.props;
+        const {snake: snake, tellChange: tellChange, tellDeepChange: tellDeepChange} = this.props;
 
         const speed = typeWriteSpeed;
 
@@ -693,6 +693,10 @@ class SnakeDetailsEdit extends React.Component{
             get: () => {return snake.myInput},
             change: (inputNew) => {
                 snake.changeInput(inputNew);
+
+                if(tellDeepChange){
+                    tellDeepChange();
+                }
                 this.forceUpdate();
             },
             add: (inputNew) => {
@@ -709,6 +713,10 @@ class SnakeDetailsEdit extends React.Component{
                 else{
                     const newVal = new MultipleInput(snake.myInput, inputNew);
                     snake.changeInput(newVal);
+                }
+
+                if(tellDeepChange){
+                    tellDeepChange();
                 }
                 this.forceUpdate();
             },
@@ -737,6 +745,10 @@ class SnakeDetailsEdit extends React.Component{
                         });
                         snake.changeInput(ans);
                     }
+                }
+
+                if(tellDeepChange){
+                    tellDeepChange();
                 }
                 this.forceUpdate();
             },
@@ -771,6 +783,10 @@ class SnakeDetailsEdit extends React.Component{
                     }
                 }));
                 snake.changeInput(newMultiple);
+
+                if(tellDeepChange){
+                    tellDeepChange();
+                }
                 this.forceUpdate();
             },
             update: () => {
@@ -782,6 +798,10 @@ class SnakeDetailsEdit extends React.Component{
                 else {
                     snake.changeInput(snake.myInput);
                 }
+
+                if(tellDeepChange){
+                    tellDeepChange();
+                }
                 this.forceUpdate();
             }
         };
@@ -790,6 +810,11 @@ class SnakeDetailsEdit extends React.Component{
         // keep a log of brains so you can toggle between multiple while preserving info
         if(!this.brains){
             this.brains = Array(blankBrains.length).fill(null);
+        }
+        if(tellDeepChange && this.origBrainID === undefined){
+            this.origBrainID = snake.myBrain.componentID;
+            console.log(`init, origBrainID: ${this.origBrainID}`);
+            this.brainChanges = 0;
         }
         this.brains[snake.myBrain.componentID] = snake.myBrain;
         const editFuncsBrain = {
@@ -898,17 +923,29 @@ class SnakeDetailsEdit extends React.Component{
                         <label htmlFor={"brain_type"}>Brain Type: </label>
                         <Select initVal={snake.myBrain.componentID} name={"brain_type"} onSelect={(val) => {
                             // target id
-                            const id = val;
+                            const id = parseInt(val);
 
                             // ignore unnecessary switches
                             if(id !== snake.myBrain.componentID) {
+                                if(tellDeepChange){
+                                    tellDeepChange();
+                                    this.brainChanges++;
+                                }
+                                // TODO: deepchange on brain parameters
+
                                 // save old
                                 this.brains[snake.myBrain.componentID] = snake.myBrain;
 
                                 // change to new
                                 // this type exists already
                                 if (this.brains[id]) {
+                                    console.log(`!!tellDeepChange: ${!!tellDeepChange}, origID: ${typeof this.origBrainID} ${this.origBrainID}, id: ${typeof id} ${id}`);
+                                    if(tellDeepChange && this.origBrainID === id){
+                                        tellDeepChange(this.brainChanges);
+                                        this.brainChanges = 0;
+                                    }
                                     snake.changeBrain(this.brains[id]);
+
                                 }
                                 // first time this type
                                 else{

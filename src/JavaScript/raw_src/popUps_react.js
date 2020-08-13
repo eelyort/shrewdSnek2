@@ -119,10 +119,10 @@ class SelectSnakePopUpREACT extends React.Component{
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
         const popUpFuncs = this.props.popUpFuncs;
 
-        let snek = this.props.loadedSnakesIn[this.props.selectedSnake].snakes[this.props.selectedSnakeGen].cloneMe();
-        snek.setNameClone();
+        let species = this.props.loadedSnakesIn[this.props.selectedSnake].cloneSpecies();
+        species.setNameClone();
 
-        popUpFuncs.spliceLoaded(this.props.loadedSnakesIn.length, 0, snek);
+        popUpFuncs.spliceLoaded(this.props.loadedSnakesIn.length, 0, species);
         popUpFuncs.changeSelected(this.props.loadedSnakesIn.length-1);
     }
     saveButton(){
@@ -185,7 +185,7 @@ class CreateSnakePopUpREACT extends React.Component{
         // snake saved
         this.saved = true;
         // change in inputs or brain
-        this.deepchange = false;
+        this.deepChanges = 0;
 
         this.state={
             snake: null,
@@ -198,6 +198,7 @@ class CreateSnakePopUpREACT extends React.Component{
         this.createBlankSnake = this.createBlankSnake.bind(this);
         this.saveResults = this.saveResults.bind(this);
         this.saveAsNew = this.saveAsNew.bind(this);
+        this.modifySpecies = this.modifySpecies.bind(this);
         this.changeErrorText = this.changeErrorText.bind(this);
         this.loadFromString = this.loadFromString.bind(this);
     }
@@ -250,7 +251,7 @@ class CreateSnakePopUpREACT extends React.Component{
         if(this.state.confirmationBox){
             confirmation = (
                 <div className={"confirmation_box"}>
-                    <h3>Are you sure you want to override the previous version of this snake?{((loadedSnakesIn[metaInfo].getLength() > 1) ? (" All generations will also be erased.") : (""))}</h3>
+                    <h3>Are you sure you want to override the previous version of this snake?{((this.deepChanges > 0) ? (" Due to changes in inputs/brain, saving this snake will erase all evolution progress.") : (""))}</h3>
                     <div>
                         <Button onClick={() => this.setState(() => ({confirmationBox: false}))}>Cancel</Button>
                         <Button onClick={() => {
@@ -295,6 +296,15 @@ class CreateSnakePopUpREACT extends React.Component{
                         <SnakeDetailsEdit snake={this.state.snake} tellChange={() => {
                             console.log("tellChange");
                             this.saved = false;
+                        }} tellDeepChange={(revertAmount) => {
+                            console.log(`tell deep change, revert: ${revertAmount}`);
+                            if(revertAmount){
+                                this.deepChanges -= revertAmount;
+                            }
+                            else{
+                                this.deepChanges++;
+                            }
+                            console.log(`deepChanges: ${this.deepChanges}`);
                         }}/>
                         <div className={"button_div"}>
                             <Button onClick={this.saveResults}>Save</Button>
@@ -329,7 +339,16 @@ class CreateSnakePopUpREACT extends React.Component{
         if(metaInfo != null){
             if(this.state.confirmationBox) {
                 this.setState(() => ({confirmationBox: false}), () => {
-                    popUpFuncs.spliceLoaded(metaInfo, 1, this.state.snake);
+                    // change input/brain, delete all generations except one
+                    if(this.deepChanges > 0) {
+                        popUpFuncs.spliceLoaded(metaInfo, 1, this.state.snake);
+                    }
+                    // surface changes: name, desc, params | keep all generations
+                    else{
+                        let newSnakes = this.modifySpecies();
+                        popUpFuncs.spliceLoaded(metaInfo, 1, newSnakes);
+                    }
+                    // mark saved
                     popUpFuncs.changeSelected(metaInfo);
                     this.changeErrorText("(Save Successful)", () => {
                         this.saved = true;
@@ -357,10 +376,45 @@ class CreateSnakePopUpREACT extends React.Component{
         this.setState((state) => ({
             snake: state.snake.cloneMe()
         }), () => {
-            popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, this.state.snake.cloneMe());
+            // change input/brain, delete all generations except one
+            if(this.deepChanges > 0 || !metaInfo) {
+                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, this.state.snake.cloneMe());
+            }
+            // surface changes: name, desc, params | keep all generations
+            else{
+                let newSnakes = this.modifySpecies();
+                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, newSnakes);
+            }
+            // mark saved
             popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
             popUpFuncs.close(1);
         });
+    }
+    modifySpecies(){
+        const {metaInfo: metaInfo, loadedSnakesIn: loadedSnakesIn} = this.props;
+
+        const newSnek = this.state.snake;
+        const oldSpecies = loadedSnakesIn[metaInfo];
+        let ans = oldSpecies.snakes.map(((value, index) => {
+            value = value.cloneMe();
+            value.setName(newSnek.componentName);
+            value.componentDescription = newSnek.componentDescription;
+            value.startHeadPos = newSnek.startHeadPos;
+            value.startLength = newSnek.startLength;
+            value.appleVal = newSnek.appleVal;
+            value.gridSize = newSnek.gridSize;
+            return value;
+        }));
+        console.log(`modifySpecies(): ans: ${ans}`);
+        return ans;
+        // return oldSpecies.snakes.map(((value, index) => {
+        //     value.setName(newSnek.componentName);
+        //     value.componentDescription = newSnek.componentDescription;
+        //     value.startHeadPos = newSnek.startHeadPos;
+        //     value.startLength = newSnek.startLength;
+        //     value.appleVal = newSnek.appleVal;
+        //     value.gridSize = newSnek.gridSize;
+        // }));
     }
     changeErrorText(text, callback = (() => null)){
         if(!this.state.errorText){

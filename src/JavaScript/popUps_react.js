@@ -236,10 +236,10 @@ var SelectSnakePopUpREACT = function (_React$Component) {
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
             var popUpFuncs = this.props.popUpFuncs;
 
-            var snek = this.props.loadedSnakesIn[this.props.selectedSnake].snakes[this.props.selectedSnakeGen].cloneMe();
-            snek.setNameClone();
+            var species = this.props.loadedSnakesIn[this.props.selectedSnake].cloneSpecies();
+            species.setNameClone();
 
-            popUpFuncs.spliceLoaded(this.props.loadedSnakesIn.length, 0, snek);
+            popUpFuncs.spliceLoaded(this.props.loadedSnakesIn.length, 0, species);
             popUpFuncs.changeSelected(this.props.loadedSnakesIn.length - 1);
         }
     }, {
@@ -329,7 +329,7 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
 
         _this3.saved = true;
         // change in inputs or brain
-        _this3.deepchange = false;
+        _this3.deepChanges = 0;
 
         _this3.state = {
             snake: null,
@@ -342,6 +342,7 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
         _this3.createBlankSnake = _this3.createBlankSnake.bind(_this3);
         _this3.saveResults = _this3.saveResults.bind(_this3);
         _this3.saveAsNew = _this3.saveAsNew.bind(_this3);
+        _this3.modifySpecies = _this3.modifySpecies.bind(_this3);
         _this3.changeErrorText = _this3.changeErrorText.bind(_this3);
         _this3.loadFromString = _this3.loadFromString.bind(_this3);
         return _this3;
@@ -446,7 +447,7 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                         "h3",
                         null,
                         "Are you sure you want to override the previous version of this snake?",
-                        loadedSnakesIn[metaInfo].getLength() > 1 ? " All generations will also be erased." : ""
+                        this.deepChanges > 0 ? " Due to changes in inputs/brain, saving this snake will erase all evolution progress." : ""
                     ),
                     React.createElement(
                         "div",
@@ -555,6 +556,14 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                         React.createElement(SnakeDetailsEdit, { snake: this.state.snake, tellChange: function tellChange() {
                                 console.log("tellChange");
                                 _this4.saved = false;
+                            }, tellDeepChange: function tellDeepChange(revertAmount) {
+                                console.log("tell deep change, revert: " + revertAmount);
+                                if (revertAmount) {
+                                    _this4.deepChanges -= revertAmount;
+                                } else {
+                                    _this4.deepChanges++;
+                                }
+                                console.log("deepChanges: " + _this4.deepChanges);
                             } }),
                         React.createElement(
                             "div",
@@ -611,7 +620,16 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                     this.setState(function () {
                         return { confirmationBox: false };
                     }, function () {
-                        popUpFuncs.spliceLoaded(metaInfo, 1, _this5.state.snake);
+                        // change input/brain, delete all generations except one
+                        if (_this5.deepChanges > 0) {
+                            popUpFuncs.spliceLoaded(metaInfo, 1, _this5.state.snake);
+                        }
+                        // surface changes: name, desc, params | keep all generations
+                        else {
+                                var newSnakes = _this5.modifySpecies();
+                                popUpFuncs.spliceLoaded(metaInfo, 1, newSnakes);
+                            }
+                        // mark saved
                         popUpFuncs.changeSelected(metaInfo);
                         _this5.changeErrorText("(Save Successful)", function () {
                             _this5.saved = true;
@@ -649,10 +667,50 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                     snake: state.snake.cloneMe()
                 };
             }, function () {
-                popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, _this6.state.snake.cloneMe());
+                // change input/brain, delete all generations except one
+                if (_this6.deepChanges > 0 || !metaInfo) {
+                    popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, _this6.state.snake.cloneMe());
+                }
+                // surface changes: name, desc, params | keep all generations
+                else {
+                        var newSnakes = _this6.modifySpecies();
+                        popUpFuncs.spliceLoaded(loadedSnakesIn.length, 0, newSnakes);
+                    }
+                // mark saved
                 popUpFuncs.changeSelected(loadedSnakesIn.length - 1);
                 popUpFuncs.close(1);
             });
+        }
+    }, {
+        key: "modifySpecies",
+        value: function modifySpecies() {
+            var _props7 = this.props,
+                metaInfo = _props7.metaInfo,
+                loadedSnakesIn = _props7.loadedSnakesIn;
+
+
+            var newSnek = this.state.snake;
+            var oldSpecies = loadedSnakesIn[metaInfo];
+            var ans = oldSpecies.snakes.map(function (value, index) {
+                value = value.cloneMe();
+                value.setName(newSnek.componentName);
+                value.componentDescription = newSnek.componentDescription;
+                value.startHeadPos = newSnek.startHeadPos;
+                value.startLength = newSnek.startLength;
+                value.appleVal = newSnek.appleVal;
+                value.gridSize = newSnek.gridSize;
+                return value;
+            });
+            console.log("modifySpecies(): ans: " + ans);
+            return ans;
+            // return oldSpecies.snakes.map(((value, index) => {
+            //     value.setName(newSnek.componentName);
+            //     value.componentDescription = newSnek.componentDescription;
+            //     value.startHeadPos = newSnek.startHeadPos;
+            //     value.startLength = newSnek.startLength;
+            //     value.appleVal = newSnek.appleVal;
+            //     value.gridSize = newSnek.gridSize;
+            // }));
         }
     }, {
         key: "changeErrorText",
@@ -684,9 +742,9 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
     }, {
         key: "loadFromString",
         value: function loadFromString(str) {
-            var _props7 = this.props,
-                metaInfo = _props7.metaInfo,
-                loadedSnakesIn = _props7.loadedSnakesIn;
+            var _props8 = this.props,
+                metaInfo = _props8.metaInfo,
+                loadedSnakesIn = _props8.loadedSnakesIn;
 
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
@@ -771,9 +829,9 @@ var EditEvolutionPopUp = function (_React$Component3) {
         value: function render() {
             var _this8 = this;
 
-            var _props8 = this.props,
-                metaInfo = _props8.metaInfo,
-                evolutionIn = _props8.evolutionIn;
+            var _props9 = this.props,
+                metaInfo = _props9.metaInfo,
+                evolutionIn = _props9.evolutionIn;
             var _state = this.state,
                 evolution = _state.evolution,
                 currSnake = _state.currSnake;

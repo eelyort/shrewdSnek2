@@ -709,6 +709,8 @@ var GameMenu = function (_React$Component3) {
         value: function showcaseRandomEvolutionSnake() {
             var _this12 = this;
 
+            console.log(loadedSnakes);
+
             var filtered = loadedSnakes.filter(function (value, index) {
                 var snekBrain = value.snakes[value.getLength() - 1].myBrain;
 

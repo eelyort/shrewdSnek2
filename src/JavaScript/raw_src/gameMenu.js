@@ -430,6 +430,8 @@ class GameMenu extends React.Component{
         return loadedSnakes[this.state.selectedSnake].snakes[this.state.selectedSnakeGen].cloneMe();
     }
     showcaseRandomEvolutionSnake(){
+        console.log(loadedSnakes);
+
         let filtered = loadedSnakes.filter((value, index) => {
             const snekBrain = value.snakes[value.getLength()-1].myBrain;
 

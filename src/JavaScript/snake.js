@@ -320,6 +320,13 @@ class SnakeSpecies{
     getLength(){
         return this.snakes.length;
     }
+    setNameClone(){
+        this.snakes.map(((value, index) => value.setNameClone()));
+    }
+    cloneSpecies(){
+        let sneks = this.snakes.map(((value, index) => value.cloneMe()));
+        return new SnakeSpecies(sneks);
+    }
     stringify(){
         let a = this.snakes.map((value, index) => {return value.stringify()});
         return JSON.stringify(a);
