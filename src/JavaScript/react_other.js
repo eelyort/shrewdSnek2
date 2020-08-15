@@ -1281,7 +1281,6 @@ var SnakeDetailsEdit = function (_React$Component8) {
             }
             if (tellDeepChange && this.origBrainID === undefined) {
                 this.origBrainID = snake.myBrain.componentID;
-                console.log("init, origBrainID: " + this.origBrainID);
                 this.brainChanges = 0;
             }
             this.brains[snake.myBrain.componentID] = snake.myBrain;
@@ -1503,7 +1502,6 @@ var SnakeDetailsEdit = function (_React$Component8) {
                                         // change to new
                                         // this type exists already
                                         if (_this11.brains[id]) {
-                                            console.log("!!tellDeepChange: " + !!tellDeepChange + ", origID: " + _typeof(_this11.origBrainID) + " " + _this11.origBrainID + ", id: " + (typeof id === "undefined" ? "undefined" : _typeof(id)) + " " + id);
                                             if (tellDeepChange && _this11.origBrainID === id) {
                                                 tellDeepChange(_this11.brainChanges);
                                                 _this11.brainChanges = 0;
@@ -1537,8 +1535,6 @@ var SnakeDetailsEdit = function (_React$Component8) {
                 snake = _props10.snake,
                 tellChange = _props10.tellChange;
 
-
-            console.log("snake edit forceUpdate");
 
             if (tellChange) {
                 tellChange();

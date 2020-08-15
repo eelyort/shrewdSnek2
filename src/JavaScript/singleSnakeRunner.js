@@ -102,17 +102,21 @@ class SingleSnakeRunner{
             }
 
             // spawn apple
-            if (!this.appleSpawned && !this.appleSpawning) {
-                this.appleSpawning = true;
-                this.appleSpawn();
-                this.ticksSinceApple = 0;
-                this.appleSpawning = false;
+            if (!this.appleSpawned) {
+                if(!this.appleSpawning) {
+                    this.appleSpawning = true;
+                    this.appleSpawn();
+                    this.ticksSinceApple = 0;
+                    this.appleSpawning = false;
+                }
+                else{
+                    return;
+                }
             }
 
             // run the snake
             if (this.appleSpawned && !this.mySnake.makeMove()) {
                 this.finish();
-                return;
             }
         }
     }

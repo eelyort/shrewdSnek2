@@ -357,11 +357,9 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                 metaInfo = _props3.metaInfo,
                 loadedSnakesIn = _props3.loadedSnakesIn;
 
-
-            console.log("render(), saved: " + this.saved);
-
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
+
             var popUpFuncs = this.props.popUpFuncs;
 
             // nothing to display
@@ -527,7 +525,6 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
             return React.createElement(
                 PopUp,
                 { className: "background create_snake" + (this.props.className ? " " + this.props.className : ""), closeFunc: function closeFunc() {
-                        console.log("closefunc, saved: " + _this4.saved);
                         if (!_this4.saved) {
                             _this4.setState(function () {
                                 return { quitConfirmation: true };
@@ -554,16 +551,13 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                         "div",
                         { className: "text_card background" },
                         React.createElement(SnakeDetailsEdit, { snake: this.state.snake, tellChange: function tellChange() {
-                                console.log("tellChange");
                                 _this4.saved = false;
                             }, tellDeepChange: function tellDeepChange(revertAmount) {
-                                console.log("tell deep change, revert: " + revertAmount);
                                 if (revertAmount) {
                                     _this4.deepChanges -= revertAmount;
                                 } else {
                                     _this4.deepChanges++;
                                 }
-                                console.log("deepChanges: " + _this4.deepChanges);
                             } }),
                         React.createElement(
                             "div",
@@ -691,7 +685,7 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
 
             var newSnek = this.state.snake;
             var oldSpecies = loadedSnakesIn[metaInfo];
-            var ans = oldSpecies.snakes.map(function (value, index) {
+            return oldSpecies.snakes.map(function (value, index) {
                 value = value.cloneMe();
                 value.setName(newSnek.componentName);
                 value.componentDescription = newSnek.componentDescription;
@@ -701,16 +695,6 @@ var CreateSnakePopUpREACT = function (_React$Component2) {
                 value.gridSize = newSnek.gridSize;
                 return value;
             });
-            console.log("modifySpecies(): ans: " + ans);
-            return ans;
-            // return oldSpecies.snakes.map(((value, index) => {
-            //     value.setName(newSnek.componentName);
-            //     value.componentDescription = newSnek.componentDescription;
-            //     value.startHeadPos = newSnek.startHeadPos;
-            //     value.startLength = newSnek.startLength;
-            //     value.appleVal = newSnek.appleVal;
-            //     value.gridSize = newSnek.gridSize;
-            // }));
         }
     }, {
         key: "changeErrorText",
