@@ -622,6 +622,8 @@ select, input{
     height: 90vh;
     margin: auto;
 
+    font-family: monospace;
+
     background-color: inherit;
 }
 
