@@ -22,6 +22,8 @@ var SelectSnakePopUpREACT = function (_React$Component) {
             deleteConfirmationUp: false
         };
 
+        _this.resetRender = false;
+
         _this.editButton = _this.editButton.bind(_this);
         _this.deleteButton = _this.deleteButton.bind(_this);
         _this.cloneButton = _this.cloneButton.bind(_this);
@@ -43,6 +45,10 @@ var SelectSnakePopUpREACT = function (_React$Component) {
 
 
             var editable = !(selectedSnake < protectedSnakes);
+
+            if (this.resetRender) {
+                return null;
+            }
 
             // bundle of functions for the popup to interact with the main menu
             //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
@@ -108,7 +114,11 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                         { className: "carousel_parent" },
                         React.createElement(
                             VerticalCarousel,
-                            { delayInitialScroll: 1, selected: selectedSnake, items: loadedSnakesIn, select: popUpFuncs.changeSelected },
+                            { delayInitialScroll: 1, selected: selectedSnake, items: loadedSnakesIn, select: function select(index) {
+                                    popUpFuncs.changeSelected(index);
+                                    popUpFuncs.changeSelectedGen(loadedSnakesIn[index].getLength() - 1);
+                                    _this2.resetRender = true;
+                                } },
                             loadedSnakesIn.map(function (val, i) {
                                 return React.createElement(
                                     "h3",
@@ -308,6 +318,14 @@ var SelectSnakePopUpREACT = function (_React$Component) {
                         return { errorText: text };
                     }, callback);
                 }
+            }
+        }
+    }, {
+        key: "componentDidUpdate",
+        value: function componentDidUpdate(prevProps, prevState, snapshot) {
+            if (this.resetRender) {
+                this.resetRender = false;
+                this.forceUpdate();
             }
         }
     }]);

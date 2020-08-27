@@ -8,6 +8,8 @@ class SelectSnakePopUpREACT extends React.Component{
             deleteConfirmationUp: false
         };
 
+        this.resetRender = false;
+
         this.editButton = this.editButton.bind(this);
         this.deleteButton = this.deleteButton.bind(this);
         this.cloneButton = this.cloneButton.bind(this);
@@ -18,6 +20,10 @@ class SelectSnakePopUpREACT extends React.Component{
         const {metaInfo: metaInfo, selectedSnake: selectedSnake, selectedSnakeGen: selectedSnakeGen, loadedSnakesIn: loadedSnakesIn} = this.props;
 
         const editable = !(selectedSnake < protectedSnakes);
+
+        if(this.resetRender){
+            return null;
+        }
 
         // bundle of functions for the popup to interact with the main menu
         //  close(newPopUp = null, info = null),  changeSelected(newI),  changeSelectedGen(newI),  changeLoaded(newLoadedSnakes), spliceLoaded(start, toDelete, newSnake(s))
@@ -50,7 +56,11 @@ class SelectSnakePopUpREACT extends React.Component{
                 <div className={"container"}>
                     {deleteBox}
                     <div className={"carousel_parent"}>
-                        <VerticalCarousel delayInitialScroll={1} selected={selectedSnake} items={loadedSnakesIn} select={popUpFuncs.changeSelected}>
+                        <VerticalCarousel delayInitialScroll={1} selected={selectedSnake} items={loadedSnakesIn} select={(index) => {
+                            popUpFuncs.changeSelected(index);
+                            popUpFuncs.changeSelectedGen(loadedSnakesIn[index].getLength()-1);
+                            this.resetRender = true;
+                        }}>
                             {loadedSnakesIn.map((val, i) => {
                                 return(
                                     <h3>{val.getComponentName()}</h3>
@@ -173,6 +183,12 @@ class SelectSnakePopUpREACT extends React.Component{
             else{
                 this.setState((state) => ({errorText: text}), callback);
             }
+        }
+    }
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if(this.resetRender){
+            this.resetRender = false;
+            this.forceUpdate();
         }
     }
 }
