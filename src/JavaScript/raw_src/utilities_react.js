@@ -625,7 +625,7 @@ class CollapsibleDiv extends React.Component{
                 <div className={"collapse_div " + openClose + ((this.props.className) ? (" " + this.props.className) : (""))}>
                     {header}
                     <Button className={"collapse_button"} onClick={this.change}>
-                        <ImgIcon className={"wrapper_div"} small={4} src={"src/Images/--button-640x640.png"} />
+                        <ImgIcon className={"wrapper_div"} small={5} src={"src/Images/--button-640x640.png"} />
                     </Button>
                     {rest}
                 </div>
@@ -636,7 +636,7 @@ class CollapsibleDiv extends React.Component{
                 <div className={"collapse_div " + openClose + ((this.props.className) ? (" " + this.props.className) : (""))}>
                     {header}
                     <Button className={"collapse_button"} onClick={this.change}>
-                        <ImgIcon className={"wrapper_div"} small={4} src={"src/Images/+-button-640x640.png"} />
+                        <ImgIcon className={"wrapper_div"} small={5} src={"src/Images/+-button-640x640.png"} />
                     </Button>
                 </div>
             );

@@ -1,11 +1,15 @@
-// function to read in snakes from a file
+// reads all snakes in a given text document
+function loadSnakesFromFile(name) {
+    let url = new URL(`./src/SavedSnakes/${name}.txt`, "https://eelyort.github.io/shrewdSnek2/");
+    fetch(url.toString()).then((result) => result.blob()).then((blob) => {
+        let reader = new FileReader();
+        reader.onload = (event) => {
+            let result = event.target.result.split("\n").filter(val => val.length > 0);
+            let snakes = result.map(((value, index) => Snake.parse(value)));
 
-// TODO: delete test
-// console.log(new URL("./relative-paths-in-javascript-in-an-external-file", "https://stackoverflow.com/questions/2188218/"));
+            loadedSnakes.push(new SnakeSpecies(snakes));
+        };
 
-let url = new URL("./src/SavedSnakes/evolution_4.txt", "https://eelyort.github.io/shrewdSnek2/");
-// console.log(url.content);
-
-fetch(url.toString()).then((result) => result.blob()).then((blob) => {
-    console.log(blob);
-});
+        reader.readAsText(blob);
+    });
+}

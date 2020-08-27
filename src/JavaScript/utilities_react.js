@@ -1003,7 +1003,7 @@ var CollapsibleDiv = function (_React$Component18) {
                     React.createElement(
                         Button,
                         { className: "collapse_button", onClick: this.change },
-                        React.createElement(ImgIcon, { className: "wrapper_div", small: 4, src: "src/Images/--button-640x640.png" })
+                        React.createElement(ImgIcon, { className: "wrapper_div", small: 5, src: "src/Images/--button-640x640.png" })
                     ),
                     rest
                 );
@@ -1015,7 +1015,7 @@ var CollapsibleDiv = function (_React$Component18) {
                     React.createElement(
                         Button,
                         { className: "collapse_button", onClick: this.change },
-                        React.createElement(ImgIcon, { className: "wrapper_div", small: 4, src: "src/Images/+-button-640x640.png" })
+                        React.createElement(ImgIcon, { className: "wrapper_div", small: 5, src: "src/Images/+-button-640x640.png" })
                     )
                 );
             }

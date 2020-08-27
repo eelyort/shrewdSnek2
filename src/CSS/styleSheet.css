@@ -690,10 +690,8 @@ select, input{
 }
 
 .icon{
-    min-width: 40px;
-    min-height: 40px;
-    width: 7vw;
-    height: 7vw;
+    width: 4.4em;
+    height: 4.4em;
 
     position: relative;
 }
@@ -701,36 +699,36 @@ select, input{
     z-index: 500;
 }
 .icon.small1{
-    min-width: 20px;
-    min-height: 20px;
-    width: 4vw;
-    height: 4vw;
-    max-width: 40px;
-    max-height: 40px;
+    width: 3.6em;
+    height: 3.6em;
 }
 .icon.small2{
-    min-width: 17px;
-    min-height: 17px;
-    width: 3vw;
-    height: 3vw;
-    max-width: 37px;
-    max-height: 37px;
+    width: 2.8em;
+    height: 2.8em;
 }
 .icon.small3{
-    min-width: 14px;
-    min-height: 14px;
-    width: 2vw;
-    height: 2vw;
-    max-width: 34px;
-    max-height: 34px;
+    width: 2em;
+    height: 2em;
 }
 .icon.small4{
-    min-width: 11px;
-    min-height: 11px;
-    width: 1.5vw;
-    height: 1.5vw;
-    max-width: 31px;
-    max-height: 31px;
+    width: 1.2em;
+    height: 1.2em;
+}
+.icon.small5{
+    width: 1em;
+    height: 1em;
+}
+.icon.small6{
+    width: 0.8em;
+    height: 0.8em;
+}
+.icon.small7{
+    width: 0.5em;
+    height: 0.5em;
+}
+.icon.small8{
+    width: 0.2em;
+    height: 0.2em;
 }
 .icon > img{
     width: 100%;
