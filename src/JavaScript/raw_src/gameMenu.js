@@ -541,7 +541,8 @@ class GameMenu extends React.Component{
     componentDidMount() {
         this.subCanvasCTX = this.subCanvasRef.current.getContext("2d");
 
-        this.showcaseRandomEvolutionSnake();
+        // buy time for snakes to load
+        setTimeout(() => this.showcaseRandomEvolutionSnake(), 120);
     }
     componentWillUnmount() {
         document.removeEventListener("keydown", () => this.keyEventInDown, false);

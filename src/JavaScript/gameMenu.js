@@ -857,20 +857,25 @@ var GameMenu = function (_React$Component3) {
     }, {
         key: "componentDidMount",
         value: function componentDidMount() {
+            var _this16 = this;
+
             this.subCanvasCTX = this.subCanvasRef.current.getContext("2d");
 
-            this.showcaseRandomEvolutionSnake();
+            // buy time for snakes to load
+            setTimeout(function () {
+                return _this16.showcaseRandomEvolutionSnake();
+            }, 120);
         }
     }, {
         key: "componentWillUnmount",
         value: function componentWillUnmount() {
-            var _this16 = this;
+            var _this17 = this;
 
             document.removeEventListener("keydown", function () {
-                return _this16.keyEventInDown;
+                return _this17.keyEventInDown;
             }, false);
             document.removeEventListener("keyup", function () {
-                return _this16.keyEventInUp;
+                return _this17.keyEventInUp;
             }, false);
         }
     }]);
