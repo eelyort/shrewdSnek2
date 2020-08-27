@@ -380,6 +380,23 @@ var GameMenu = function (_React$Component3) {
                                     { htmlFor: "infinite_evolve" },
                                     "Evolve Infinitely"
                                 )
+                            ),
+                            React.createElement(
+                                "div",
+                                { className: "inline_block_parent" },
+                                React.createElement("input", { type: "checkbox", name: "infinite_evolve", checked: this.showcase, onChange: function onChange() {
+                                        _this5.showcase = !_this5.showcase;
+                                        _this5.forceUpdate(function () {
+                                            if (_this5.showcase && !_this5.runningInstance) {
+                                                _this5.showcaseRandomEvolutionSnake();
+                                            }
+                                        });
+                                    } }),
+                                React.createElement(
+                                    "label",
+                                    { htmlFor: "infinite_evolve" },
+                                    "Showcase Mode"
+                                )
                             )
                         ),
                         React.createElement(

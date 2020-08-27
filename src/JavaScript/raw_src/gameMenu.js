@@ -214,6 +214,17 @@ class GameMenu extends React.Component{
                                 <input type={"checkbox"} name={"infinite_evolve"} checked={this.state.infiniteEvolve} onChange={this.infiniteButton} />
                                 <label htmlFor={"infinite_evolve"}>Evolve Infinitely</label>
                             </div>
+                            <div className={"inline_block_parent"}>
+                                <input type={"checkbox"} name={"infinite_evolve"} checked={this.showcase} onChange={() => {
+                                    this.showcase = !this.showcase;
+                                    this.forceUpdate(() => {
+                                        if(this.showcase && !this.runningInstance){
+                                            this.showcaseRandomEvolutionSnake();
+                                        }
+                                    });
+                                }} />
+                                <label htmlFor={"infinite_evolve"}>Showcase Mode</label>
+                            </div>
                         </FadeMenu>
                         <TypewriterText className={"playing_text"}>
                             <h2>
