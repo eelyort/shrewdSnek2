@@ -490,3 +490,34 @@ console.log(`b: ${b}, c: ${c}, d: ${d}, e: ${e}`);
 // // }
 // //
 // // console.log(c);
+
+const size = 5000000;
+const maxVal = 9999999;
+let data = [];
+for (let i = 0; i < size; i++) {
+    data.push(Math.floor(Math.random() * maxVal));
+}
+// console.log(data);
+
+// string
+let start1 = new Date().getTime();
+for (let i = 0; i < size; i++) {
+    let a = data[i].toString().split("").map(((value, index) => parseInt(value)));
+}
+let end1 = new Date().getTime();
+
+// number
+let start2 = new Date().getTime();
+for (let i = 0; i < size; i++) {
+    const numDigits = (Math.log10((data[i] ^ (data[i] >> 31)) - (data[i] >> 31)) | 0) + 1;
+    let a = Array(numDigits).fill(0);
+
+    let temp = data[i];
+    for (let j = 0; j < numDigits; j++) {
+        a[i] = temp % 10;
+        temp /= 10;
+    }
+}
+let end2 = new Date().getTime();
+
+console.log(`string: ${end1-start1}, number: ${end2-start2}`);
