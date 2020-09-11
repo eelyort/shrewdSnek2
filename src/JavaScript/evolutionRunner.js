@@ -2,7 +2,7 @@ const numRunVars = 3;
 
 // name, val, description, min, max, step
 const defaultEvolutionParams = [
-    ["Number of Snakes", 300, "The number of snakes in each generation.", 10, 25000, 50],
+    ["Number of Snakes", 800, "The number of snakes in each generation.", 10, 25000, 50],
     ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
     ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
     ["Likely-hood Mutations", 3, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second.", 0, 5000, 0.1],
@@ -11,7 +11,7 @@ const defaultEvolutionParams = [
     ["Ticks per Apple Score", 50, "The amount of ticks a snake must survive to get the same score as they would from eating an apple.", 1, 999999, 5],
     ["Max Time Score", 1, "The max score (in apples) a snake can get by surviving and not eating apples.", 0, 1000],
     ["Ticks till Time Out", 200, "The amount of ticks a snake can survive without eating any apples, if it goes past this number it dies.", 1, 999999, 10],
-    ["Ticks till Time Out Growth", 3, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple.", 0, 1000],
+    ["Time Out Growth per Length", 1, "The amount of ticks added to the above per length, at longer lengths it makes sense that it takes longer to get the apple.", 0, 1000],
     ["Percentage Survive", 0.02, "The percentage of each generation that will survive and compete in the next generation unchanged.", 0, 1, 0.02],
     ["Percentage Parents", 0.2, "The percentage of each generation that lives long enough to give birth to children.", 0, 1, 0.02],
     ["Parent Selection Shape", 0.78, "The selection of parents is done with an exponential trend, (this)^(x/sqrt(numParents)). Decreasing this number makes the most successful snake be selected as a parent more often.", 0.001, 2, 0.01]
