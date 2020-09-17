@@ -2,7 +2,7 @@ const numRunVars = 3;
 
 // name, val, description, min, max, step
 const defaultEvolutionParams = [
-    ["Number of Snakes", 800, "The number of snakes in each generation.", 10, 25000, 50],
+    ["Number of Snakes", 600, "The number of snakes in each generation.", 10, 25000, 50],
     ["Reproductions", [[new SingleWeightSwapReproduction(), 1], [new NodeSwapReproduction(), 1]], "The methods whereby two parents will produce offspring and their relative probabilities."],
     ["Mutations", [[new PercentMutation(), 1], [new ReplaceMutation(), 1], [new AddMutation(), 1], [new NegateMutation(), 1]], "The possible methods by which the snakes will be changed and their relative probabilities."],
     ["Likely-hood Mutations", 3, "How likely a parent is to mutate, values above 1 translate to 1 mutation + x probability of a second.", 0, 5000, 0.1],
@@ -158,9 +158,11 @@ class Evolution extends Component{
 
         // the (temporary) variables in use when a generation is running
         this.runningResults = null;
-        // index (of the next snake to be started), number running, number finished
-        this.runningBuffer = new SharedArrayBuffer(Int16Array.BYTES_PER_ELEMENT * numRunVars);
-        this.runningVars = new Int16Array(this.runningBuffer);
+        this.numStarted = null;
+        this.startingMore = false;
+        // // index (of the next snake to be started), number running, number finished
+        // this.runningBuffer = new SharedArrayBuffer(Int16Array.BYTES_PER_ELEMENT * numRunVars);
+        // this.runningVars = new Int16Array(this.runningBuffer);
 
         return true;
     }
@@ -286,15 +288,16 @@ class Evolution extends Component{
 
         // set parameters
         this.runningProgress = 0;
+        this.numStarted = 0;
         this.runningResults = Array.apply(null, {length: this.parameters[0]});
         for(let i = 0; i < this.runningResults.length; i++){
             this.runningResults[i] = null;
         }
         // index (of the next snake to be started), number running, number finished
-        this.runningVars = new Int16Array(this.runningBuffer);
-        for (let i = 0; i < numRunVars; i++) {
-            Atomics.store(this.runningVars, i, 0);
-        }
+        // this.runningVars = new Int16Array(this.runningBuffer);
+        // for (let i = 0; i < numRunVars; i++) {
+        //     Atomics.store(this.runningVars, i, 0);
+        // }
 
         // start the generation
         this.myInterval = setInterval(this.update.bind(this), Math.ceil(1000 / evolutionUpdatePerSec));
@@ -303,10 +306,18 @@ class Evolution extends Component{
     // function called every once in a while, begins new snakes when needed, updates visible parameters
     update(){
         // update progress
-        this.runningProgress = Atomics.load(this.runningVars, 2);
+        // this.runningProgress = Atomics.load(this.runningVars, 2);
+        let temp = 0;
+        this.runningResults.map((value, index) => {
+            if(value){
+                temp++;
+            }
+        });
+        this.runningProgress = temp;
 
         // finished
-        if(Atomics.load(this.runningVars, 2) >= this.parameters[0]){
+        // if(Atomics.load(this.runningVars, 2) >= this.parameters[0]){
+        if(this.runningProgress >= this.parameters[0]){
             this.finish();
 
             return;
@@ -314,12 +325,24 @@ class Evolution extends Component{
 
         // start new snakes - async so it doesn't freeze the screen
         setTimeout(function () {
-            while(Atomics.load(this.runningVars, 1) < maxNumThreads){
-                if(!this.startNextPrivate()){
-                    break;
+            if(!this.startingMore) {
+                this.startingMore = true;
+
+                let numRunningCurr = this.numStarted - this.runningProgress;
+                for (let i = 0; i < maxNumThreads-numRunningCurr; i++) {
+                    if(!this.startNextPrivate()){
+                        break;
+                    }
                 }
+                // while (Atomics.load(this.runningVars, 1) < maxNumThreads) {
+                //     if (!this.startNextPrivate()) {
+                //         break;
+                //     }
+                // }
+
+                this.startingMore = false;
             }
-        }.bind(this), 1);
+        }.bind(this), 0);
     }
 
     // called to end and process
@@ -365,9 +388,9 @@ class Evolution extends Component{
 
     // starts the next one
     startNextPrivate(){
-        let idx = Atomics.load(this.runningVars, 0);
-
         // index (of the next snake to be started), number running, number finished
+        // let idx = Atomics.load(this.runningVars, 0);
+        let idx = this.numStarted;
 
         // end if no more to do
         if(idx >= this.nextGeneration.length){
@@ -377,28 +400,32 @@ class Evolution extends Component{
         let runner = this.nextGeneration[idx];
         // species runner
         if(runner instanceof SpeciesRunner){
-            let old = Atomics.add(this.runningVars, 0, 1);
-            // test to make sure the same snake isn't run multiple times
-            if(old !== idx){
-                Atomics.sub(this.runningVars, 0, 1);
-            }
-            else{
-                Atomics.add(this.runningVars, 1, 1);
-                runner.runNext();
-            }
+            // let old = Atomics.add(this.runningVars, 0, 1);
+            // // test to make sure the same snake isn't run multiple times
+            // if(old !== idx){
+            //     Atomics.sub(this.runningVars, 0, 1);
+            // }
+            // else{
+            //     Atomics.add(this.runningVars, 1, 1);
+            //     runner.runNext();
+            // }
+            this.numStarted++;
+            runner.runNext();
         }
         // sibling runner
         else{
             let num = runner.numReturn;
-            let old = Atomics.add(this.runningVars, 0, num);
-            // test to make sure the same snake isn't run multiple times
-            if(old !== idx){
-                Atomics.sub(this.runningVars, 0, num);
-            }
-            else{
-                Atomics.add(this.runningVars, 1, runner.runners.length);
-                runner.start();
-            }
+            // let old = Atomics.add(this.runningVars, 0, num);
+            // // test to make sure the same snake isn't run multiple times
+            // if(old !== idx){
+            //     Atomics.sub(this.runningVars, 0, num);
+            // }
+            // else{
+            //     Atomics.add(this.runningVars, 1, runner.runners.length);
+            //     runner.start();
+            // }
+            this.numStarted += num;
+            runner.start();
         }
 
         return true;
@@ -418,12 +445,12 @@ class Evolution extends Component{
         }
         index++;
 
-        // update vars - // index, number running, number finished
-        let numFinished = index - origIndex;
-        // number running
-        Atomics.sub(this.runningVars, 1, 2);
-        // number finished
-        Atomics.add(this.runningVars, 2, numFinished);
+        // // update vars - // index, number running, number finished
+        // let numFinished = index - origIndex;
+        // // number running
+        // Atomics.sub(this.runningVars, 1, 2);
+        // // number finished
+        // Atomics.add(this.runningVars, 2, numFinished);
     }
 
     // mutates a single snake - assumes mutatePercents is done already
